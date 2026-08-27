@@ -20,39 +20,7 @@ html,body{
   color:var(--text-main);
 }
 #stage{position:fixed;inset:0;}
-svg{width:100%;height:100%;display:block;cursor:grab;}
-svg:active{cursor:grabbing;}
-
-.bg-star{fill:#fff;animation:twinkle linear infinite;}
-@keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:.9;}}
-
-.link{stroke:#3a4166;stroke-width:1;fill:none;transition:stroke .35s, opacity .35s, stroke-width .35s;}
-.link.active{stroke-width:2.4;opacity:1;}
-.link.dim{opacity:.06;}
-
-.node circle{stroke:rgba(255,255,255,.55);stroke-width:1;transition:opacity .3s, r .3s, filter .3s;cursor:pointer;}
-.node text{
-  fill:var(--text-main);
-  font-family:var(--font-body);
-  font-size:10.5px;
-  pointer-events:none;
-  paint-order:stroke;
-  stroke:var(--bg-void);
-  stroke-width:3px;
-  opacity:0;
-  transition:opacity .25s;
-}
-.node.show-label text{opacity:.9;}
-.node.dim circle{opacity:.12;}
-.node.dim text{opacity:0 !important;}
-.node.active circle{filter:drop-shadow(0 0 10px currentColor);}
-.node.selected circle{stroke:#fff;stroke-width:2.5;}
-.node.new-star circle{animation:starbirth 1.8s ease-out;}
-@keyframes starbirth{
-  0%{r:0; opacity:0; filter:drop-shadow(0 0 0 currentColor);}
-  40%{opacity:1; filter:drop-shadow(0 0 22px currentColor);}
-  100%{filter:drop-shadow(0 0 10px currentColor);}
-}
+#stage-canvas{width:100%;height:100%;display:block;cursor:grab;}
 
 /* ---- top bar ---- */
 #topbar{
@@ -126,7 +94,7 @@ svg:active{cursor:grabbing;}
   z-index:30;overflow-y:auto;
 }
 html[dir="rtl"] #panel{transform:translateX(100%);}
-#panel.open{transform:translateX(0);}
+#panel.open, html[dir="rtl"] #panel.open{transform:translateX(0);}
 #panelInner{padding:26px 22px 40px;}
 #closePanel{
   position:absolute;top:16px;inset-inline-start:16px;background:none;border:none;color:var(--text-dim);
@@ -177,7 +145,9 @@ html[dir="rtl"] #panel{transform:translateX(100%);}
 #footerbar a:hover{text-decoration:underline;}
 
 @media (max-width:640px){
-  #searchWrap{width:130px;}
+  #topbar{flex-wrap:wrap; row-gap:8px;}
+  #topbar > div:first-child{width:100%;}
+  #searchWrap{width:auto;flex:1;margin-inline-start:0;}
   #hint{display:none;}
   #title{font-size:16px;}
   #footerbar{display:none;}

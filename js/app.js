@@ -1,3 +1,5 @@
+import { createStarMap } from './starmap.js';
+
 /* ============================ i18n ============================ */
 const i18n = {
   ar: {
@@ -107,42 +109,9 @@ function logFailedSearch(query){
   links.forEach(l=>{ degree[l.source]=(degree[l.source]||0)+1; degree[l.target]=(degree[l.target]||0)+1; });
   nodes.forEach(n=> n.r = Math.min(17, 6.5 + (degree[n.id]||0)*1.15));
 
-  const svg = d3.select('#svg');
   let width = window.innerWidth, height = window.innerHeight;
-
-  const defs = svg.append('defs');
-  Object.entries(categories).forEach(([key,c])=>{
-    const filt = defs.append('filter').attr('id','glow-'+key).attr('x','-100%').attr('y','-100%').attr('width','300%').attr('height','300%');
-    filt.append('feGaussianBlur').attr('stdDeviation','3.2').attr('result','coloredBlur');
-    const merge = filt.append('feMerge');
-    merge.append('feMergeNode').attr('in','coloredBlur');
-    merge.append('feMergeNode').attr('in','SourceGraphic');
-  });
-
-  const zoomLayer = svg.append('g').attr('class','zoom-layer');
-  const bgLayer = zoomLayer.append('g').attr('class','bg-layer');
-  const linkLayer = zoomLayer.append('g').attr('class','link-layer');
-  const nodeLayer = zoomLayer.append('g').attr('class','node-layer');
-
-  const bgStars = d3.range(160).map(()=>({
-    x: Math.random()*width*1.4 - width*0.2,
-    y: Math.random()*height*1.4 - height*0.2,
-    r: Math.random()*1.4 + 0.3,
-    dur: (Math.random()*3+2).toFixed(2),
-    delay:(Math.random()*3).toFixed(2)
-  }));
-  bgLayer.selectAll('circle').data(bgStars).enter().append('circle')
-    .attr('class','bg-star')
-    .attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',d=>d.r)
-    .style('animation-duration',d=>d.dur+'s')
-    .style('animation-delay',d=>d.delay+'s');
-
-  const zoom = d3.zoom().scaleExtent([0.25,3.5]).on('zoom', ev=>{
-    zoomLayer.attr('transform', ev.transform);
-  });
-  svg.call(zoom);
-
-  const linkSel = linkLayer.selectAll('line').data(links).enter().append('line').attr('class','link');
+  const canvas = document.getElementById('stage-canvas');
+  const starMap = createStarMap({ canvas, width, height, categories });
 
   const isRecent = (dateAdded) => {
     if(!dateAdded) return false;
@@ -150,27 +119,7 @@ function logFailedSearch(query){
     return days <= 7;
   };
 
-  const nodeSel = nodeLayer.selectAll('g').data(nodes).enter().append('g')
-    .attr('class', d=> 'node' + (isRecent(d.date_added) ? ' new-star' : ''))
-    .call(d3.drag()
-      .on('start', (ev,d)=>{ if(!ev.active) sim.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; })
-      .on('drag', (ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
-      .on('end', (ev,d)=>{ if(!ev.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
-    )
-    .on('click', (ev,d)=>{ ev.stopPropagation(); selectNode(d.id); })
-    .on('mouseenter', function(){ d3.select(this).classed('show-label',true); })
-    .on('mouseleave', function(){ if(selectedId !== d3.select(this).datum().id) d3.select(this).classed('show-label',false); });
-
-  nodeSel.append('circle')
-    .attr('r', d=>d.r)
-    .attr('fill', d=>categories[d.category].color)
-    .style('color', d=>categories[d.category].color)
-    .attr('filter', d=>'url(#glow-'+d.category+')');
-
-  nodeSel.append('text')
-    .text(d=>d.name)
-    .attr('text-anchor','middle')
-    .attr('y', d=> -(d.r+7));
+  starMap.buildGraph(nodes, links);
 
   const sim = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d=>d.id).distance(64).strength(0.45))
@@ -178,19 +127,21 @@ function logFailedSearch(query){
     .force('collide', d3.forceCollide(d=>d.r+8))
     .force('x', d3.forceX(d=> categories[d.category].cx*width).strength(0.075))
     .force('y', d3.forceY(d=> categories[d.category].cy*height).strength(0.075))
-    .on('tick', ticked);
-
-  function ticked(){
-    linkSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
-    nodeSel.attr('transform', d=>`translate(${d.x},${d.y})`);
-  }
+    .on('tick', ()=> starMap.syncPositions());
 
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
+    starMap.resize(width, height);
     sim.force('x', d3.forceX(d=> categories[d.category].cx*width).strength(0.075));
     sim.force('y', d3.forceY(d=> categories[d.category].cy*height).strength(0.075));
     sim.alpha(0.3).restart();
   });
+
+  // Let the layout settle for a moment, then reveal the founding batch with a birth effect.
+  setTimeout(()=>{
+    const newIds = nodes.filter(n=>isRecent(n.date_added)).map(n=>n.id);
+    if(newIds.length) starMap.triggerBirth(newIds);
+  }, 900);
 
   /* ---- interaction ---- */
   let selectedId = null;
@@ -203,24 +154,10 @@ function logFailedSearch(query){
 
   function selectNode(id){
     selectedId = id;
-    const neigh = neighborMap[id];
-    nodeSel.classed('dim', d=> d.id!==id && !neigh.has(d.id));
-    nodeSel.classed('active', d=> d.id===id || neigh.has(d.id));
-    nodeSel.classed('selected', d=> d.id===id);
-    nodeSel.classed('show-label', d=> d.id===id || neigh.has(d.id));
-    linkSel.classed('active', l=> (l.source.id||l.source)===id || (l.target.id||l.target)===id);
-    linkSel.classed('dim', l=> !((l.source.id||l.source)===id || (l.target.id||l.target)===id));
+    starMap.setSelection(id, neighborMap[id]);
     openPanel(idIndex.get(id));
-    centerOn(id);
+    starMap.centerOn(id);
     hideNotFound();
-  }
-
-  function centerOn(id){
-    const n = nodes.find(x=>x.id===id);
-    if(!n) return;
-    const scale = 1.25;
-    const t = d3.zoomIdentity.translate(width/2 - n.x*scale, height/2 - n.y*scale).scale(scale);
-    svg.transition().duration(600).call(zoom.transform, t);
   }
 
   function openPanel(term){
@@ -229,12 +166,10 @@ function logFailedSearch(query){
     badge.selectAll('*').remove();
     badge.style('background', cat.color+'22').style('color', cat.color).style('border','1px solid '+cat.color+'55')
       .text(lang==='ar' ? cat.label_ar : cat.label_en);
+    const existingBadge = document.querySelector('.newBadge');
+    if(existingBadge) existingBadge.remove();
     if(isRecent(term.date_added)){
-      d3.select('#panelInner').select('.newBadge').remove();
       badge.node().insertAdjacentHTML('afterend', `<span class="newBadge">★ ${i18n[lang].newBadge}</span>`);
-    } else {
-      const existing = document.querySelector('.newBadge');
-      if(existing) existing.remove();
     }
     d3.select('#panelName').text(term.name).style('color', cat.color);
     d3.select('#panelDefs').html('');
@@ -259,14 +194,14 @@ function logFailedSearch(query){
     d3.select('#panel').classed('open', true);
   }
 
-  d3.select('#closePanel').on('click', ()=>{
+  function closePanel(){
     d3.select('#panel').classed('open', false);
     selectedId = null;
-    nodeSel.classed('dim',false).classed('active',false).classed('selected',false).classed('show-label',false);
-    linkSel.classed('active',false).classed('dim',false);
-  });
-
-  svg.on('click', ()=>{ if(selectedId){ d3.select('#closePanel').dispatch('click'); } hideNotFound(); });
+    starMap.setSelection(null, new Set());
+  }
+  d3.select('#closePanel').on('click', closePanel);
+  starMap.onNodeClick(id => selectNode(id));
+  starMap.onBackgroundClick(()=>{ if(selectedId) closePanel(); hideNotFound(); });
 
   /* ---- legend ---- */
   const legendSel = d3.select('#legend');
@@ -279,9 +214,7 @@ function logFailedSearch(query){
       chip.on('click', function(){
         const off = chip.classed('off');
         chip.classed('off', !off);
-        nodeSel.filter(d=>d.category===key).style('display', off ? null : 'none');
-        linkSel.filter(l=> (idIndex.get(l.source.id||l.source).category)===key || (idIndex.get(l.target.id||l.target).category)===key)
-          .style('display', off ? null : 'none');
+        starMap.setCategoryVisible(key, off);
       });
     });
   }
@@ -322,9 +255,9 @@ function logFailedSearch(query){
   });
 
   /* ---- zoom controls ---- */
-  d3.select('#zoomIn').on('click', ()=> svg.transition().duration(300).call(zoom.scaleBy, 1.35));
-  d3.select('#zoomOut').on('click', ()=> svg.transition().duration(300).call(zoom.scaleBy, 0.74));
-  d3.select('#zoomReset').on('click', ()=> svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity));
+  d3.select('#zoomIn').on('click', ()=> starMap.zoomBy(1.35));
+  d3.select('#zoomOut').on('click', ()=> starMap.zoomBy(0.74));
+  d3.select('#zoomReset').on('click', ()=> starMap.zoomReset());
 
   /* ---- language toggle ---- */
   function applyLangChrome(){
