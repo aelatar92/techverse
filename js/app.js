@@ -26,6 +26,7 @@ const i18n = {
     visitedLabel: 'مصطلح مُستكشف',
     newBadgeTitle: 'شارة جديدة! ★',
     nextSuggestedLabel: '▶ التالي المقترح',
+    relatedPathsLabel: '🌠 جزء من مسار تعلّم',
     visitedTag: '✓ تمت زيارته'
   },
   en: {
@@ -52,6 +53,7 @@ const i18n = {
     visitedLabel: 'Terms Explored',
     newBadgeTitle: 'New Badge! ★',
     nextSuggestedLabel: '▶ Suggested Next',
+    relatedPathsLabel: '🌠 Part of a Learning Path',
     visitedTag: '✓ Visited'
   }
 };
@@ -355,6 +357,17 @@ function computeCategoryStats(categories, terms){
   });
 
   let activeConstellationId = null;
+  const termConstellations = new Map();
+  terms.forEach(t=> termConstellations.set(t.id, []));
+  constellations.forEach(c=> c.term_ids.forEach(tid=>{
+    if(termConstellations.has(tid)) termConstellations.get(tid).push(c);
+  }));
+
+  function activateConstellation(cid){
+    activeConstellationId = cid;
+    const c = constellations.find(c=>c.id===cid);
+    starMap.setConstellation(c ? c.term_ids : null);
+  }
 
   function selectNode(id){
     selectedId = id;
@@ -376,6 +389,7 @@ function computeCategoryStats(categories, terms){
       ...document.querySelectorAll('#panelDefs .defBlock'),
       document.querySelector('#relTitle'),
       document.querySelector('#relList'),
+      document.querySelector('.relatedPaths'),
       document.querySelector('.nextSuggested')
     ].filter(Boolean);
     items.forEach((el, i)=>{
@@ -425,6 +439,28 @@ function computeCategoryStats(categories, terms){
       chip.append('span').text(r.name);
       if(visitedIds.has(rid)) chip.append('span').attr('class','visitedTag').text(i18n[lang].visitedTag);
     });
+
+    const existingPaths = document.querySelector('.relatedPaths');
+    if(existingPaths) existingPaths.remove();
+    const memberPaths = termConstellations.get(term.id) || [];
+    if(memberPaths.length){
+      const pathsSel = d3.select('#panelInner').append('div').attr('class','relatedPaths');
+      pathsSel.append('div').attr('class','nsLabel').text(i18n[lang].relatedPathsLabel);
+      const wrap = pathsSel.append('div').attr('class','pathChipWrap');
+      memberPaths.forEach(c=>{
+        wrap.append('div').attr('class','pathChip')
+          .on('click', ()=>{
+            closePanel();
+            activateConstellation(c.id);
+            renderStats();
+            d3.select('#statsPanel').classed('open', true);
+          })
+          .call(chip=>{
+            chip.append('span').attr('class','pIcon').text('🌠');
+            chip.append('span').text(lang==='ar' ? c.name_ar : c.name_en);
+          });
+      });
+    }
 
     const existingNext = document.querySelector('.nextSuggested');
     if(existingNext) existingNext.remove();
@@ -531,8 +567,7 @@ function computeCategoryStats(categories, terms){
             activeConstellationId = null;
             starMap.setConstellation(null);
           } else {
-            activeConstellationId = c.id;
-            starMap.setConstellation(c.term_ids);
+            activateConstellation(c.id);
           }
           renderStats();
         });
