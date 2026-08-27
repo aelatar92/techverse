@@ -107,6 +107,21 @@ comments/discussions.
   explicit approval before doing it — never commit or push automatically without the
   user's approval each time.
 
+## Feedback from an actual first design attempt
+A first pass at the visual design was tried and was not good enough. Specifically
+needed to raise the realism and liveliness:
+- **High visual quality (HDR-like feel)**: stars need real multi-layer bloom/glow,
+  not just a circle with simple blur, plus color grading that gives the
+  over-exposed brightness feel of real space photography (post-processing, e.g.
+  UnrealBloomPass in Three.js or an equivalent).
+- **Neural links must actually feel "alive"**: light pulses that travel along each
+  link between two stars continuously and periodically, with a gradual opacity
+  shift (a breathing effect) and possibly a subtle line-width change — not static,
+  motionless lines like in the first attempt.
+- **Terms (stars) must float and keep moving continuously**: even after the graph
+  simulation settles, each star should keep a slow, continuous organic motion
+  around itself (a gentle sway/float), not freeze completely in place.
+
 ## Hosting
 Initially considering hosting the project from the user's personal machine.
 Discuss with the user at implementation time the best practical way to keep the

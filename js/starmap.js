@@ -139,6 +139,40 @@ function makeStarfield(count, spread, dotTexture){
 }
 
 /* ---------------------------------------------------------------------
+   Neural links — a traveling light pulse plus a slow breathing opacity,
+   so the connections between stars read as alive rather than static wires.
+--------------------------------------------------------------------- */
+const linkVertexShader = `
+  attribute vec3 color;
+  attribute float aT;
+  attribute float aPhase;
+  varying vec3 vColor;
+  varying float vT;
+  varying float vPhase;
+  void main(){
+    vColor = color;
+    vT = aT;
+    vPhase = aPhase;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+const linkFragmentShader = `
+  uniform float uTime;
+  varying vec3 vColor;
+  varying float vT;
+  varying float vPhase;
+  void main(){
+    float breathe = 0.65 + 0.35 * sin(uTime * 0.55 + vPhase * 6.2831853);
+    float pulsePos = fract(uTime * 0.22 + vPhase);
+    float d = abs(vT - pulsePos);
+    d = min(d, 1.0 - d);
+    float pulse = smoothstep(0.12, 0.0, d) * 2.2;
+    vec3 finalColor = vColor * breathe + vColor * pulse;
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+`;
+
+/* ---------------------------------------------------------------------
    StarMap — the public API consumed by app.js
 --------------------------------------------------------------------- */
 export function createStarMap({ canvas, width, height, categories }){
@@ -150,6 +184,8 @@ export function createStarMap({ canvas, width, height, categories }){
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(width, height, false);
   renderer.setClearColor(0x05060d, 1);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.85;
 
   // Parallax layers, farthest first
   const farGroup = new THREE.Group();   // distant starfield
@@ -235,7 +271,15 @@ export function createStarMap({ canvas, width, height, categories }){
       holder.userData.id = node.id;
       holder.add(glow, core, ring, label, hitArea);
       nodeGroup.add(holder);
-      nodeEntries.set(node.id, { node, holder, glow, core, ring, label, hitArea, glowMat, coreMat, ringMat, labelMat, baseColor: color });
+      nodeEntries.set(node.id, {
+        node, holder, glow, core, ring, label, hitArea, glowMat, coreMat, ringMat, labelMat, baseColor: color,
+        driftPhaseX: Math.random()*Math.PI*2,
+        driftPhaseY: Math.random()*Math.PI*2,
+        driftSpeedX: 0.14 + Math.random()*0.10,
+        driftSpeedY: 0.11 + Math.random()*0.10,
+        driftAmpX: 2.5 + Math.random()*3,
+        driftAmpY: 2.5 + Math.random()*3
+      });
     });
 
     linkData = [];
@@ -247,27 +291,47 @@ export function createStarMap({ canvas, width, height, categories }){
 
     const positions = new Float32Array(linkData.length*6);
     const colors = new Float32Array(linkData.length*6);
+    const aT = new Float32Array(linkData.length*2);
+    const aPhase = new Float32Array(linkData.length*2);
+    linkData.forEach((l, i)=>{
+      aT[i*2+0] = 0; aT[i*2+1] = 1;
+      const ph = Math.random();
+      aPhase[i*2+0] = ph; aPhase[i*2+1] = ph;
+    });
     linkGeometry = new THREE.BufferGeometry();
     linkGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     linkGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    linkMaterial = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 1 });
+    linkGeometry.setAttribute('aT', new THREE.BufferAttribute(aT, 1));
+    linkGeometry.setAttribute('aPhase', new THREE.BufferAttribute(aPhase, 1));
+    linkMaterial = new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0 } },
+      vertexShader: linkVertexShader,
+      fragmentShader: linkFragmentShader,
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+    });
     if(linkMesh) linkGroup.remove(linkMesh);
     linkMesh = new THREE.LineSegments(linkGeometry, linkMaterial);
     linkGroup.add(linkMesh);
 
-    syncPositions();
+    syncPositions(0);
     setSelection(null, new Set());
   }
 
-  function syncPositions(){
+  function syncPositions(t){
+    const time = t || 0;
     nodeEntries.forEach(entry=>{
-      entry.holder.position.set(entry.node.x || 0, entry.node.y || 0, 0);
+      const dx = Math.sin(time*entry.driftSpeedX + entry.driftPhaseX) * entry.driftAmpX;
+      const dy = Math.cos(time*entry.driftSpeedY + entry.driftPhaseY) * entry.driftAmpY;
+      entry.holder.position.set((entry.node.x||0)+dx, (entry.node.y||0)+dy, 0);
     });
     if(linkGeometry){
       const pos = linkGeometry.attributes.position.array;
       linkData.forEach((l, i)=>{
-        pos[i*6+0] = l.a.x || 0; pos[i*6+1] = l.a.y || 0; pos[i*6+2] = 0;
-        pos[i*6+3] = l.b.x || 0; pos[i*6+4] = l.b.y || 0; pos[i*6+5] = 0;
+        const ea = nodeEntries.get(l.a.id), eb = nodeEntries.get(l.b.id);
+        const ax = ea ? ea.holder.position.x : (l.a.x||0), ay = ea ? ea.holder.position.y : (l.a.y||0);
+        const bx = eb ? eb.holder.position.x : (l.b.x||0), by = eb ? eb.holder.position.y : (l.b.y||0);
+        pos[i*6+0] = ax; pos[i*6+1] = ay; pos[i*6+2] = 0;
+        pos[i*6+3] = bx; pos[i*6+4] = by; pos[i*6+5] = 0;
       });
       linkGeometry.attributes.position.needsUpdate = true;
     }
@@ -426,11 +490,13 @@ export function createStarMap({ canvas, width, height, categories }){
     requestAnimationFrame(step);
   }
 
-  /* ---- postprocessing ---- */
+  /* ---- postprocessing: two-layer bloom for an HDR, over-exposed space-photo feel ---- */
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(width, height), 0.85, 0.45, 0.32);
-  composer.addPass(bloom);
+  const bloomWide = new UnrealBloomPass(new THREE.Vector2(width, height), 0.28, 0.85, 0.38);
+  const bloomTight = new UnrealBloomPass(new THREE.Vector2(width, height), 0.55, 0.18, 0.7);
+  composer.addPass(bloomWide);
+  composer.addPass(bloomTight);
 
   const vignetteShader = {
     uniforms: { tDiffuse: { value: null }, uAmount: { value: 0.35 } },
@@ -453,13 +519,18 @@ export function createStarMap({ canvas, width, height, categories }){
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
     composer.setSize(w, h);
+    bloomWide.setSize(w, h);
+    bloomTight.setSize(w, h);
     rawGroup.position.set(-w/2, h/2, 0);
   }
 
   let running = true;
   function animate(now){
     if(!running) return;
-    for(const mat of farGroup.children.map(c=>c.material)){ if(mat.uniforms) mat.uniforms.uTime.value = now/1000; }
+    const t = now/1000;
+    for(const mat of farGroup.children.map(c=>c.material)){ if(mat.uniforms) mat.uniforms.uTime.value = t; }
+    if(linkMaterial && linkMaterial.uniforms) linkMaterial.uniforms.uTime.value = t;
+    syncPositions(t);
     composer.render();
     requestAnimationFrame(animate);
   }

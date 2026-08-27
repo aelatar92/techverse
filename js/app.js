@@ -201,8 +201,10 @@ function computeCategoryStats(categories, terms){
     .force('charge', d3.forceManyBody().strength(-95))
     .force('collide', d3.forceCollide(d=>d.r+8))
     .force('x', d3.forceX(d=> categories[d.category].cx*width + subOffset(d, subAngleData, width, height).ox).strength(0.075))
-    .force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075))
-    .on('tick', ()=> starMap.syncPositions());
+    .force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075));
+  // Node/link screen positions are now refreshed every animation frame inside
+  // starmap.js (so the gentle drift keeps running even once the simulation
+  // settles), so no d3 'tick' handler is needed here.
 
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
