@@ -13,7 +13,8 @@
       "routing-switching": { "label_ar": "التوجيه والتحويل", "label_en": "Routing & Switching" },
       "security": { "label_ar": "أمن الشبكات", "label_en": "Network Security" },
       "certifications": { "label_ar": "شهادات", "label_en": "Certifications" },
-      "performance": { "label_ar": "الأداء", "label_en": "Performance" }
+      "performance": { "label_ar": "الأداء", "label_en": "Performance" },
+      "wireless": { "label_ar": "الأمن اللاسلكي", "label_en": "Wireless Security" }
     }
   },
   "linux": {
@@ -45,7 +46,8 @@
       "cloud": { "label_ar": "الحوسبة السحابية", "label_en": "Cloud Computing" },
       "servers-services": { "label_ar": "الخوادم والخدمات", "label_en": "Servers & Services" },
       "storage": { "label_ar": "التخزين", "label_en": "Storage" },
-      "reliability": { "label_ar": "الموثوقية والاستمرارية", "label_en": "Reliability & Continuity" }
+      "reliability": { "label_ar": "الموثوقية والاستمرارية", "label_en": "Reliability & Continuity" },
+      "operating-systems": { "label_ar": "أنظمة التشغيل", "label_en": "Operating Systems" }
     }
   },
   "security": {
