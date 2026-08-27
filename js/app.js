@@ -131,12 +131,19 @@ function logFailedSearch(query){
   }catch(e){ /* analytics unavailable */ }
 }
 
-/* ============================ Sub-galaxy clustering ============================
-   Large categories (many terms/subcategories) get visually crowded when every
-   term is pulled toward one single anchor point. Instead, terms are pulled
-   toward a secondary anchor offset from the category center based on their
-   subcategory, arranging subcategories in a ring around the galaxy so related
-   terms cluster together without the whole category collapsing into one blob. */
+/* ============================ Galaxy clustering ============================
+   Each category is one spiral galaxy, clearly separated from the other 11:
+   the most fundamental/connected terms form its bright core, everything else
+   winds outward in arms (grouped by subcategory) the farther it is from that
+   core — same shape logic as a real spiral galaxy photo, not a flat radial
+   scatter. Viewed from the free-orbiting 3D camera at anything but dead-on,
+   each flat disk naturally reads as an oval, exactly like real galaxy shots. */
+function hashUnit(str){
+  let h = 2166136261 >>> 0;
+  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0) / 4294967296;
+}
+
 function computeSubAngles(terms, categories){
   const bySubcat = {};
   terms.forEach(t=>{
@@ -151,35 +158,70 @@ function computeSubAngles(terms, categories){
     const n = keys.length;
     const angles = {};
     keys.forEach((k,i)=>{ angles[k] = (i/n) * Math.PI * 2; });
-    // Each galaxy gets its own tilt so a field of several galaxies doesn't
-    // read as uniformly-aligned ovals stamped from the same template.
+    // Each galaxy's arms start from a different clock position, and half
+    // spiral the other way, so a field of several galaxies doesn't look
+    // uniformly stamped from one template.
     const idx = catKeys.indexOf(catId);
-    const rotation = catKeys.length > 1 ? (idx / catKeys.length) * Math.PI : 0;
-    result[catId] = { angles, n, rotation };
+    const rotation = catKeys.length > 1 ? (idx / catKeys.length) * Math.PI * 2 : 0;
+    const dir = idx % 2 === 0 ? 1 : -1;
+    result[catId] = { angles, n, rotation, dir };
   });
   return result;
 }
 
-function subOffset(node, subAngleData, width, height){
+// Pushes the 12 hand-placed category anchors (categories.json cx/cy) further
+// apart from the shared center than their raw 0..1 grid would give, so
+// neighboring galaxies read as visually distinct instead of bleeding into
+// each other. Real 3D orbit/zoom (already in place) is how a visitor gets
+// close to any one of them, the same way you'd approach a real galaxy field.
+const GALAXY_SPREAD = 2.1;
+
+function galaxyCenter(catId, categories, width, height){
+  const cat = categories[catId];
+  return {
+    cx: (cat.cx - 0.5) * width * GALAXY_SPREAD + width * 0.5,
+    cy: (cat.cy - 0.5) * height * GALAXY_SPREAD + height * 0.5
+  };
+}
+
+function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, degree, categories, width, height){
+  const { cx, cy } = galaxyCenter(node.category, categories, width, height);
   const catData = subAngleData[node.category];
-  if(!catData || catData.n <= 1 || !node.subcategory || !(node.subcategory in catData.angles)){
-    return { ox: 0, oy: 0 };
-  }
-  const angle = catData.angles[node.subcategory];
-  // Slightly more room per category than before, so the wider collision
-  // radius below (real star-to-star spacing) has space to actually resolve
-  // instead of fighting the anchor pull and bulging past the ellipse.
-  const radiusFrac = Math.min(0.17, 0.06 + catData.n * 0.013);
-  const R = Math.min(width, height) * radiusFrac;
-  // Subcategory anchors sit on an ellipse (not a circle) around the category
-  // center, so each galaxy's overall silhouette reads as a distinct oval
-  // rather than a round blob; rotated per-category (see computeSubAngles)
-  // for visual variety across the field.
-  const rx = R * 1.45, ry = R * 0.68;
-  const ox0 = Math.cos(angle) * rx, oy0 = Math.sin(angle) * ry;
-  const rot = catData.rotation || 0;
-  const cos = Math.cos(rot), sin = Math.sin(rot);
-  return { ox: ox0*cos - oy0*sin, oy: ox0*sin + oy0*cos };
+
+  const armBaseAngle = (catData && node.subcategory && node.subcategory in catData.angles)
+    ? catData.angles[node.subcategory] + (catData.rotation || 0)
+    : hashUnit(node.id) * Math.PI * 2;
+  // A little per-node jitter so an entire arm doesn't sit on one
+  // infinitely-thin curve — it gets some visible width instead.
+  const sectorCount = catData ? Math.max(4, catData.n) : 6;
+  const jitter = (hashUnit(node.id + '_a') - 0.5) * (Math.PI / sectorCount) * 1.6;
+
+  // Core-to-periphery radius: the most-connected (most fundamental) terms in
+  // the category sit near its center; everything else orbits outward. Eased
+  // with a square (not sqrt) so only the genuinely top-tier hub terms get
+  // pulled in tight — a sqrt curve pulled every mid-degree term in too,
+  // which piled dozens of terms into the same small core zone and read as
+  // one overexposed blown-out cluster instead of a bright center + orbits.
+  const maxDeg = degreeMaxByCat[node.category] || 1;
+  const norm = Math.min(1, (degree[node.id] || 0) / maxDeg);
+  const termCount = catTermCount[node.category] || 1;
+  const outerR = Math.min(width, height) * Math.min(0.20, 0.075 + termCount * 0.0035);
+  const innerR = 22;
+  const r = innerR + (outerR - innerR) * Math.pow(1 - norm, 2);
+
+  // Spiral-arm twist: the angle winds further away from its arm's base
+  // angle the farther out a term sits, curling into a spiral like a real
+  // galaxy photo instead of straight radial spokes. Barely any twist right
+  // at the core (real spiral galaxies have a dense, arm-less bright center),
+  // building up to a near-full turn by the outer edge. Direction alternates
+  // per category (see computeSubAngles) so a field of many galaxies doesn't
+  // all curl the same way.
+  const spiralTurns = 0.85;
+  const t = Math.max(0, Math.min(1, (r - innerR) / (outerR - innerR)));
+  const dir = catData ? (catData.dir || 1) : 1;
+  const angle = armBaseAngle + jitter + dir * t * spiralTurns * Math.PI * 2;
+
+  return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
 
 /* ============================ Progress / gamification ============================
@@ -247,6 +289,11 @@ function computeCategoryStats(categories, terms){
   });
   const degree = {};
   links.forEach(l=>{ degree[l.source]=(degree[l.source]||0)+1; degree[l.target]=(degree[l.target]||0)+1; });
+  const degreeMaxByCat = {}, catTermCount = {};
+  nodes.forEach(n=>{
+    catTermCount[n.category] = (catTermCount[n.category]||0) + 1;
+    degreeMaxByCat[n.category] = Math.max(degreeMaxByCat[n.category]||0, degree[n.id]||0);
+  });
   nodes.forEach(n=> n.r = Math.min(17, 6.5 + (degree[n.id]||0)*1.15));
 
   let width = window.innerWidth, height = window.innerHeight;
@@ -355,6 +402,8 @@ function computeCategoryStats(categories, terms){
   }
 
   const subAngleData = computeSubAngles(terms, categories);
+  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, degree, categories, width, height).x;
+  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, degree, categories, width, height).y;
 
   const sim = d3.forceSimulation(nodes)
     // Distance scales with both endpoints' radii so heavily-connected hub
@@ -364,8 +413,11 @@ function computeCategoryStats(categories, terms){
     .force('link', d3.forceLink(links).id(d=>d.id).distance(d=> 50 + (d.source.r||8)*0.8 + (d.target.r||8)*0.8).strength(0.4))
     .force('charge', d3.forceManyBody().strength(-95))
     .force('collide', d3.forceCollide(d=>d.r*1.25 + 11))
-    .force('x', d3.forceX(d=> categories[d.category].cx*width + subOffset(d, subAngleData, width, height).ox).strength(0.075))
-    .force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075));
+    // Pulls each term toward its core-to-periphery position within its own
+    // circular galaxy (see radialTarget) — stronger than before so that
+    // clear per-galaxy structure wins out over the general link/charge pull.
+    .force('x', d3.forceX(targetX).strength(0.1))
+    .force('y', d3.forceY(targetY).strength(0.1));
   // Node/link screen positions are now refreshed every animation frame inside
   // starmap.js (so the gentle drift keeps running even once the simulation
   // settles), so no d3 'tick' handler is needed here.
@@ -373,8 +425,8 @@ function computeCategoryStats(categories, terms){
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
     starMap.resize(width, height);
-    sim.force('x', d3.forceX(d=> categories[d.category].cx*width + subOffset(d, subAngleData, width, height).ox).strength(0.075));
-    sim.force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075));
+    sim.force('x', d3.forceX(targetX).strength(0.1));
+    sim.force('y', d3.forceY(targetY).strength(0.1));
     sim.alpha(0.3).restart();
   });
 
