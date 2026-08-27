@@ -137,20 +137,25 @@ function logFailedSearch(query){
    toward a secondary anchor offset from the category center based on their
    subcategory, arranging subcategories in a ring around the galaxy so related
    terms cluster together without the whole category collapsing into one blob. */
-function computeSubAngles(terms){
+function computeSubAngles(terms, categories){
   const bySubcat = {};
   terms.forEach(t=>{
     if(!t.subcategory) return;
     if(!bySubcat[t.category]) bySubcat[t.category] = new Set();
     bySubcat[t.category].add(t.subcategory);
   });
+  const catKeys = Object.keys(categories);
   const result = {};
   Object.entries(bySubcat).forEach(([catId, set])=>{
     const keys = [...set].sort();
     const n = keys.length;
     const angles = {};
     keys.forEach((k,i)=>{ angles[k] = (i/n) * Math.PI * 2; });
-    result[catId] = { angles, n };
+    // Each galaxy gets its own tilt so a field of several galaxies doesn't
+    // read as uniformly-aligned ovals stamped from the same template.
+    const idx = catKeys.indexOf(catId);
+    const rotation = catKeys.length > 1 ? (idx / catKeys.length) * Math.PI : 0;
+    result[catId] = { angles, n, rotation };
   });
   return result;
 }
@@ -163,7 +168,15 @@ function subOffset(node, subAngleData, width, height){
   const angle = catData.angles[node.subcategory];
   const radiusFrac = Math.min(0.14, 0.05 + catData.n * 0.012);
   const R = Math.min(width, height) * radiusFrac;
-  return { ox: Math.cos(angle) * R, oy: Math.sin(angle) * R };
+  // Subcategory anchors sit on an ellipse (not a circle) around the category
+  // center, so each galaxy's overall silhouette reads as a distinct oval
+  // rather than a round blob; rotated per-category (see computeSubAngles)
+  // for visual variety across the field.
+  const rx = R * 1.45, ry = R * 0.68;
+  const ox0 = Math.cos(angle) * rx, oy0 = Math.sin(angle) * ry;
+  const rot = catData.rotation || 0;
+  const cos = Math.cos(rot), sin = Math.sin(rot);
+  return { ox: ox0*cos - oy0*sin, oy: ox0*sin + oy0*cos };
 }
 
 /* ============================ Progress / gamification ============================
@@ -338,7 +351,7 @@ function computeCategoryStats(categories, terms){
     return null;
   }
 
-  const subAngleData = computeSubAngles(terms);
+  const subAngleData = computeSubAngles(terms, categories);
 
   const sim = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d=>d.id).distance(64).strength(0.45))

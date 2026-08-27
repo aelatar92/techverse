@@ -303,9 +303,15 @@ export function createStarMap({ canvas, width, height, categories }){
 
   const scene = new THREE.Scene();
   const fov = 50;
-  const camera = new THREE.PerspectiveCamera(fov, width/height, 1, 4000);
+  const camFar = 4000;
+  const camera = new THREE.PerspectiveCamera(fov, width/height, 1, camFar);
   const D0 = height / (2 * Math.tan(THREE.MathUtils.degToRad(fov/2)));
   camera.position.set(0, 0, D0);
+  // Depth-fades node/nebula sprites (built-in Sprite fog support) so distant
+  // content softens into the backdrop instead of an abrupt pop, and so
+  // zooming all the way out fades to background color before hitting the
+  // far clip plane rather than the galaxy vanishing outright.
+  scene.fog = new THREE.Fog(0x05060d, D0 * 1.4, camFar * 0.8);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
@@ -330,7 +336,8 @@ export function createStarMap({ canvas, width, height, categories }){
   const glowTex = makeGlowTexture();
   const ringTex = makeRingTexture();
 
-  farGroup.add(makeStarfield(500, 2400, dotTex));
+  const starfield = makeStarfield(500, 2400, dotTex);
+  farGroup.add(starfield);
 
   // nebula clouds behind each category cluster — z-jittered around that
   // category's own node depth band so the haze stays visually coherent with
@@ -526,6 +533,16 @@ export function createStarMap({ canvas, width, height, categories }){
       const labelScale = distToCam / D0;
       entry.label.scale.set(entry.labelScaleX*labelScale, entry.labelScaleY*labelScale, 1);
     });
+    // Gentle pulsing halo on the selected node only — cheap since it's a
+    // single O(1) lookup rather than a per-node check in the loop above.
+    if(currentSelected){
+      const sel = nodeEntries.get(currentSelected);
+      if(sel){
+        const pulse = 1 + 0.12 * Math.sin(time * 1.6);
+        const ringBase = sel.node.r * 2.4;
+        sel.ring.scale.set(ringBase*pulse, ringBase*pulse, 1);
+      }
+    }
     if(linkGeometry){
       const pos = linkGeometry.attributes.position.array;
       linkData.forEach((l, i)=>{
@@ -722,8 +739,28 @@ export function createStarMap({ canvas, width, height, categories }){
   controls.minPolarAngle = Math.PI * 0.15; // keep the galaxy from flipping upside-down
   controls.maxPolarAngle = Math.PI * 0.85;
   controls.minDistance = D0 / 3.5; // mirrors the old d3-zoom scaleExtent([0.25,3.5])
-  controls.maxDistance = D0 * 4;
+  // Capped below camera.far (with margin for content up to ~400 units off
+  // origin) so dollying all the way out fades into the fog instead of the
+  // whole galaxy clipping through the far plane and vanishing.
+  controls.maxDistance = Math.min(D0 * 4, camFar - 600);
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.6; // gentle ambient drift, not a spin
   controls.update();
+
+  // Auto-rotation pauses the instant the user takes the camera (drag, wheel,
+  // touch — OrbitControls' own 'start'/'end' events cover all input modes)
+  // and resumes on its own a couple of seconds after they let go, so the
+  // galaxy is always either responding to the visitor or drifting on its own.
+  let autoRotateResumeTimer = null;
+  const AUTO_ROTATE_RESUME_MS = 2500;
+  controls.addEventListener('start', ()=>{
+    controls.autoRotate = false;
+    if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
+  });
+  controls.addEventListener('end', ()=>{
+    if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
+    autoRotateResumeTimer = setTimeout(()=>{ controls.autoRotate = true; }, AUTO_ROTATE_RESUME_MS);
+  });
 
   // Small manual RAF tween for programmatic camera moves (zoomBy/zoomReset/
   // centerOn) — disables user input for the duration so a drag can't fight
@@ -732,6 +769,8 @@ export function createStarMap({ canvas, width, height, categories }){
   let cameraTween = null;
   function tweenCamera(toPos, toTarget, duration){
     controls.enabled = false;
+    controls.autoRotate = false;
+    if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
     cameraTween = {
       fromPos: camera.position.clone(), toPos,
       fromTarget: controls.target.clone(), toTarget,
@@ -745,7 +784,12 @@ export function createStarMap({ canvas, width, height, categories }){
     const e = d3.easeCubicOut(raw);
     camera.position.lerpVectors(fromPos, toPos, e);
     controls.target.lerpVectors(fromTarget, toTarget, e);
-    if(raw >= 1){ cameraTween = null; controls.enabled = true; }
+    if(raw >= 1){
+      cameraTween = null;
+      controls.enabled = true;
+      if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
+      autoRotateResumeTimer = setTimeout(()=>{ controls.autoRotate = true; }, AUTO_ROTATE_RESUME_MS);
+    }
   }
 
   function zoomBy(factor){
@@ -829,8 +873,24 @@ export function createStarMap({ canvas, width, height, categories }){
     return null;
   }
 
+  // Right-click drives OrbitControls' pan, so the browser's own context menu
+  // popping up would interrupt that gesture — suppress it on the canvas.
+  canvas.addEventListener('contextmenu', ev=> ev.preventDefault());
+
   let hoveredId = null;
-  canvas.addEventListener('pointerdown', ev=>{ downPos = { x: ev.clientX, y: ev.clientY }; pointerMoved = false; });
+  canvas.addEventListener('pointerdown', ev=>{
+    downPos = { x: ev.clientX, y: ev.clientY };
+    pointerMoved = false;
+    canvas.style.cursor = 'grabbing';
+  });
+  // Without this, downPos never cleared after the first press, so the
+  // pointermove hover branch below (guarded by `if(!downPos)`) would never
+  // run again for the rest of the session — hover/cursor/link-highlight all
+  // silently stopped working after one click.
+  canvas.addEventListener('pointerup', ()=>{
+    downPos = null;
+    canvas.style.cursor = 'grab';
+  });
   canvas.addEventListener('pointermove', ev=>{
     if(downPos && Math.hypot(ev.clientX - downPos.x, ev.clientY - downPos.y) > 4) pointerMoved = true;
     if(!downPos){
@@ -1005,17 +1065,23 @@ export function createStarMap({ canvas, width, height, categories }){
     }
   }
 
+  let frameCount = 0;
   function animate(now){
     if(!running) return;
     const t = now/1000;
-    for(const mat of farGroup.children.map(c=>c.material)){ if(mat.uniforms) mat.uniforms.uTime.value = t; }
+    if(starfield.material.uniforms) starfield.material.uniforms.uTime.value = t;
     if(dustPoints.material.uniforms) dustPoints.material.uniforms.uTime.value = t;
     if(linkMaterial && linkMaterial.uniforms) linkMaterial.uniforms.uTime.value = t;
     stepCameraTween(now);
     controls.update();
     camera.updateMatrixWorld();
     syncPositions(t);
-    resolveLabelLayout();
+    // The label-collision relaxation target only needs to settle within the
+    // existing 0.18 lerp's own smoothing window, so recomputing it every
+    // other frame instead of every frame roughly halves its O(n^2) cost with
+    // no visible difference.
+    frameCount++;
+    if(frameCount % 2 === 0) resolveLabelLayout();
     updateFocus();
     composer.render();
     requestAnimationFrame(animate);
@@ -1038,6 +1104,6 @@ export function createStarMap({ canvas, width, height, categories }){
     onNodeClick(cb){ onNodeClickCb = cb; },
     onBackgroundClick(cb){ onBackgroundClickCb = cb; },
     onNodeHover(cb){ onNodeHoverCb = cb; },
-    dispose(){ running = false; controls.dispose(); }
+    dispose(){ running = false; controls.dispose(); if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer); }
   };
 }
