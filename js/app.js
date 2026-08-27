@@ -132,12 +132,13 @@ function logFailedSearch(query){
 }
 
 /* ============================ Galaxy clustering ============================
-   Each category is one spiral galaxy, clearly separated from the other 11:
-   the most fundamental/connected terms form its bright core, everything else
-   winds outward in arms (grouped by subcategory) the farther it is from that
-   core — same shape logic as a real spiral galaxy photo, not a flat radial
-   scatter. Viewed from the free-orbiting 3D camera at anything but dead-on,
-   each flat disk naturally reads as an oval, exactly like real galaxy shots. */
+   Each of the 12 categories is its own galaxy, clearly separated from the
+   other 11, and each one has a genuinely different shape/logic (see
+   GALAXY_SHAPES below) rather than one template reused everywhere — the
+   same way real galaxies come in different Hubble types (spiral, barred,
+   ring, elliptical...), not just rotated copies of one photo. Viewed from
+   the free-orbiting 3D camera at anything but dead-on, each flat disk
+   naturally reads as an oval, exactly like real galaxy shots. */
 function hashUnit(str){
   let h = 2166136261 >>> 0;
   for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -156,15 +157,15 @@ function computeSubAngles(terms, categories){
   Object.entries(bySubcat).forEach(([catId, set])=>{
     const keys = [...set].sort();
     const n = keys.length;
-    const angles = {};
-    keys.forEach((k,i)=>{ angles[k] = (i/n) * Math.PI * 2; });
+    const angles = {}, subIndex = {};
+    keys.forEach((k,i)=>{ angles[k] = (i/n) * Math.PI * 2; subIndex[k] = i; });
     // Each galaxy's arms start from a different clock position, and half
     // spiral the other way, so a field of several galaxies doesn't look
     // uniformly stamped from one template.
     const idx = catKeys.indexOf(catId);
     const rotation = catKeys.length > 1 ? (idx / catKeys.length) * Math.PI * 2 : 0;
     const dir = idx % 2 === 0 ? 1 : -1;
-    result[catId] = { angles, n, rotation, dir };
+    result[catId] = { angles, subIndex, n, rotation, dir };
   });
   return result;
 }
@@ -184,44 +185,150 @@ function galaxyCenter(catId, categories, width, height){
   };
 }
 
-function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, degree, categories, width, height){
+// One shape per category, picked to fit what the category is about rather
+// than assigned arbitrarily. Only a handful of underlying generators (see
+// the switch in radialTarget) — real galaxy classification reuses "spiral"
+// across countless individual galaxies too — but arm count/tightness/
+// direction differ enough per category that no two read as the same galaxy.
+const GALAXY_SHAPES = {
+  networking:  { type: 'spiral', arms: 2, turns: 0.9 },
+  linux:       { type: 'barredSpiral', turns: 0.75, barFrac: 0.4 },
+  systems:     { type: 'spiral', arms: 4, turns: 0.55 },
+  security:    { type: 'rings', bands: 3 },
+  hardware:    { type: 'ring' },
+  ai:          { type: 'spiral', arms: 3, turns: 1.3 },
+  softdev:     { type: 'scatter' },
+  databases:   { type: 'rings', bands: 2 },
+  web:         { type: 'spiral', arms: 2, turns: 0.4 },
+  blockchain:  { type: 'chain' },
+  iot:         { type: 'hubSatellite' },
+  projectmgmt: { type: 'elliptical' }
+};
+
+function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, degree, categories, width, height){
   const { cx, cy } = galaxyCenter(node.category, categories, width, height);
   const catData = subAngleData[node.category];
+  const shape = GALAXY_SHAPES[node.category] || { type: 'spiral', arms: 2, turns: 0.85 };
+  const rotation = catData ? (catData.rotation || 0) : 0;
+  const dir = catData ? (catData.dir || 1) : 1;
 
+  const subIdx = (catData && node.subcategory && node.subcategory in catData.subIndex)
+    ? catData.subIndex[node.subcategory]
+    : Math.floor(hashUnit(node.id) * 6);
   const armBaseAngle = (catData && node.subcategory && node.subcategory in catData.angles)
-    ? catData.angles[node.subcategory] + (catData.rotation || 0)
+    ? catData.angles[node.subcategory] + rotation
     : hashUnit(node.id) * Math.PI * 2;
-  // A little per-node jitter so an entire arm doesn't sit on one
+  // A little per-node jitter so an entire arm/cluster doesn't sit on one
   // infinitely-thin curve — it gets some visible width instead.
   const sectorCount = catData ? Math.max(4, catData.n) : 6;
   const jitter = (hashUnit(node.id + '_a') - 0.5) * (Math.PI / sectorCount) * 1.6;
 
-  // Core-to-periphery radius: the most-connected (most fundamental) terms in
-  // the category sit near its center; everything else orbits outward. Eased
-  // with a square (not sqrt) so only the genuinely top-tier hub terms get
-  // pulled in tight — a sqrt curve pulled every mid-degree term in too,
-  // which piled dozens of terms into the same small core zone and read as
-  // one overexposed blown-out cluster instead of a bright center + orbits.
+  // Core-to-periphery radius budget shared by every shape: the most-
+  // connected (most fundamental) terms in the category sit near its
+  // center; everything else orbits outward. Eased with a square (not sqrt)
+  // so only the genuinely top-tier hub terms get pulled in tight — a sqrt
+  // curve pulled every mid-degree term in too, which piled dozens of terms
+  // into the same small core zone and read as one overexposed blown-out
+  // cluster instead of a bright center + orbits.
   const maxDeg = degreeMaxByCat[node.category] || 1;
   const norm = Math.min(1, (degree[node.id] || 0) / maxDeg);
   const termCount = catTermCount[node.category] || 1;
   const outerR = Math.min(width, height) * Math.min(0.20, 0.075 + termCount * 0.0035);
   const innerR = 22;
-  const r = innerR + (outerR - innerR) * Math.pow(1 - norm, 2);
+  const orderFrac = termCount > 1 ? (catOrderIndex[node.id] || 0) / termCount : 0;
 
-  // Spiral-arm twist: the angle winds further away from its arm's base
-  // angle the farther out a term sits, curling into a spiral like a real
-  // galaxy photo instead of straight radial spokes. Barely any twist right
-  // at the core (real spiral galaxies have a dense, arm-less bright center),
-  // building up to a near-full turn by the outer edge. Direction alternates
-  // per category (see computeSubAngles) so a field of many galaxies doesn't
-  // all curl the same way.
-  const spiralTurns = 0.85;
-  const t = Math.max(0, Math.min(1, (r - innerR) / (outerR - innerR)));
-  const dir = catData ? (catData.dir || 1) : 1;
-  const angle = armBaseAngle + jitter + dir * t * spiralTurns * Math.PI * 2;
+  let x, y;
+  switch(shape.type){
+    case 'barredSpiral': {
+      // Straight bar through the core (2 opposite ends), peeling off into
+      // spiral arms past barFrac — like a barred spiral galaxy.
+      const r = innerR + (outerR - innerR) * Math.pow(1 - norm, 2);
+      const t = Math.max(0, Math.min(1, (r - innerR) / (outerR - innerR)));
+      const barFrac = shape.barFrac || 0.4;
+      const barAngle = (subIdx % 2) * Math.PI + rotation;
+      if(t < barFrac){
+        const perp = barAngle + Math.PI / 2;
+        const w = (hashUnit(node.id + '_w') - 0.5) * innerR * 1.3;
+        x = cx + Math.cos(barAngle) * r + Math.cos(perp) * w;
+        y = cy + Math.sin(barAngle) * r + Math.sin(perp) * w;
+      } else {
+        const tt = (t - barFrac) / (1 - barFrac);
+        const angle = barAngle + jitter + dir * tt * (shape.turns || 0.75) * Math.PI * 2;
+        x = cx + Math.cos(angle) * r; y = cy + Math.sin(angle) * r;
+      }
+      break;
+    }
+    case 'rings': {
+      // Discrete concentric bands (defense-in-depth / layered structure)
+      // instead of a smooth radius gradient — hub terms land on the
+      // innermost band, not just "somewhat closer in".
+      const bands = shape.bands || 3;
+      const bandIdx = Math.min(bands - 1, Math.floor((1 - norm) * bands));
+      const bandR = innerR + (outerR - innerR) * ((bandIdx + 0.5) / bands);
+      const angle = hashUnit(node.id + '_ring') * Math.PI * 2;
+      x = cx + Math.cos(angle) * bandR; y = cy + Math.sin(angle) * bandR;
+      break;
+    }
+    case 'ring': {
+      // One clean ring, terms evenly spaced around it — for small,
+      // tightly-scoped categories where a full core/arm structure would
+      // be overkill for the term count.
+      const rr = outerR * 0.75;
+      const angle = orderFrac * Math.PI * 2 + rotation;
+      x = cx + Math.cos(angle) * rr; y = cy + Math.sin(angle) * rr;
+      break;
+    }
+    case 'scatter': {
+      // Irregular galaxy: no rotational structure, radius only loosely
+      // tied to degree, angle fully free.
+      const rr = innerR + (outerR - innerR) * Math.pow(hashUnit(node.id + '_sr'), 0.7) * (0.5 + 0.5 * (1 - norm));
+      const angle = hashUnit(node.id + '_sa') * Math.PI * 2;
+      x = cx + Math.cos(angle) * rr; y = cy + Math.sin(angle) * rr;
+      break;
+    }
+    case 'chain': {
+      // Terms strung around a single undulating loop, like links in a
+      // chain, instead of radiating from a center at all.
+      const baseR = outerR * 0.68;
+      const angle = orderFrac * Math.PI * 2 + rotation;
+      const rr = baseR + 0.22 * baseR * Math.sin(angle * 5);
+      x = cx + Math.cos(angle) * rr; y = cy + Math.sin(angle) * rr;
+      break;
+    }
+    case 'hubSatellite': {
+      // Small satellite clumps (one per subcategory) around a shared
+      // center, with the most-connected terms pulled toward the true
+      // center rather than staying in their clump — a hub with things
+      // orbiting it, not a disk.
+      const clusterR = outerR * 0.62;
+      const localR = (hashUnit(node.id + '_hr') - 0.5) * innerR * 1.4;
+      const localA = (hashUnit(node.id + '_ha') - 0.5) * 0.5;
+      const angle = armBaseAngle + localA;
+      const rr = innerR + (clusterR + localR - innerR) * (1 - Math.pow(norm, 2));
+      x = cx + Math.cos(angle) * rr; y = cy + Math.sin(angle) * rr;
+      break;
+    }
+    case 'elliptical': {
+      // Smooth structureless density falloff from the center — no arms,
+      // no rings, just a soft glow that thins out toward the edge.
+      const angle = hashUnit(node.id + '_ea') * Math.PI * 2;
+      const rr = outerR * Math.pow(hashUnit(node.id + '_er'), 1.6);
+      x = cx + Math.cos(angle) * rr; y = cy + Math.sin(angle) * rr;
+      break;
+    }
+    case 'spiral':
+    default: {
+      const r = innerR + (outerR - innerR) * Math.pow(1 - norm, 2);
+      const t = Math.max(0, Math.min(1, (r - innerR) / (outerR - innerR)));
+      const arms = shape.arms || 2;
+      const armAngle = ((subIdx % arms) / arms) * Math.PI * 2 + rotation;
+      const angle = armAngle + jitter + dir * t * (shape.turns || 0.85) * Math.PI * 2;
+      x = cx + Math.cos(angle) * r; y = cy + Math.sin(angle) * r;
+      break;
+    }
+  }
 
-  return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+  return { x, y };
 }
 
 /* ============================ Progress / gamification ============================
@@ -289,8 +396,9 @@ function computeCategoryStats(categories, terms){
   });
   const degree = {};
   links.forEach(l=>{ degree[l.source]=(degree[l.source]||0)+1; degree[l.target]=(degree[l.target]||0)+1; });
-  const degreeMaxByCat = {}, catTermCount = {};
+  const degreeMaxByCat = {}, catTermCount = {}, catOrderIndex = {};
   nodes.forEach(n=>{
+    catOrderIndex[n.id] = catTermCount[n.category] || 0;
     catTermCount[n.category] = (catTermCount[n.category]||0) + 1;
     degreeMaxByCat[n.category] = Math.max(degreeMaxByCat[n.category]||0, degree[n.id]||0);
   });
@@ -402,22 +510,31 @@ function computeCategoryStats(categories, terms){
   }
 
   const subAngleData = computeSubAngles(terms, categories);
-  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, degree, categories, width, height).x;
-  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, degree, categories, width, height).y;
+  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, degree, categories, width, height).x;
+  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, degree, categories, width, height).y;
+
+  // Cross-galaxy links (a term related to one in a different category) stay
+  // gentle — enough to bend a line across the gap and show the connection —
+  // instead of pulling as hard as same-galaxy links do. At full strength a
+  // handful of cross-links (e.g. hardware's PoE/UTP cable terms linking into
+  // networking) were strong enough to physically drag those terms out of
+  // their own galaxy entirely, breaking shapes like "ring" that depend on
+  // every term landing close to a specific radius.
+  const linkStrength = l => l.source.category === l.target.category ? 0.4 : 0.05;
 
   const sim = d3.forceSimulation(nodes)
     // Distance scales with both endpoints' radii so heavily-connected hub
     // terms (bigger glow halos) don't get pulled in closer than their own
     // glow radius allows — otherwise the busiest nodes stay visually fused
     // together no matter how much collision spacing is added elsewhere.
-    .force('link', d3.forceLink(links).id(d=>d.id).distance(d=> 50 + (d.source.r||8)*0.8 + (d.target.r||8)*0.8).strength(0.4))
+    .force('link', d3.forceLink(links).id(d=>d.id).distance(d=> 50 + (d.source.r||8)*0.8 + (d.target.r||8)*0.8).strength(linkStrength))
     .force('charge', d3.forceManyBody().strength(-95))
     .force('collide', d3.forceCollide(d=>d.r*1.25 + 11))
     // Pulls each term toward its core-to-periphery position within its own
     // circular galaxy (see radialTarget) — stronger than before so that
     // clear per-galaxy structure wins out over the general link/charge pull.
-    .force('x', d3.forceX(targetX).strength(0.1))
-    .force('y', d3.forceY(targetY).strength(0.1));
+    .force('x', d3.forceX(targetX).strength(0.14))
+    .force('y', d3.forceY(targetY).strength(0.14));
   // Node/link screen positions are now refreshed every animation frame inside
   // starmap.js (so the gentle drift keeps running even once the simulation
   // settles), so no d3 'tick' handler is needed here.
@@ -425,8 +542,8 @@ function computeCategoryStats(categories, terms){
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
     starMap.resize(width, height);
-    sim.force('x', d3.forceX(targetX).strength(0.1));
-    sim.force('y', d3.forceY(targetY).strength(0.1));
+    sim.force('x', d3.forceX(targetX).strength(0.14));
+    sim.force('y', d3.forceY(targetY).strength(0.14));
     sim.alpha(0.3).restart();
   });
 
