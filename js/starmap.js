@@ -651,7 +651,16 @@ export function createStarMap({ canvas, width, height, categories }){
         _linkPerp.crossVectors(_linkDir, _linkView);
         if(_linkPerp.lengthSq() < 1e-6) _linkPerp.crossVectors(_linkDir, new THREE.Vector3(0,1,0));
         const widthFrac = p.count / galaxyPairMaxCount;
-        _linkPerp.normalize().multiplyScalar(GALAXY_LINK_MIN_WIDTH + (GALAXY_LINK_MAX_WIDTH - GALAXY_LINK_MIN_WIDTH) * widthFrac);
+        const desiredHalfWidth = GALAXY_LINK_MIN_WIDTH + (GALAXY_LINK_MAX_WIDTH - GALAXY_LINK_MIN_WIDTH) * widthFrac;
+        // Two heavily cross-linked galaxies often end up with their centers
+        // pulled close together, so the straight-line distance between them
+        // can be barely bigger than the ribbon's own width — rendering as a
+        // bright solid blob/triangle instead of a recognizable line. Cap the
+        // half-width to a fraction of the ribbon's actual length so it always
+        // reads as a ribbon, however close the two galaxies are.
+        const length = ca.distanceTo(cb);
+        const halfWidth = Math.max(0.8, Math.min(desiredHalfWidth, length * 0.12));
+        _linkPerp.normalize().multiplyScalar(halfWidth);
         gpos[o+0]=ca.x+_linkPerp.x; gpos[o+1]=ca.y+_linkPerp.y; gpos[o+2]=ca.z+_linkPerp.z;
         gpos[o+3]=ca.x-_linkPerp.x; gpos[o+4]=ca.y-_linkPerp.y; gpos[o+5]=ca.z-_linkPerp.z;
         gpos[o+6]=cb.x+_linkPerp.x; gpos[o+7]=cb.y+_linkPerp.y; gpos[o+8]=cb.z+_linkPerp.z;
