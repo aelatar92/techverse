@@ -112,6 +112,21 @@ function logFailedSearch(query){
     list.push({query, ts: new Date().toISOString()});
     localStorage.setItem(key, JSON.stringify(list.slice(-500)));
   }catch(e){ /* localStorage unavailable */ }
+  /* Centralized wishlist: log each miss as a GoatCounter custom event so it
+     aggregates across every visitor (not just this browser) once the real
+     GoatCounter site code is in place — the dashboard's Events view then
+     ranks missing terms by how often they were searched. Silently a no-op
+     against the current placeholder site code / when analytics is blocked. */
+  try{
+    const slug = query.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '') || 'blank';
+    if(window.goatcounter && typeof window.goatcounter.count === 'function'){
+      window.goatcounter.count({
+        path: 'missing-term/' + slug,
+        title: 'Missing term search: ' + query,
+        event: true
+      });
+    }
+  }catch(e){ /* analytics unavailable */ }
 }
 
 /* ============================ Sub-galaxy clustering ============================
