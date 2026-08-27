@@ -160,5 +160,19 @@
       "industrial": { "label_ar": "الأتمتة الصناعية", "label_en": "Industrial Automation" },
       "security": { "label_ar": "الأمان", "label_en": "Security" }
     }
+  },
+  "projectmgmt": {
+    "id": "projectmgmt",
+    "label_ar": "إدارة المشاريع التقنية",
+    "label_en": "Tech Project Management",
+    "color": "#94a3b8",
+    "cx": 0.65,
+    "cy": 0.90,
+    "subcategories": {
+      "methodologies": { "label_ar": "المنهجيات", "label_en": "Methodologies" },
+      "artifacts": { "label_ar": "المخرجات والوثائق", "label_en": "Artifacts" },
+      "ceremonies": { "label_ar": "الفعاليات", "label_en": "Ceremonies" },
+      "roles-metrics": { "label_ar": "الأدوار والمقاييس", "label_en": "Roles & Metrics" }
+    }
   }
 }

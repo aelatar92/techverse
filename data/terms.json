@@ -1294,7 +1294,7 @@
     "aliases": ["HA"],
     "definition_ar": "تصميم أنظمة بحيث تبقى الخدمة متاحة لأطول وقت ممكن بأقل قدر من الانقطاع، غالبًا عبر التكرار (Redundancy) وتوزيع الأحمال.",
     "definition_en": "Designing systems so a service stays available with minimal downtime, typically through redundancy and load distribution.",
-    "related": ["loadbalancer", "raid", "backup", "replication"],
+    "related": ["loadbalancer", "raid", "backup", "replication", "sre"],
     "date_added": "2026-08-27"
   },
   {
@@ -2097,7 +2097,7 @@
     "aliases": [],
     "definition_ar": "عملية يفحص فيها مطوّر آخر تغييرات الكود قبل دمجها، للتأكد من جودتها وصحتها واتساقها مع معايير المشروع.",
     "definition_en": "The process where another developer examines code changes before they're merged, checking quality, correctness, and consistency with project standards.",
-    "related": ["pull_request", "git"],
+    "related": ["pull_request", "git", "technical_debt"],
     "date_added": "2026-08-27"
   },
   {
@@ -2174,7 +2174,7 @@
     "aliases": ["Continuous Integration", "Continuous Deployment", "Continuous Delivery"],
     "definition_ar": "ممارسة تُدمج فيها تغييرات الكود تلقائيًا وتُختبر وتُنشر بشكل مستمر، لتقليل الوقت بين كتابة الكود ووصوله للمستخدم بأمان.",
     "definition_en": "A practice where code changes are automatically integrated, tested, and deployed continuously, shrinking the time between writing code and safely getting it to users.",
-    "related": ["git", "webhook", "agile"],
+    "related": ["git", "webhook", "agile", "devops"],
     "date_added": "2026-08-27"
   },
   {
@@ -2185,7 +2185,7 @@
     "aliases": [],
     "definition_ar": "منهجية لإدارة مشاريع البرمجيات تعتمد على تسليم العمل على دفعات صغيرة ومتكررة (Iterations)، مع تعديل مستمر بناءً على تغذية راجعة سريعة بدلًا من خطة جامدة طويلة المدى.",
     "definition_en": "A software project management approach based on delivering work in small, repeated iterations, adapting continuously based on fast feedback instead of a rigid long-term plan.",
-    "related": ["scrum", "cicd"],
+    "related": ["scrum", "cicd", "devops", "kanban", "waterfall", "mvp", "technical_debt"],
     "date_added": "2026-08-27"
   },
   {
@@ -2196,7 +2196,7 @@
     "aliases": [],
     "definition_ar": "إطار عملي شائع لتطبيق منهجية Agile، ينظّم العمل في دورات زمنية قصيرة (Sprints) مع اجتماعات يومية قصيرة لمتابعة التقدم.",
     "definition_en": "A popular framework for implementing Agile, organizing work into short time-boxed cycles called sprints, with brief daily meetings to track progress.",
-    "related": ["agile"],
+    "related": ["agile", "sprint", "retrospective", "velocity", "definition_of_done"],
     "date_added": "2026-08-27"
   },
   {
@@ -2956,6 +2956,193 @@
     "definition_ar": "مجال يركّز على حماية أجهزة IoT من الاختراق، وهو تحدٍّ خاص لأن أغلب هذه الأجهزة محدودة الموارد وقد لا تُحدَّث بانتظام، ما يجعلها هدفًا سهلًا للهجمات مثل بناء شبكات Botnet.",
     "definition_en": "A field focused on protecting IoT devices from compromise; a particular challenge since most are resource-constrained and rarely updated, making them easy targets for attacks like building botnets.",
     "related": ["iot", "malware", "firewall"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "devops",
+    "name": "DevOps",
+    "category": "projectmgmt",
+    "subcategory": "methodologies",
+    "aliases": [],
+    "definition_ar": "ثقافة وممارسة تدمج فرق التطوير (Dev) والتشغيل (Ops) للعمل معًا طوال دورة حياة المنتج، بهدف تسريع تسليم البرمجيات بجودة وموثوقية أعلى.",
+    "definition_en": "A culture and practice that merges development (Dev) and operations (Ops) teams to work together across the product lifecycle, aiming to deliver software faster with higher quality and reliability.",
+    "related": ["cicd", "agile", "sre"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "kanban",
+    "name": "Kanban",
+    "category": "projectmgmt",
+    "subcategory": "methodologies",
+    "aliases": [],
+    "definition_ar": "أسلوب لإدارة سير العمل بصريًا عبر لوحة مقسّمة لأعمدة (كـ\"قيد الانتظار\"، \"قيد التنفيذ\"، \"منتهي\")، مع تحديد حد أقصى للمهام في كل عمود لتفادي الازدحام.",
+    "definition_en": "A visual workflow management method using a board divided into columns (like \"To Do,\" \"In Progress,\" \"Done\"), with a work-in-progress limit per column to avoid bottlenecks.",
+    "related": ["agile", "scrum"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "waterfall",
+    "name": "Waterfall",
+    "category": "projectmgmt",
+    "subcategory": "methodologies",
+    "aliases": [],
+    "definition_ar": "منهجية تقليدية لإدارة المشاريع تنفّذ المراحل (تحليل، تصميم، تنفيذ، اختبار) بالتتابع الواحدة تلو الأخرى، بعكس Agile التي تعتمد التكرار المرن.",
+    "definition_en": "A traditional project management approach that executes phases — analysis, design, implementation, testing — sequentially one after another, unlike Agile's flexible iterations.",
+    "related": ["agile", "gantt_chart"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sprint",
+    "name": "Sprint",
+    "category": "projectmgmt",
+    "subcategory": "ceremonies",
+    "aliases": [],
+    "definition_ar": "دورة زمنية قصيرة وثابتة الطول (عادة أسبوعين) في Scrum يلتزم خلالها الفريق بتسليم مجموعة محددة من المهام.",
+    "definition_en": "A short, fixed-length cycle (usually two weeks) in Scrum during which the team commits to delivering a defined set of work.",
+    "related": ["scrum", "product_backlog"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "product_backlog",
+    "name": "Product Backlog",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [],
+    "definition_ar": "قائمة مرتبة بالأولوية تضم كل الميزات والإصلاحات والمهام المطلوبة لمنتج معيّن، ويسحب منها الفريق العمل في كل Sprint.",
+    "definition_en": "A prioritized list of all the features, fixes, and tasks needed for a product, from which the team pulls work each sprint.",
+    "related": ["sprint", "user_story", "epic"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "user_story",
+    "name": "User Story",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [],
+    "definition_ar": "وصف قصير لميزة من منظور المستخدم النهائي (عادة بصيغة \"بصفتي... أريد... حتى...\")، يوضّح القيمة المطلوبة دون الدخول في تفاصيل تقنية.",
+    "definition_en": "A short feature description from the end user's perspective (typically \"As a... I want... so that...\"), capturing the needed value without technical detail.",
+    "related": ["product_backlog", "epic"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "epic",
+    "name": "Epic",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [],
+    "definition_ar": "مجموعة كبيرة من العمل أو الميزات المترابطة يصعب إنجازها في Sprint واحد، وتُقسَّم عادة إلى عدة User Stories أصغر قابلة للتنفيذ.",
+    "definition_en": "A large body of related work or features too big to complete in one sprint, typically broken down into several smaller, actionable user stories.",
+    "related": ["user_story", "product_backlog"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "mvp",
+    "name": "MVP",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": ["Minimum Viable Product"],
+    "definition_ar": "أبسط نسخة من منتج تحتوي فقط على الميزات الأساسية الكافية لاختبار الفكرة مع مستخدمين حقيقيين، قبل الاستثمار في تطويره بالكامل.",
+    "definition_en": "The simplest version of a product containing only the core features needed to test the idea with real users, before investing in building it out fully.",
+    "related": ["agile", "roadmap"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "roadmap",
+    "name": "Product Roadmap",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": ["Roadmap"],
+    "definition_ar": "خطة عالية المستوى توضّح الاتجاه المستقبلي لمنتج معيّن والمعالم الرئيسية المتوقع الوصول إليها بمرور الوقت، دون الدخول في تفاصيل كل مهمة.",
+    "definition_en": "A high-level plan showing a product's future direction and the key milestones expected over time, without detailing every individual task.",
+    "related": ["mvp", "product_backlog", "stakeholder"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "gantt_chart",
+    "name": "Gantt Chart",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [],
+    "definition_ar": "مخطط بصري يعرض جدول زمني لمهام مشروع معيّن، موضّحًا تواريخ بدايتها ونهايتها والتبعيات بينها، شائع في إدارة المشاريع بمنهجية Waterfall.",
+    "definition_en": "A visual chart showing a project's task timeline, including start/end dates and dependencies between tasks; common in Waterfall-style project management.",
+    "related": ["waterfall"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "definition_of_done",
+    "name": "Definition of Done",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": ["DoD"],
+    "definition_ar": "مجموعة معايير متفق عليها مسبقًا يجب أن تتحقق في أي مهمة ليُعتبر إنجازها فعليًا مكتملًا، لتفادي الخلاف حول جاهزية العمل للتسليم.",
+    "definition_en": "A pre-agreed set of criteria a task must meet to be considered truly complete, avoiding disputes over whether work is actually ready to ship.",
+    "related": ["sprint", "scrum"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "retrospective",
+    "name": "Retrospective",
+    "category": "projectmgmt",
+    "subcategory": "ceremonies",
+    "aliases": ["Sprint Retrospective"],
+    "definition_ar": "اجتماع يعقده الفريق في نهاية كل Sprint لمراجعة ما سار بشكل جيد وما يحتاج تحسينًا في طريقة عملهم، لا في المنتج نفسه.",
+    "definition_en": "A meeting the team holds at the end of each sprint to review what went well and what needs improving in how they work — not the product itself.",
+    "related": ["sprint", "scrum"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "stakeholder",
+    "name": "Stakeholder",
+    "category": "projectmgmt",
+    "subcategory": "roles-metrics",
+    "aliases": [],
+    "definition_ar": "أي شخص أو جهة له مصلحة أو تأثير في نتيجة مشروع، مثل العميل أو الإدارة أو المستخدمين النهائيين، وقد لا يكون جزءًا من فريق التنفيذ مباشرة.",
+    "definition_en": "Any person or party with an interest in or influence over a project's outcome — such as a client, management, or end users — who may not be part of the execution team itself.",
+    "related": ["roadmap", "raci"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "raci",
+    "name": "RACI Matrix",
+    "category": "projectmgmt",
+    "subcategory": "roles-metrics",
+    "aliases": ["RACI"],
+    "definition_ar": "أداة تحدد بوضوح من هو المسؤول (Responsible) والمعتمِد (Accountable) والمُستشار (Consulted) والمُبلَّغ (Informed) لكل مهمة في مشروع، لتفادي التداخل أو الفراغ في المسؤوليات.",
+    "definition_en": "A tool that clearly defines who is Responsible, Accountable, Consulted, and Informed for each task in a project, avoiding overlapping or missing ownership.",
+    "related": ["stakeholder"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "velocity",
+    "name": "Velocity",
+    "category": "projectmgmt",
+    "subcategory": "roles-metrics",
+    "aliases": [],
+    "definition_ar": "مقياس في Scrum لمتوسط كمية العمل (غالبًا بوحدات نقاط القصة) التي ينجزها فريق في كل Sprint، يُستخدم للتنبؤ بالسعة المستقبلية.",
+    "definition_en": "A Scrum metric measuring the average amount of work (often in story points) a team completes per sprint, used to forecast future capacity.",
+    "related": ["sprint", "scrum"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sre",
+    "name": "SRE",
+    "category": "projectmgmt",
+    "subcategory": "methodologies",
+    "aliases": ["Site Reliability Engineering"],
+    "definition_ar": "نهج هندسي يطبّق مبادئ البرمجة على مشاكل التشغيل والموثوقية، يهدف لبناء أنظمة قابلة للتوسع وعالية التوافر بأتمتة أكبر وتدخل بشري أقل.",
+    "definition_en": "An engineering approach that applies software engineering principles to operations and reliability problems, aiming to build scalable, highly available systems with more automation and less manual intervention.",
+    "related": ["devops", "highavailability"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "technical_debt",
+    "name": "Technical Debt",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [],
+    "definition_ar": "التكلفة الإضافية المستقبلية الناتجة عن اختيار حل سريع أو غير مثالي الآن بدلًا من حل أفضل يستغرق وقتًا أطول، وتتراكم كـ\"دين\" يجب سداده لاحقًا عبر إعادة الهيكلة.",
+    "definition_en": "The extra future cost that results from choosing a quick or imperfect solution now instead of a better one that takes longer, accumulating like debt that must eventually be repaid through refactoring.",
+    "related": ["code_review", "agile"],
     "date_added": "2026-08-27"
   }
 ]
