@@ -62,7 +62,7 @@
     "aliases": ["Domain Name System"],
     "definition_ar": "نظام أسماء النطاقات، يترجم أسماء المواقع القابلة للقراءة (مثل google.com) إلى عناوين IP يفهمها الجهاز.",
     "definition_en": "The Domain Name System (RFC 1035) translates human-readable domain names, such as google.com, into the IP addresses machines use to communicate.",
-    "related": ["udp", "dhcp", "activedirectory", "https"],
+    "related": ["udp", "dhcp", "activedirectory", "https", "domain"],
     "date_added": "2026-08-27"
   },
   {
@@ -172,7 +172,7 @@
     "aliases": ["HyperText Transfer Protocol"],
     "definition_ar": "بروتوكول نقل النصوص الفائقة، الأساس الذي تُنقل به صفحات الويب بين المتصفح والخادم.",
     "definition_en": "The HyperText Transfer Protocol (RFC 9110) is the foundation on which web pages are transferred between a browser and a server.",
-    "related": ["https", "tcp", "port", "server", "rest_api"],
+    "related": ["https", "tcp", "port", "server", "rest_api", "cors", "status_code", "url"],
     "date_added": "2026-08-27"
   },
   {
@@ -777,7 +777,7 @@
     "aliases": [],
     "definition_ar": "جهاز أو برنامج يقدّم خدمة أو موارد لأجهزة أخرى (العملاء) عبر الشبكة، مثل خادم ويب أو خادم قواعد بيانات.",
     "definition_en": "A device or program that provides a service or resources to other devices (clients) over a network, such as a web server or database server.",
-    "related": ["clientserver", "os", "database", "http", "middleware", "microservices"],
+    "related": ["clientserver", "os", "database", "http", "middleware", "microservices", "web_server", "hosting"],
     "date_added": "2026-08-27"
   },
   {
@@ -2395,6 +2395,193 @@
     "definition_ar": "طلب مُصاغ بلغة قاعدة البيانات (كـ SQL) لاسترجاع أو تعديل بيانات محددة، وهو الوسيلة الأساسية للتفاعل مع أي قاعدة بيانات.",
     "definition_en": "A request written in a database's language (such as SQL) to retrieve or modify specific data; the primary way applications interact with any database.",
     "related": ["sql", "database"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "browser",
+    "name": "Web Browser",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": ["Browser"],
+    "definition_ar": "برنامج يتيح للمستخدم تصفح صفحات الويب وعرضها، عبر إرسال طلبات HTTP/HTTPS للخوادم وعرض المحتوى الناتج (HTML/CSS/JS)، مثل Chrome وFirefox.",
+    "definition_en": "A program that lets users browse and view web pages by sending HTTP/HTTPS requests to servers and rendering the resulting HTML/CSS/JS content, such as Chrome or Firefox.",
+    "related": ["http", "html", "dom"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "domain",
+    "name": "Domain Name",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": ["Domain"],
+    "definition_ar": "الاسم القابل للقراءة الذي يمثل موقعًا على الإنترنت (مثل example.com)، ويترجمه DNS إلى عنوان IP يفهمه الحاسوب.",
+    "definition_en": "The human-readable name that represents a website (like example.com); DNS translates it into the IP address computers understand.",
+    "related": ["dns", "url", "hosting"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "url",
+    "name": "URL",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": ["Uniform Resource Locator"],
+    "definition_ar": "العنوان الكامل الذي يحدد موقع مورد معيّن على الإنترنت، ويتكون من البروتوكول والنطاق والمسار، مثل https://example.com/page.",
+    "definition_en": "The full address that identifies a specific resource on the internet, made up of the protocol, domain, and path, such as https://example.com/page.",
+    "related": ["domain", "http"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "hosting",
+    "name": "Web Hosting",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": ["Hosting"],
+    "definition_ar": "خدمة تستضيف ملفات موقع ويب على خادم متصل بالإنترنت دائمًا، لتكون صفحاته متاحة للزوار في أي وقت.",
+    "definition_en": "A service that stores a website's files on a server permanently connected to the internet, keeping its pages available to visitors at any time.",
+    "related": ["server", "domain", "cdn"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cdn",
+    "name": "CDN",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": ["Content Delivery Network"],
+    "definition_ar": "شبكة من الخوادم الموزّعة جغرافيًا تخزّن نسخًا من محتوى الموقع وتقدّمها للزائر من أقرب خادم له، لتسريع التحميل وتقليل الحمل عن الخادم الأساسي.",
+    "definition_en": "A network of geographically distributed servers that cache copies of a site's content and serve visitors from the nearest one, speeding up load times and offloading the origin server.",
+    "related": ["hosting", "loadbalancer"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "html",
+    "name": "HTML",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": ["HyperText Markup Language"],
+    "definition_ar": "لغة الترميز الأساسية لبناء صفحات الويب، تحدد هيكل المحتوى وعناصره (عناوين، فقرات، صور، روابط) التي يعرضها المتصفح.",
+    "definition_en": "The foundational markup language for building web pages, defining the structure and elements — headings, paragraphs, images, links — that a browser renders.",
+    "related": ["browser", "css", "dom"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "css",
+    "name": "CSS",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": ["Cascading Style Sheets"],
+    "definition_ar": "لغة تنسيق تحدد شكل عناصر صفحة الويب المبنية بـ HTML: الألوان والخطوط والتخطيط والاستجابة لمقاسات الشاشات المختلفة.",
+    "definition_en": "A styling language that defines how HTML page elements look — colors, fonts, layout, and responsiveness across different screen sizes.",
+    "related": ["html", "browser", "responsive_design"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "javascript",
+    "name": "JavaScript",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": ["JS"],
+    "definition_ar": "لغة برمجة تعمل داخل المتصفح لإضافة التفاعل والديناميكية لصفحات الويب، وأصبحت أيضًا تُستخدم لبناء الخوادم عبر بيئات مثل Node.js.",
+    "definition_en": "A programming language that runs in the browser to add interactivity and dynamic behavior to web pages; it's now also used to build servers via environments like Node.js.",
+    "related": ["html", "css", "dom"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "dom",
+    "name": "DOM",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": ["Document Object Model"],
+    "definition_ar": "تمثيل شجري لصفحة HTML يبنيه المتصفح في الذاكرة، يتيح للغات مثل JavaScript قراءة محتوى الصفحة وتعديله ديناميكيًا.",
+    "definition_en": "A tree-like representation of an HTML page that the browser builds in memory, letting languages like JavaScript read and dynamically modify the page's content.",
+    "related": ["html", "javascript", "browser"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cookie",
+    "name": "Cookie",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": ["HTTP Cookie"],
+    "definition_ar": "قطعة بيانات صغيرة يخزّنها الموقع في متصفح الزائر لتذكّر معلومات عنه بين الزيارات، مثل حالة تسجيل الدخول أو تفضيلاته.",
+    "definition_en": "A small piece of data a website stores in the visitor's browser to remember information between visits, such as login state or preferences.",
+    "related": ["browser", "session"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "session",
+    "name": "Session",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": ["Web Session"],
+    "definition_ar": "فترة تفاعل مستمرة بين مستخدم وموقع ويب، يحتفظ خلالها الخادم بحالة المستخدم (كتسجيل دخوله) حتى يغادر الموقع أو تنتهي مهلة الجلسة.",
+    "definition_en": "A continuous period of interaction between a user and a website, during which the server retains the user's state (such as being logged in) until they leave or the session times out.",
+    "related": ["cookie", "server"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cors",
+    "name": "CORS",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": ["Cross-Origin Resource Sharing"],
+    "definition_ar": "آلية أمان في المتصفحات تتحكم في السماح لصفحة ويب من نطاق معيّن بطلب موارد من نطاق مختلف، لمنع الطلبات غير المصرح بها بين المواقع.",
+    "definition_en": "A browser security mechanism that controls whether a web page from one domain is allowed to request resources from a different domain, preventing unauthorized cross-site requests.",
+    "related": ["http", "domain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "web_server",
+    "name": "Web Server",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": ["Apache", "Nginx"],
+    "definition_ar": "برنامج خادم متخصص في استقبال طلبات HTTP/HTTPS من المتصفحات وإرسال صفحات الويب المطلوبة، مثل Apache وNginx.",
+    "definition_en": "Server software specialized in receiving HTTP/HTTPS requests from browsers and returning the requested web pages, such as Apache or Nginx.",
+    "related": ["server", "http", "hosting"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "static_site",
+    "name": "Static Website",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": ["Dynamic Website"],
+    "definition_ar": "موقع تُقدَّم صفحاته كما هي محفوظة دون معالجة من الخادم عند كل طلب، بعكس المواقع الديناميكية التي تُولّد المحتوى لحظيًا من قاعدة بيانات، ما يجعله أسرع وأسهل استضافة.",
+    "definition_en": "A website whose pages are served exactly as stored, without server-side processing on each request — unlike dynamic sites that generate content on the fly from a database — making it faster and simpler to host.",
+    "related": ["hosting", "html", "database"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "seo",
+    "name": "SEO",
+    "category": "web",
+    "subcategory": "discovery",
+    "aliases": ["Search Engine Optimization"],
+    "definition_ar": "مجموعة ممارسات تهدف لتحسين ظهور موقع ويب في نتائج محركات البحث، عبر عوامل مثل سرعة التحميل، بنية HTML، والكلمات المفتاحية.",
+    "definition_en": "A set of practices aimed at improving a website's visibility in search engine results, through factors like load speed, HTML structure, and keywords.",
+    "related": ["html", "browser"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "responsive_design",
+    "name": "Responsive Design",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": [],
+    "definition_ar": "أسلوب تصميم مواقع الويب بحيث يتكيّف تخطيطها تلقائيًا مع مختلف أحجام الشاشات، من الهاتف إلى شاشة الحاسوب الكبيرة.",
+    "definition_en": "An approach to web design where the layout automatically adapts to different screen sizes, from mobile phones to large desktop displays.",
+    "related": ["css", "browser"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "status_code",
+    "name": "HTTP Status Code",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": ["404", "500"],
+    "definition_ar": "رمز رقمي يرسله الخادم مع كل استجابة HTTP ليخبر المتصفح بنتيجة الطلب، مثل 200 (نجاح)، 404 (غير موجود)، أو 500 (خطأ في الخادم).",
+    "definition_en": "A numeric code the server sends with every HTTP response to tell the browser the outcome of the request, such as 200 (OK), 404 (Not Found), or 500 (Server Error).",
+    "related": ["http", "browser"],
     "date_added": "2026-08-27"
   }
 ]

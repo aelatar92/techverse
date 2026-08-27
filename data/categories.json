@@ -117,5 +117,19 @@
       "nosql": { "label_ar": "غير علائقية (NoSQL)", "label_en": "NoSQL" },
       "operations": { "label_ar": "عمليات وأداء", "label_en": "Operations & Performance" }
     }
+  },
+  "web": {
+    "id": "web",
+    "label_ar": "الويب والإنترنت",
+    "label_en": "Web & Internet",
+    "color": "#2dd4bf",
+    "cx": 0.5,
+    "cy": 0.92,
+    "subcategories": {
+      "browsing": { "label_ar": "التصفح", "label_en": "Browsing" },
+      "infrastructure": { "label_ar": "البنية التحتية", "label_en": "Infrastructure" },
+      "frontend": { "label_ar": "الواجهة الأمامية", "label_en": "Frontend" },
+      "discovery": { "label_ar": "الاكتشاف والانتشار", "label_en": "Discovery" }
+    }
   }
 }
