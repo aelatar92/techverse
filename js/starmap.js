@@ -434,12 +434,15 @@ export function createStarMap({ canvas, width, height, categories }){
         node, holder, glow, core, ring, visitedRing, label, hitArea, z,
         glowMat, coreMat, ringMat, visitedMat, labelMat, baseColor: color,
         glowSize, coreSize,
+        // Wider, slightly slower drift than before so stars read as freely
+        // floating rather than statically pinned in place — links (redrawn
+        // live from actual positions every frame) follow along naturally.
         driftPhaseX: Math.random()*Math.PI*2,
         driftPhaseY: Math.random()*Math.PI*2,
-        driftSpeedX: 0.14 + Math.random()*0.10,
-        driftSpeedY: 0.11 + Math.random()*0.10,
-        driftAmpX: 2.5 + Math.random()*3,
-        driftAmpY: 2.5 + Math.random()*3,
+        driftSpeedX: 0.10 + Math.random()*0.08,
+        driftSpeedY: 0.08 + Math.random()*0.08,
+        driftAmpX: 7 + Math.random()*7,
+        driftAmpY: 7 + Math.random()*7,
         breathePhase: Math.random()*Math.PI*2,
         breatheSpeed: 0.35 + Math.random()*0.25,
         labelBaseY,

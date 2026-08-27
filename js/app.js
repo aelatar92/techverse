@@ -166,7 +166,10 @@ function subOffset(node, subAngleData, width, height){
     return { ox: 0, oy: 0 };
   }
   const angle = catData.angles[node.subcategory];
-  const radiusFrac = Math.min(0.14, 0.05 + catData.n * 0.012);
+  // Slightly more room per category than before, so the wider collision
+  // radius below (real star-to-star spacing) has space to actually resolve
+  // instead of fighting the anchor pull and bulging past the ellipse.
+  const radiusFrac = Math.min(0.17, 0.06 + catData.n * 0.013);
   const R = Math.min(width, height) * radiusFrac;
   // Subcategory anchors sit on an ellipse (not a circle) around the category
   // center, so each galaxy's overall silhouette reads as a distinct oval
@@ -354,9 +357,13 @@ function computeCategoryStats(categories, terms){
   const subAngleData = computeSubAngles(terms, categories);
 
   const sim = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d=>d.id).distance(64).strength(0.45))
+    // Distance scales with both endpoints' radii so heavily-connected hub
+    // terms (bigger glow halos) don't get pulled in closer than their own
+    // glow radius allows — otherwise the busiest nodes stay visually fused
+    // together no matter how much collision spacing is added elsewhere.
+    .force('link', d3.forceLink(links).id(d=>d.id).distance(d=> 50 + (d.source.r||8)*0.8 + (d.target.r||8)*0.8).strength(0.4))
     .force('charge', d3.forceManyBody().strength(-95))
-    .force('collide', d3.forceCollide(d=>d.r+8))
+    .force('collide', d3.forceCollide(d=>d.r*1.25 + 11))
     .force('x', d3.forceX(d=> categories[d.category].cx*width + subOffset(d, subAngleData, width, height).ox).strength(0.075))
     .force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075));
   // Node/link screen positions are now refreshed every animation frame inside
