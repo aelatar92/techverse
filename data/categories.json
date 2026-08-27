@@ -77,5 +77,19 @@
       "cabling": { "label_ar": "الكابلات", "label_en": "Cabling" },
       "rack-infrastructure": { "label_ar": "بنية الخزائن", "label_en": "Rack Infrastructure" }
     }
+  },
+  "ai": {
+    "id": "ai",
+    "label_ar": "الذكاء الاصطناعي وتعلّم الآلة",
+    "label_en": "AI & Machine Learning",
+    "color": "#facc15",
+    "cx": 0.5,
+    "cy": 0.10,
+    "subcategories": {
+      "fundamentals": { "label_ar": "أساسيات", "label_en": "Fundamentals" },
+      "training": { "label_ar": "التدريب والبيانات", "label_en": "Training & Data" },
+      "genai": { "label_ar": "الذكاء التوليدي", "label_en": "Generative AI" },
+      "applications": { "label_ar": "تطبيقات", "label_en": "Applications" }
+    }
   }
 }

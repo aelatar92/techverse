@@ -1613,7 +1613,7 @@
     "aliases": ["Graphics Processing Unit", "Video Card"],
     "definition_ar": "معالج متخصص في تنفيذ آلاف العمليات الحسابية المتوازية، مصمم أصلًا لمعالجة الرسوميات وأصبح أساسيًا اليوم في الذكاء الاصطناعي والتعلّم العميق.",
     "definition_en": "A processor specialized in running thousands of parallel calculations; originally built for graphics rendering, it is now central to AI and deep learning workloads.",
-    "related": ["cpu", "vram"],
+    "related": ["cpu", "vram", "deep_learning"],
     "date_added": "2026-08-27"
   },
   {
@@ -1834,6 +1834,193 @@
     "definition_ar": "آلية تحكم بالوصول تسمح أو تمنع أجهزة معينة من الاتصال بالشبكة اعتمادًا على عنوان MAC الخاص بها، وهي حماية أساسية يمكن تجاوزها بانتحال العنوان (MAC Spoofing).",
     "definition_en": "An access-control mechanism that allows or blocks specific devices from joining a network based on their MAC address; a basic protection that can be bypassed via MAC spoofing.",
     "related": ["mac", "accesspoint"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "artificial_intelligence",
+    "name": "Artificial Intelligence",
+    "category": "ai",
+    "subcategory": "fundamentals",
+    "aliases": ["AI"],
+    "definition_ar": "مجال في علوم الحاسوب يهدف لبناء أنظمة قادرة على أداء مهام تتطلب عادة ذكاءً بشريًا، مثل الفهم والتعلّم واتخاذ القرار.",
+    "definition_en": "A field of computer science focused on building systems capable of performing tasks that normally require human intelligence, such as understanding, learning, and decision-making.",
+    "related": ["machine_learning", "deep_learning"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "machine_learning",
+    "name": "Machine Learning",
+    "category": "ai",
+    "subcategory": "fundamentals",
+    "aliases": ["ML"],
+    "definition_ar": "فرع من الذكاء الاصطناعي يمكّن الأنظمة من التعلّم واكتشاف الأنماط من البيانات مباشرة، دون برمجة كل قاعدة يدويًا.",
+    "definition_en": "A branch of AI that enables systems to learn patterns directly from data, rather than being explicitly programmed with every rule.",
+    "related": ["artificial_intelligence", "deep_learning", "supervised_learning", "training_data"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "deep_learning",
+    "name": "Deep Learning",
+    "category": "ai",
+    "subcategory": "fundamentals",
+    "aliases": ["DL"],
+    "definition_ar": "فرع من تعلّم الآلة يعتمد على الشبكات العصبية الاصطناعية متعددة الطبقات لاستخلاص أنماط معقدة من كميات ضخمة من البيانات.",
+    "definition_en": "A branch of machine learning that uses multi-layered artificial neural networks to extract complex patterns from large amounts of data.",
+    "related": ["machine_learning", "neural_network", "gpu"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "neural_network",
+    "name": "Neural Network",
+    "category": "ai",
+    "subcategory": "fundamentals",
+    "aliases": ["Artificial Neural Network", "ANN"],
+    "definition_ar": "نموذج حسابي مستوحى من طريقة عمل الدماغ البشري، يتكون من طبقات من العُقد (Neurons) المترابطة التي تتعلّم تعديل أوزانها لتحسين دقة التنبؤ.",
+    "definition_en": "A computational model loosely inspired by the human brain, made of layers of connected \"neurons\" that learn to adjust their weights to improve prediction accuracy.",
+    "related": ["deep_learning", "training_data", "transformer"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "supervised_learning",
+    "name": "Supervised Learning",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [],
+    "definition_ar": "أسلوب تدريب يتعلّم فيه النموذج من بيانات موسومة مسبقًا بالإجابة الصحيحة (Labels)، مثل تصنيف الصور بمعرفة محتواها مقدمًا.",
+    "definition_en": "A training approach where the model learns from data that is pre-labeled with the correct answer, such as classifying images whose content is already known.",
+    "related": ["machine_learning", "training_data", "unsupervised_learning"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "unsupervised_learning",
+    "name": "Unsupervised Learning",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [],
+    "definition_ar": "أسلوب تدريب يكتشف فيه النموذج الأنماط والتجمعات داخل بيانات غير موسومة بدون إجابات صحيحة معروفة مسبقًا.",
+    "definition_en": "A training approach where the model discovers patterns and groupings within unlabeled data, with no predefined correct answers.",
+    "related": ["supervised_learning", "machine_learning"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "reinforcement_learning",
+    "name": "Reinforcement Learning",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": ["RL"],
+    "definition_ar": "أسلوب تدريب يتعلّم فيه نموذج (Agent) اتخاذ قرارات عبر التجربة والخطأ، بالحصول على مكافأة أو عقاب بناءً على نتيجة كل قرار.",
+    "definition_en": "A training approach where an agent learns to make decisions through trial and error, receiving a reward or penalty based on the outcome of each action.",
+    "related": ["machine_learning"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "training_data",
+    "name": "Training Data",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": ["Dataset"],
+    "definition_ar": "مجموعة البيانات التي يتعلّم منها نموذج تعلّم الآلة أثناء التدريب؛ جودتها وتنوّعها يؤثران بشكل مباشر على دقة النموذج النهائي.",
+    "definition_en": "The dataset a machine learning model learns from during training; its quality and diversity directly affect the accuracy of the resulting model.",
+    "related": ["machine_learning", "overfitting"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "overfitting",
+    "name": "Overfitting",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [],
+    "definition_ar": "مشكلة يحفظ فيها النموذج تفاصيل بيانات التدريب بدقة مبالغ فيها بدلًا من تعلّم الأنماط العامة، فيؤدي لأداء ضعيف على بيانات جديدة لم يرها من قبل.",
+    "definition_en": "A problem where a model memorizes training data too precisely instead of learning general patterns, leading to poor performance on new, unseen data.",
+    "related": ["training_data", "machine_learning"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "large_language_model",
+    "name": "Large Language Model",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": ["LLM"],
+    "definition_ar": "نموذج ذكاء اصطناعي ضخم مدرّب على كميات هائلة من النصوص، قادر على فهم اللغة الطبيعية وتوليدها للرد على الأسئلة وكتابة المحتوى وغيرها.",
+    "definition_en": "A massive AI model trained on huge amounts of text, capable of understanding and generating natural language to answer questions, write content, and more.",
+    "related": ["deep_learning", "transformer", "generative_ai", "prompt_engineering"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "transformer",
+    "name": "Transformer",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": ["Attention Mechanism"],
+    "definition_ar": "معمارية شبكة عصبية قدّمت آلية \"الانتباه\" (Attention) التي تسمح للنموذج بالتركيز على أجزاء مختلفة من المدخل حسب أهميتها، وهي الأساس الذي تُبنى عليه أغلب نماذج اللغة الحديثة.",
+    "definition_en": "A neural network architecture that introduced the \"attention\" mechanism, letting a model weigh different parts of its input by importance; it underlies most modern language models.",
+    "related": ["large_language_model", "neural_network"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "generative_ai",
+    "name": "Generative AI",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": ["GenAI"],
+    "definition_ar": "فئة من نماذج الذكاء الاصطناعي القادرة على إنشاء محتوى جديد (نص، صورة، صوت، كود) بدلًا من مجرد تصنيف أو تحليل بيانات موجودة.",
+    "definition_en": "A class of AI models capable of creating new content — text, images, audio, code — rather than just classifying or analyzing existing data.",
+    "related": ["large_language_model", "prompt_engineering"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "prompt_engineering",
+    "name": "Prompt Engineering",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [],
+    "definition_ar": "مهارة صياغة التعليمات (Prompts) الموجّهة لنموذج لغوي بطريقة تحصل منه على أفضل استجابة ممكنة لمهمة معينة.",
+    "definition_en": "The skill of crafting instructions (prompts) for a language model in a way that elicits the best possible response for a given task.",
+    "related": ["large_language_model", "generative_ai"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "nlp",
+    "name": "NLP",
+    "category": "ai",
+    "subcategory": "applications",
+    "aliases": ["Natural Language Processing"],
+    "definition_ar": "فرع من الذكاء الاصطناعي يركّز على تمكين الحاسوب من فهم اللغة البشرية الطبيعية ومعالجتها وتوليدها، مثل الترجمة الآلية والتلخيص.",
+    "definition_en": "A branch of AI focused on enabling computers to understand, process, and generate natural human language, such as machine translation and summarization.",
+    "related": ["large_language_model", "artificial_intelligence"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "computer_vision",
+    "name": "Computer Vision",
+    "category": "ai",
+    "subcategory": "applications",
+    "aliases": ["CV"],
+    "definition_ar": "فرع من الذكاء الاصطناعي يمكّن الحاسوب من \"فهم\" محتوى الصور والفيديو، مثل التعرف على الوجوه أو اكتشاف الأجسام.",
+    "definition_en": "A branch of AI that enables computers to \"understand\" the content of images and video, such as facial recognition or object detection.",
+    "related": ["deep_learning", "artificial_intelligence"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "chatbot",
+    "name": "Chatbot",
+    "category": "ai",
+    "subcategory": "applications",
+    "aliases": ["Conversational AI"],
+    "definition_ar": "برنامج يحاكي محادثة بشرية عبر النص أو الصوت، ويعتمد حديثًا في أغلب الأحيان على نماذج اللغة الكبيرة لفهم السؤال وتوليد رد مناسب.",
+    "definition_en": "A program that simulates human conversation via text or voice; modern chatbots typically rely on large language models to understand a query and generate a fitting response.",
+    "related": ["large_language_model", "nlp"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ai_hallucination",
+    "name": "AI Hallucination",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": ["Hallucination"],
+    "definition_ar": "ظاهرة يولّد فيها نموذج ذكاء اصطناعي (خاصة نماذج اللغة) معلومات تبدو منطقية لكنها غير صحيحة أو غير موجودة أصلًا، دون وعي منه بخطئها.",
+    "definition_en": "A phenomenon where an AI model — especially a language model — generates information that sounds plausible but is factually incorrect or entirely fabricated, without being aware it's wrong.",
+    "related": ["large_language_model", "generative_ai"],
     "date_added": "2026-08-27"
   }
 ]
