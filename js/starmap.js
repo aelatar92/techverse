@@ -551,11 +551,11 @@ export function createStarMap({ canvas, width, height, categories }){
   const GLOW_FLOOR = 0.4;
   const _camWorld = new THREE.Vector3();
   const _camLocal = new THREE.Vector3();
+  const _camTargetLocal = new THREE.Vector3();
+  const _camForward = new THREE.Vector3();
   const _linkA = new THREE.Vector3();
   const _linkB = new THREE.Vector3();
   const _linkDir = new THREE.Vector3();
-  const _linkMid = new THREE.Vector3();
-  const _linkView = new THREE.Vector3();
   const _linkPerp = new THREE.Vector3();
 
   function syncPositions(t){
@@ -565,6 +565,19 @@ export function createStarMap({ canvas, width, height, categories }){
     // label distance-compensation and for link camera-facing ribbons.
     camera.getWorldPosition(_camWorld);
     rawGroup.worldToLocal(_camLocal.copy(_camWorld));
+    // A single stable view direction for the whole frame (camera -> orbit
+    // target), reused by every link/bridge ribbon below instead of each one
+    // computing its own camera-to-midpoint vector. With a per-link vector, a
+    // hub of links radiating toward/away from the camera in different
+    // directions had some of them go nearly parallel to their own view
+    // vector — a well-known degenerate case for camera-facing ribbons that
+    // made the perpendicular direction numerically unstable and rendered as
+    // a thin, doubled/ghosted line. A single shared direction only
+    // degenerates for a link that happens to align with the camera's actual
+    // view axis, which is far rarer.
+    rawGroup.worldToLocal(_camTargetLocal.copy(controls.target));
+    _camForward.subVectors(_camTargetLocal, _camLocal);
+    if(_camForward.lengthSq() < 1e-6) _camForward.set(0, 0, -1); else _camForward.normalize();
     nodeEntries.forEach(entry=>{
       const dx = Math.sin(time*entry.driftSpeedX + entry.driftPhaseX) * entry.driftAmpX;
       const dy = Math.cos(time*entry.driftSpeedY + entry.driftPhaseY) * entry.driftAmpY;
@@ -620,10 +633,7 @@ export function createStarMap({ canvas, width, height, categories }){
         _linkB.set(eb ? eb.holder.position.x : (l.b.x||0), eb ? eb.holder.position.y : (l.b.y||0), eb ? eb.holder.position.z : 0);
         _linkDir.subVectors(_linkB, _linkA);
         if(_linkDir.lengthSq() < 1e-6) _linkDir.set(1,0,0); else _linkDir.normalize();
-        _linkMid.addVectors(_linkA, _linkB).multiplyScalar(0.5);
-        _linkView.subVectors(_camLocal, _linkMid);
-        if(_linkView.lengthSq() < 1e-6) _linkView.copy(_linkDir); else _linkView.normalize();
-        _linkPerp.crossVectors(_linkDir, _linkView);
+        _linkPerp.crossVectors(_linkDir, _camForward);
         if(_linkPerp.lengthSq() < 1e-6) _linkPerp.crossVectors(_linkDir, new THREE.Vector3(0,1,0));
         _linkPerp.normalize().multiplyScalar(LINK_HALF_WIDTH);
         const o = i*18;
@@ -645,10 +655,7 @@ export function createStarMap({ canvas, width, height, categories }){
         if(!ca || !cb) { for(let k=0;k<18;k++){ gpos[o+k]=0; } return; }
         _linkDir.subVectors(cb, ca);
         if(_linkDir.lengthSq() < 1e-6) _linkDir.set(1,0,0); else _linkDir.normalize();
-        _linkMid.addVectors(ca, cb).multiplyScalar(0.5);
-        _linkView.subVectors(_camLocal, _linkMid);
-        if(_linkView.lengthSq() < 1e-6) _linkView.copy(_linkDir); else _linkView.normalize();
-        _linkPerp.crossVectors(_linkDir, _linkView);
+        _linkPerp.crossVectors(_linkDir, _camForward);
         if(_linkPerp.lengthSq() < 1e-6) _linkPerp.crossVectors(_linkDir, new THREE.Vector3(0,1,0));
         const widthFrac = p.count / galaxyPairMaxCount;
         const desiredHalfWidth = GALAXY_LINK_MIN_WIDTH + (GALAXY_LINK_MAX_WIDTH - GALAXY_LINK_MIN_WIDTH) * widthFrac;
