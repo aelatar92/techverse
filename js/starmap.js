@@ -365,6 +365,22 @@ export function createStarMap({ canvas, width, height, categories }){
   let linkBaseColorArr = new Float32Array(0);
   let hoveredLinkIndex = -1;
 
+  /* ---- galaxy bridges: one soft aggregate ribbon per pair of galaxies with
+     at least one cross-category relationship, connecting their live center
+     points, instead of drawing every individual cross-galaxy term link
+     (which read as clutter) — see setSelection for how the individual
+     links stay hidden until a term touching them is actually selected. */
+  const galaxyLinkGroup = new THREE.Group();
+  rawGroup.add(galaxyLinkGroup);
+  let galaxyLinkGeometry, galaxyLinkMaterial, galaxyLinkMesh;
+  let galaxyPairs = []; // {catA, catB, count}
+  let galaxyPairMaxCount = 1;
+  let galaxyLinkDim = 1; // lowered while a term is selected so bridges don't compete with the emphasized individual links
+  const categoryCenters = new Map(); // catId -> THREE.Vector3 (rawGroup-local, recomputed every frame)
+  const GALAXY_LINK_MIN_WIDTH = 2.2;
+  const GALAXY_LINK_MAX_WIDTH = 6.5;
+  const _galaxyLinkColor = new THREE.Color(0x8fa2ff);
+
   /* ---- nodes ---- */
   const nodeGroup = new THREE.Group();
   rawGroup.add(nodeGroup);
@@ -496,6 +512,34 @@ export function createStarMap({ canvas, width, height, categories }){
     linkBaseColorArr = new Float32Array(linkData.length*VPL*3);
     hoveredLinkIndex = -1;
 
+    // Group individual cross-galaxy links by (category, category) pair —
+    // one bridge ribbon per pair, thickness/brightness scaled by how many
+    // real term relationships it represents.
+    const pairMap = new Map();
+    linkData.forEach(l=>{
+      if(l.a.category === l.b.category) return;
+      const key = [l.a.category, l.b.category].sort().join('__');
+      let p = pairMap.get(key);
+      if(!p){ p = { catA: l.a.category, catB: l.b.category, count: 0 }; pairMap.set(key, p); }
+      p.count++;
+    });
+    galaxyPairs = [...pairMap.values()];
+    galaxyPairMaxCount = Math.max(1, ...galaxyPairs.map(p=>p.count));
+
+    const GVPL = 6;
+    const gPositions = new Float32Array(galaxyPairs.length*GVPL*3);
+    const gColors = new Float32Array(galaxyPairs.length*GVPL*3);
+    galaxyLinkGeometry = new THREE.BufferGeometry();
+    galaxyLinkGeometry.setAttribute('position', new THREE.BufferAttribute(gPositions, 3));
+    galaxyLinkGeometry.setAttribute('color', new THREE.BufferAttribute(gColors, 3));
+    galaxyLinkMaterial = new THREE.MeshBasicMaterial({
+      vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
+    });
+    if(galaxyLinkMesh) galaxyLinkGroup.remove(galaxyLinkMesh);
+    galaxyLinkMesh = new THREE.Mesh(galaxyLinkGeometry, galaxyLinkMaterial);
+    galaxyLinkMesh.frustumCulled = false;
+    galaxyLinkGroup.add(galaxyLinkMesh);
+
     syncPositions(0);
     setSelection(null, new Set());
   }
@@ -544,6 +588,20 @@ export function createStarMap({ canvas, width, height, categories }){
       const labelScale = distToCam / D0;
       entry.label.scale.set(entry.labelScaleX*labelScale, entry.labelScaleY*labelScale, 1);
     });
+    // Live per-category center (average position of that category's member
+    // stars this frame) — the galaxy bridge ribbons connect these, so they
+    // drift gently along with their galaxy instead of sitting at a fixed
+    // point computed once at layout time.
+    const centerSums = {};
+    nodeEntries.forEach(entry=>{
+      const cat = entry.node.category;
+      const s = centerSums[cat] || (centerSums[cat] = {x:0,y:0,z:0,n:0});
+      s.x += entry.holder.position.x; s.y += entry.holder.position.y; s.z += entry.holder.position.z; s.n++;
+    });
+    Object.entries(centerSums).forEach(([cat, s])=>{
+      if(!categoryCenters.has(cat)) categoryCenters.set(cat, new THREE.Vector3());
+      categoryCenters.get(cat).set(s.x/s.n, s.y/s.n, s.z/s.n);
+    });
     // Gentle pulsing halo on the selected node only — cheap since it's a
     // single O(1) lookup rather than a per-node check in the loop above.
     if(currentSelected){
@@ -578,6 +636,36 @@ export function createStarMap({ canvas, width, height, categories }){
       });
       linkGeometry.attributes.position.needsUpdate = true;
     }
+    if(galaxyLinkGeometry && galaxyPairs.length){
+      const gpos = galaxyLinkGeometry.attributes.position.array;
+      const gcol = galaxyLinkGeometry.attributes.color.array;
+      galaxyPairs.forEach((p, i)=>{
+        const ca = categoryCenters.get(p.catA), cb = categoryCenters.get(p.catB);
+        const o = i*18;
+        if(!ca || !cb) { for(let k=0;k<18;k++){ gpos[o+k]=0; } return; }
+        _linkDir.subVectors(cb, ca);
+        if(_linkDir.lengthSq() < 1e-6) _linkDir.set(1,0,0); else _linkDir.normalize();
+        _linkMid.addVectors(ca, cb).multiplyScalar(0.5);
+        _linkView.subVectors(_camLocal, _linkMid);
+        if(_linkView.lengthSq() < 1e-6) _linkView.copy(_linkDir); else _linkView.normalize();
+        _linkPerp.crossVectors(_linkDir, _linkView);
+        if(_linkPerp.lengthSq() < 1e-6) _linkPerp.crossVectors(_linkDir, new THREE.Vector3(0,1,0));
+        const widthFrac = p.count / galaxyPairMaxCount;
+        _linkPerp.normalize().multiplyScalar(GALAXY_LINK_MIN_WIDTH + (GALAXY_LINK_MAX_WIDTH - GALAXY_LINK_MIN_WIDTH) * widthFrac);
+        gpos[o+0]=ca.x+_linkPerp.x; gpos[o+1]=ca.y+_linkPerp.y; gpos[o+2]=ca.z+_linkPerp.z;
+        gpos[o+3]=ca.x-_linkPerp.x; gpos[o+4]=ca.y-_linkPerp.y; gpos[o+5]=ca.z-_linkPerp.z;
+        gpos[o+6]=cb.x+_linkPerp.x; gpos[o+7]=cb.y+_linkPerp.y; gpos[o+8]=cb.z+_linkPerp.z;
+        gpos[o+9]=ca.x-_linkPerp.x; gpos[o+10]=ca.y-_linkPerp.y; gpos[o+11]=ca.z-_linkPerp.z;
+        gpos[o+12]=cb.x-_linkPerp.x; gpos[o+13]=cb.y-_linkPerp.y; gpos[o+14]=cb.z-_linkPerp.z;
+        gpos[o+15]=cb.x+_linkPerp.x; gpos[o+16]=cb.y+_linkPerp.y; gpos[o+17]=cb.z+_linkPerp.z;
+        const hidden = hiddenCategories.has(p.catA) || hiddenCategories.has(p.catB);
+        const opacity = hidden ? 0 : galaxyLinkDim * (0.14 + 0.22*widthFrac);
+        const r = _galaxyLinkColor.r*opacity, g = _galaxyLinkColor.g*opacity, b = _galaxyLinkColor.b*opacity;
+        for(let k=0;k<6;k++){ gcol[o+k*3+0]=r; gcol[o+k*3+1]=g; gcol[o+k*3+2]=b; }
+      });
+      galaxyLinkGeometry.attributes.position.needsUpdate = true;
+      galaxyLinkGeometry.attributes.color.needsUpdate = true;
+    }
   }
 
   let hiddenCategories = new Set();
@@ -592,6 +680,10 @@ export function createStarMap({ canvas, width, height, categories }){
     const constellationActive = currentConstellation && currentConstellation.size > 0;
 
     const focused = constellationActive || !!selectedId;
+    // Bridges stay full-strength when nothing's selected (they're the whole
+    // point of the default view); once a term is picked, ease them back so
+    // they don't compete with that term's own emphasized links.
+    galaxyLinkDim = selectedId ? 0.45 : 1;
 
     nodeEntries.forEach((entry, id)=>{
       const hidden = hiddenCategories.has(entry.node.category);
@@ -611,14 +703,19 @@ export function createStarMap({ canvas, width, height, categories }){
       const colArr = linkGeometry.attributes.color.array;
       linkData.forEach((l, i)=>{
         const hidden = hiddenCategories.has(l.a.category) || hiddenCategories.has(l.b.category);
+        // Cross-galaxy term links are represented by the aggregate bridge
+        // ribbons (see galaxyPairs) by default — showing every individual
+        // one too was the actual source of clutter. They still light up
+        // normally the moment they touch the selected term.
+        const crossGalaxy = l.a.category !== l.b.category;
         let intensity;
         if(hidden) intensity = 0;
         else if(constellationActive){
           intensity = (currentConstellation.has(l.a.id) && currentConstellation.has(l.b.id)) ? 0.9 : 0.02;
         }
-        else if(!selectedId) intensity = 0.34;
+        else if(!selectedId) intensity = crossGalaxy ? 0 : 0.34;
         else if(l.a.id === selectedId || l.b.id === selectedId) intensity = 0.9;
-        else intensity = 0.04;
+        else intensity = crossGalaxy ? 0 : 0.04;
         const c = new THREE.Color(0x8fa2ff);
         const r = c.r*intensity, g = c.g*intensity, b = c.b*intensity;
         const o = i*18;
