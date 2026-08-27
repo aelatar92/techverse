@@ -72,6 +72,11 @@ function makeNebulaTexture(hex, size = 512){
 }
 
 function makeLabelTexture(text){
+  // Rendered at 3x resolution (supersampled) so the texture still has enough
+  // detail to look crisp when the sprite is magnified at high zoom — a label
+  // sprite scales up with the same camera zoom as everything else, and a
+  // texture drawn at 1:1 display size just gets blurrier the more you zoom in.
+  const SS = 3;
   const paddingX = 16;
   const fontSize = 30;
   const font = `600 ${fontSize}px 'IBM Plex Sans Arabic', Arial, sans-serif`;
@@ -80,8 +85,9 @@ function makeLabelTexture(text){
   const w = Math.ceil(measure.measureText(text).width) + paddingX*2;
   const h = fontSize + 22;
   const c = document.createElement('canvas');
-  c.width = w; c.height = h;
+  c.width = w*SS; c.height = h*SS;
   const ctx = c.getContext('2d');
+  ctx.scale(SS, SS);
   ctx.font = font;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -91,6 +97,7 @@ function makeLabelTexture(text){
   ctx.fillStyle = '#e8ecf7';
   ctx.fillText(text, w/2, h/2);
   const tex = new THREE.CanvasTexture(c);
+  tex.anisotropy = 8;
   tex.needsUpdate = true;
   return { texture: tex, aspect: w/h };
 }
@@ -278,7 +285,7 @@ export function createStarMap({ canvas, width, height, categories }){
   renderer.setSize(width, height, false);
   renderer.setClearColor(0x05060d, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.85;
+  renderer.toneMappingExposure = 0.72;
 
   // Parallax layers, farthest first
   const farGroup = new THREE.Group();   // distant starfield
@@ -392,7 +399,9 @@ export function createStarMap({ canvas, width, height, categories }){
         labelHalfW: (labelH*aspect)/2 + 3,
         labelHalfH: labelH/2 + 2,
         labelOffX: 0,
-        labelOffY: 0
+        labelOffY: 0,
+        labelDispX: 0,
+        labelDispY: 0
       });
     });
 
@@ -403,14 +412,21 @@ export function createStarMap({ canvas, width, height, categories }){
       if(a && b) linkData.push({ a, b });
     });
 
-    const positions = new Float32Array(linkData.length*6);
-    const colors = new Float32Array(linkData.length*6);
-    const aT = new Float32Array(linkData.length*2);
-    const aPhase = new Float32Array(linkData.length*2);
+    // Links are rendered as thin quads (2 triangles / 6 verts each) rather than
+    // GL_LINES: hairlines stay a fixed ~1px regardless of zoom, so at higher
+    // zoom levels they get lost against the now much-larger, bloom-saturated
+    // star glows. A quad with real world-space width scales with zoom like
+    // everything else, so links stay (and get more) visible as you zoom in.
+    const VPL = 6;
+    const positions = new Float32Array(linkData.length*VPL*3);
+    const colors = new Float32Array(linkData.length*VPL*3);
+    const aT = new Float32Array(linkData.length*VPL);
+    const aPhase = new Float32Array(linkData.length*VPL);
     linkData.forEach((l, i)=>{
-      aT[i*2+0] = 0; aT[i*2+1] = 1;
       const ph = Math.random();
-      aPhase[i*2+0] = ph; aPhase[i*2+1] = ph;
+      for(let k=0;k<VPL;k++) aPhase[i*VPL+k] = ph;
+      aT[i*VPL+0]=0; aT[i*VPL+1]=0; aT[i*VPL+2]=1;
+      aT[i*VPL+3]=0; aT[i*VPL+4]=1; aT[i*VPL+5]=1;
     });
     linkGeometry = new THREE.BufferGeometry();
     linkGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -421,17 +437,25 @@ export function createStarMap({ canvas, width, height, categories }){
       uniforms: { uTime: { value: 0 } },
       vertexShader: linkVertexShader,
       fragmentShader: linkFragmentShader,
-      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
     });
     if(linkMesh) linkGroup.remove(linkMesh);
-    linkMesh = new THREE.LineSegments(linkGeometry, linkMaterial);
+    linkMesh = new THREE.Mesh(linkGeometry, linkMaterial);
+    // Vertex positions are rewritten every frame (drift) after the geometry's
+    // bounding sphere was computed from the initial all-zero layout, so the
+    // stale sphere no longer matches reality; without this, THREE silently
+    // frustum-culls the whole link mesh once the camera zooms/pans away from
+    // world origin, which read as "all the links vanish when I zoom in".
+    linkMesh.frustumCulled = false;
     linkGroup.add(linkMesh);
-    linkBaseColorArr = new Float32Array(linkData.length*6);
+    linkBaseColorArr = new Float32Array(linkData.length*VPL*3);
     hoveredLinkIndex = -1;
 
     syncPositions(0);
     setSelection(null, new Set());
   }
+
+  const LINK_HALF_WIDTH = 1.3;
 
   function syncPositions(t){
     const time = t || 0;
@@ -449,17 +473,29 @@ export function createStarMap({ canvas, width, height, categories }){
         const ea = nodeEntries.get(l.a.id), eb = nodeEntries.get(l.b.id);
         const ax = ea ? ea.holder.position.x : (l.a.x||0), ay = ea ? ea.holder.position.y : (l.a.y||0);
         const bx = eb ? eb.holder.position.x : (l.b.x||0), by = eb ? eb.holder.position.y : (l.b.y||0);
-        pos[i*6+0] = ax; pos[i*6+1] = ay; pos[i*6+2] = 0;
-        pos[i*6+3] = bx; pos[i*6+4] = by; pos[i*6+5] = 0;
+        let dx = bx-ax, dy = by-ay;
+        const len = Math.hypot(dx, dy) || 1;
+        const px = -dy/len*LINK_HALF_WIDTH, py = dx/len*LINK_HALF_WIDTH;
+        const o = i*18;
+        pos[o+0]=ax+px; pos[o+1]=ay+py; pos[o+2]=0;
+        pos[o+3]=ax-px; pos[o+4]=ay-py; pos[o+5]=0;
+        pos[o+6]=bx+px; pos[o+7]=by+py; pos[o+8]=0;
+        pos[o+9]=ax-px; pos[o+10]=ay-py; pos[o+11]=0;
+        pos[o+12]=bx-px; pos[o+13]=by-py; pos[o+14]=0;
+        pos[o+15]=bx+px; pos[o+16]=by+py; pos[o+17]=0;
       });
       linkGeometry.attributes.position.needsUpdate = true;
     }
   }
 
   /* ---- label collision avoidance ----
-     Recomputed from scratch every frame: a few relaxation passes push apart
-     any label bounding boxes that overlap, so crowded areas spread labels out
-     instead of letting them stack illegibly on top of each other. */
+     The relaxation target is recomputed from scratch every frame (a few
+     iterations pushing apart overlapping label boxes), but a crowded cluster
+     with no single stable layout can flip which direction it pushes labels
+     from one frame to the next as stars drift — applied directly, that reads
+     as jittering/ghosted text, worse at high zoom. So the raw target is only
+     used to steer a slower-moving displayed offset (lerp), which damps the
+     flicker into smooth, stable motion. */
   function resolveLabelLayout(){
     const active = [];
     nodeEntries.forEach(entry=>{
@@ -496,7 +532,9 @@ export function createStarMap({ canvas, width, height, categories }){
     }
 
     active.forEach(entry=>{
-      entry.label.position.set(entry.labelOffX, entry.labelBaseY + entry.labelOffY, 0.3);
+      entry.labelDispX += (entry.labelOffX - entry.labelDispX) * 0.18;
+      entry.labelDispY += (entry.labelOffY - entry.labelDispY) * 0.18;
+      entry.label.position.set(entry.labelDispX, entry.labelBaseY + entry.labelDispY, 0.3);
     });
   }
 
@@ -541,10 +579,11 @@ export function createStarMap({ canvas, width, height, categories }){
         else intensity = 0.04;
         const c = new THREE.Color(0x8fa2ff);
         const r = c.r*intensity, g = c.g*intensity, b = c.b*intensity;
-        colArr[i*6+0] = r; colArr[i*6+1] = g; colArr[i*6+2] = b;
-        colArr[i*6+3] = r; colArr[i*6+4] = g; colArr[i*6+5] = b;
-        linkBaseColorArr[i*6+0] = r; linkBaseColorArr[i*6+1] = g; linkBaseColorArr[i*6+2] = b;
-        linkBaseColorArr[i*6+3] = r; linkBaseColorArr[i*6+4] = g; linkBaseColorArr[i*6+5] = b;
+        const o = i*18;
+        for(let k=0;k<6;k++){
+          colArr[o+k*3+0] = r; colArr[o+k*3+1] = g; colArr[o+k*3+2] = b;
+          linkBaseColorArr[o+k*3+0] = r; linkBaseColorArr[o+k*3+1] = g; linkBaseColorArr[o+k*3+2] = b;
+        }
       });
       linkGeometry.attributes.color.needsUpdate = true;
       if(hoveredLinkIndex >= 0) setLinkHover(hoveredLinkIndex, true);
@@ -554,10 +593,11 @@ export function createStarMap({ canvas, width, height, categories }){
   function setLinkHover(idx, hovering){
     if(idx == null || idx < 0 || !linkGeometry || idx >= linkData.length) return;
     const colArr = linkGeometry.attributes.color.array;
+    const o = idx*18;
     if(hovering){
-      for(let k=0;k<6;k++) colArr[idx*6+k] = Math.min(1.4, linkBaseColorArr[idx*6+k]*2.4 + 0.12);
+      for(let k=0;k<18;k++) colArr[o+k] = Math.min(1.4, linkBaseColorArr[o+k]*2.4 + 0.12);
     } else {
-      for(let k=0;k<6;k++) colArr[idx*6+k] = linkBaseColorArr[idx*6+k];
+      for(let k=0;k<18;k++) colArr[o+k] = linkBaseColorArr[o+k];
     }
     linkGeometry.attributes.color.needsUpdate = true;
   }
@@ -766,13 +806,13 @@ export function createStarMap({ canvas, width, height, categories }){
   /* ---- postprocessing: dual bloom + color grade + cinematic focus blur + vignette ---- */
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloomWide = new UnrealBloomPass(new THREE.Vector2(width, height), 0.28, 0.85, 0.38);
-  const bloomTight = new UnrealBloomPass(new THREE.Vector2(width, height), 0.55, 0.18, 0.7);
+  const bloomWide = new UnrealBloomPass(new THREE.Vector2(width, height), 0.18, 0.6, 0.45);
+  const bloomTight = new UnrealBloomPass(new THREE.Vector2(width, height), 0.4, 0.15, 0.78);
   composer.addPass(bloomWide);
   composer.addPass(bloomTight);
 
   const gradeShader = {
-    uniforms: { tDiffuse: { value: null }, uContrast: { value: 1.12 }, uSaturation: { value: 1.18 }, uLift: { value: 0.015 } },
+    uniforms: { tDiffuse: { value: null }, uContrast: { value: 1.06 }, uSaturation: { value: 1.1 }, uLift: { value: 0.01 } },
     vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
     fragmentShader: `
       uniform sampler2D tDiffuse; uniform float uContrast; uniform float uSaturation; uniform float uLift;
@@ -799,16 +839,17 @@ export function createStarMap({ canvas, width, height, categories }){
         d.x *= uAspect;
         float dist = length(d);
         float blurAmt = clamp(dist*1.8, 0.0, 1.0) * uAmount;
-        float radius = blurAmt * 0.012;
-        vec4 sum = texture2D(tDiffuse, vUv) * 0.2;
-        sum += texture2D(tDiffuse, vUv + vec2(radius,0.0)) * 0.1;
-        sum += texture2D(tDiffuse, vUv - vec2(radius,0.0)) * 0.1;
-        sum += texture2D(tDiffuse, vUv + vec2(0.0,radius)) * 0.1;
-        sum += texture2D(tDiffuse, vUv - vec2(0.0,radius)) * 0.1;
-        sum += texture2D(tDiffuse, vUv + vec2(radius,radius)) * 0.1;
-        sum += texture2D(tDiffuse, vUv - vec2(radius,radius)) * 0.1;
-        sum += texture2D(tDiffuse, vUv + vec2(radius,-radius)) * 0.1;
-        sum += texture2D(tDiffuse, vUv - vec2(radius,-radius)) * 0.1;
+        float r2 = blurAmt * 0.007;
+        float r1 = r2 * 0.5;
+        vec4 sum = texture2D(tDiffuse, vUv) * 0.28;
+        sum += texture2D(tDiffuse, vUv + vec2(r1,0.0)) * 0.09;
+        sum += texture2D(tDiffuse, vUv - vec2(r1,0.0)) * 0.09;
+        sum += texture2D(tDiffuse, vUv + vec2(0.0,r1)) * 0.09;
+        sum += texture2D(tDiffuse, vUv - vec2(0.0,r1)) * 0.09;
+        sum += texture2D(tDiffuse, vUv + vec2(r2,r2)) * 0.09;
+        sum += texture2D(tDiffuse, vUv - vec2(r2,r2)) * 0.09;
+        sum += texture2D(tDiffuse, vUv + vec2(r2,-r2)) * 0.09;
+        sum += texture2D(tDiffuse, vUv - vec2(r2,-r2)) * 0.09;
         gl_FragColor = sum;
       }`
   };
@@ -846,7 +887,7 @@ export function createStarMap({ canvas, width, height, categories }){
   let dofAmount = 0;
   const _focusWorldPos = new THREE.Vector3();
   function updateFocus(){
-    const targetAmount = currentSelected ? 0.6 : 0;
+    const targetAmount = currentSelected ? 0.4 : 0;
     dofAmount += (targetAmount - dofAmount) * 0.08;
     dofPass.uniforms.uAmount.value = dofAmount;
     if(currentSelected){
