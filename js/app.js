@@ -10,6 +10,7 @@ const i18n = {
     hint: 'اضغط على أي نجمة لعرض شرحها، وتنقّل بين المصطلحات عبر الروابط العصبية المتصلة بها.',
     related: 'روابط عصبية مرتبطة',
     langToggle: 'English',
+    legendToggle: 'الفئات',
     newBadge: 'جديد',
     notFoundTitle: 'المصطلح غير موجود',
     notFoundBody: name => `مفيش نجمة بالاسم "${name}" في الكون حاليًا.`,
@@ -37,6 +38,7 @@ const i18n = {
     hint: 'Click any star to view its explanation, and navigate between related terms via the neural links connecting them.',
     related: 'Related Neural Links',
     langToggle: 'العربية',
+    legendToggle: 'Categories',
     newBadge: 'NEW',
     notFoundTitle: 'Term not found',
     notFoundBody: name => `No star named "${name}" exists in the universe yet.`,
@@ -575,6 +577,17 @@ function computeCategoryStats(categories, terms){
   }
   renderLegend();
 
+  const legendPanel = document.getElementById('legendPanel');
+  d3.select('#legendToggleLabel').text(i18n[lang].legendToggle);
+  let legendCollapsed = false;
+  try{ legendCollapsed = localStorage.getItem('techverse_legend_collapsed') === '1'; }catch(e){ /* unavailable */ }
+  legendPanel.classList.toggle('collapsed', legendCollapsed);
+  document.getElementById('legendToggle').addEventListener('click', ()=>{
+    legendCollapsed = !legendCollapsed;
+    legendPanel.classList.toggle('collapsed', legendCollapsed);
+    try{ localStorage.setItem('techverse_legend_collapsed', legendCollapsed ? '1' : '0'); }catch(e){ /* unavailable */ }
+  });
+
   function updateLegendProgress(){
     legendSel.selectAll('.chip').each(function(){
       const key = this.getAttribute('data-cat');
@@ -731,6 +744,7 @@ function computeCategoryStats(categories, terms){
     d3.select('#search').attr('placeholder', t.searchPlaceholder);
     d3.select('#hint').text(t.hint);
     d3.select('#langToggle').text(t.langToggle);
+    d3.select('#legendToggleLabel').text(t.legendToggle);
     d3.select('#journeyChip').attr('title', t.journeyTitle);
     d3.select('#coffeeLink').text('☕ ' + t.coffee);
     renderLegend();
