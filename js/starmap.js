@@ -332,6 +332,7 @@ export function createStarMap({ canvas, width, height, categories }){
   let nodesRef = [];
   let onNodeClickCb = null;
   let onBackgroundClickCb = null;
+  let onNodeHoverCb = null;
 
   function buildGraph(nodes, links){
     nodesRef = nodes;
@@ -698,6 +699,9 @@ export function createStarMap({ canvas, width, height, categories }){
         if(hoveredId) setHoverLabel(hoveredId, false);
         if(nodeId) setHoverLabel(nodeId, true);
         hoveredId = nodeId;
+        if(onNodeHoverCb) onNodeHoverCb(nodeId, ev.clientX, ev.clientY);
+      } else if(nodeId && onNodeHoverCb){
+        onNodeHoverCb(nodeId, ev.clientX, ev.clientY);
       }
       if(linkIdx !== hoveredLinkIndex){
         if(hoveredLinkIndex >= 0) setLinkHover(hoveredLinkIndex, false);
@@ -705,6 +709,10 @@ export function createStarMap({ canvas, width, height, categories }){
         hoveredLinkIndex = linkIdx;
       }
     }
+  });
+  canvas.addEventListener('pointerleave', ()=>{
+    if(hoveredId){ setHoverLabel(hoveredId, false); hoveredId = null; if(onNodeHoverCb) onNodeHoverCb(null); }
+    if(hoveredLinkIndex >= 0){ setLinkHover(hoveredLinkIndex, false); hoveredLinkIndex = -1; }
   });
   canvas.addEventListener('click', ev=>{
     if(pointerMoved) return;
@@ -880,6 +888,7 @@ export function createStarMap({ canvas, width, height, categories }){
     resize,
     onNodeClick(cb){ onNodeClickCb = cb; },
     onBackgroundClick(cb){ onBackgroundClickCb = cb; },
+    onNodeHover(cb){ onNodeHoverCb = cb; },
     dispose(){ running = false; }
   };
 }

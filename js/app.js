@@ -369,6 +369,31 @@ function computeCategoryStats(categories, terms){
     starMap.setConstellation(c ? c.term_ids : null);
   }
 
+  /* ---- curiosity gap: a genuine question built from the term's own real
+     relationships (never fabricated, never a substitute for the full
+     definition, which is always shown in full right below it) ---- */
+  function getTeaser(term){
+    const cat = categories[term.category];
+    const inPath = (termConstellations.get(term.id) || []).length > 0;
+    const relFirst = (term.related && term.related.length) ? idIndex.get(term.related[0]) : null;
+    if(inPath){
+      return {
+        ar: `🌠 "${term.name}" جزء من مسار تعلّم كامل — عايز تعرف هو إيه؟`,
+        en: `🌠 "${term.name}" is part of a full learning path — want to see it?`
+      };
+    }
+    if(relFirst){
+      return {
+        ar: `🔗 إيه العلاقة بين "${term.name}" و"${relFirst.name}"؟`,
+        en: `🔗 What connects "${term.name}" and "${relFirst.name}"?`
+      };
+    }
+    return {
+      ar: `✦ ليه "${term.name}" مهم في عالم ${cat.label_ar}؟`,
+      en: `✦ Why does "${term.name}" matter in ${cat.label_en}?`
+    };
+  }
+
   function selectNode(id){
     selectedId = id;
     activeConstellationId = null;
@@ -386,6 +411,7 @@ function computeCategoryStats(categories, terms){
       document.querySelector('.subBadge'),
       document.querySelector('.newBadge'),
       document.querySelector('#panelName'),
+      document.querySelector('.curiosityHook'),
       ...document.querySelectorAll('#panelDefs .defBlock'),
       document.querySelector('#relTitle'),
       document.querySelector('#relList'),
@@ -421,6 +447,7 @@ function computeCategoryStats(categories, terms){
     d3.select('#panelName').text(term.name).style('color', cat.color);
     d3.select('#panelDefs').html('');
     const defsWrap = d3.select('#panelDefs');
+    defsWrap.append('div').attr('class','curiosityHook').text(getTeaser(term)[lang]);
     const arBlock = defsWrap.append('div').attr('class','defBlock');
     arBlock.append('span').attr('class','defLangTag').text('AR · العربية');
     arBlock.append('div').attr('class','defText').attr('lang','ar').attr('dir','rtl').text(term.definition_ar);
@@ -487,6 +514,24 @@ function computeCategoryStats(categories, terms){
     if(activeConstellationId){ activeConstellationId = null; starMap.setConstellation(null); }
     hideNotFound();
     d3.select('#statsPanel').classed('open', false);
+  });
+
+  const teaserEl = document.getElementById('hoverTeaser');
+  starMap.onNodeHover((id, x, y)=>{
+    if(!id){ teaserEl.classList.remove('show'); return; }
+    const t = idIndex.get(id);
+    if(!t) return;
+    teaserEl.textContent = getTeaser(t)[lang];
+    const rtl = document.documentElement.getAttribute('dir') === 'rtl';
+    teaserEl.style.top = (y - 12) + 'px';
+    if(rtl){
+      teaserEl.style.right = (window.innerWidth - x + 16) + 'px';
+      teaserEl.style.left = 'auto';
+    } else {
+      teaserEl.style.left = (x + 16) + 'px';
+      teaserEl.style.right = 'auto';
+    }
+    teaserEl.classList.add('show');
   });
 
   /* ---- legend ---- */

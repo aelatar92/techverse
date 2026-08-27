@@ -275,6 +275,23 @@ html[dir="rtl"] #panel{transform:translateX(100%);}
 #footerbar a{color:#ffdd57;text-decoration:none;font-weight:600;}
 #footerbar a:hover{text-decoration:underline;}
 
+/* ---- curiosity-gap hover teaser (a genuine question, not hidden content) ---- */
+#hoverTeaser{
+  position:fixed;z-index:25;pointer-events:none;
+  max-width:240px;padding:9px 14px;border-radius:12px;
+  background:rgba(10,13,27,.92);border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 8px 24px -8px rgba(0,0,0,.6);
+  font-size:12.5px;line-height:1.6;color:var(--text-main);
+  opacity:0;transform:translateY(4px);transition:opacity .18s ease, transform .18s ease;
+}
+#hoverTeaser.show{opacity:1;transform:translateY(0);}
+
+.curiosityHook{
+  font-size:14px;font-style:italic;color:var(--text-main);opacity:.92;
+  padding-inline-start:12px;border-inline-start:2px solid var(--accent, #4fd1ff);
+  margin-bottom:18px;line-height:1.7;
+}
+
 /* ---- badge unlock toast ---- */
 #badgeToastWrap{
   position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;
