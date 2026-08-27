@@ -218,7 +218,26 @@ const GALAXY_SHAPES = {
   projectmgmt: { type: 'elliptical' }
 };
 
-function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, degree, categories, width, height){
+// Average direction (as an angle) from a galaxy's own center toward the
+// center(s) of every other galaxy it has at least one cross-category link
+// into — a term that bridges to several galaxies leans toward their
+// combined direction, same as a vector sum of several pulls.
+function crossGalaxyAngle(node, crossCatTargets, categories, width, height){
+  const targets = crossCatTargets[node.id];
+  if(!targets || targets.size === 0) return null;
+  const home = galaxyCenter(node.category, categories, width, height);
+  let vx = 0, vy = 0;
+  targets.forEach(catId=>{
+    const other = galaxyCenter(catId, categories, width, height);
+    const dx = other.cx - home.cx, dy = other.cy - home.cy;
+    const len = Math.hypot(dx, dy) || 1;
+    vx += dx / len; vy += dy / len; // unit vectors, so one very-far galaxy
+  });                                // can't dominate a nearer one
+  if(Math.hypot(vx, vy) < 1e-6) return null;
+  return Math.atan2(vy, vx);
+}
+
+function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height){
   const { cx, cy } = galaxyCenter(node.category, categories, width, height);
   const catData = subAngleData[node.category];
   const shape = GALAXY_SHAPES[node.category] || { type: 'spiral', arms: 2, turns: 0.85 };
@@ -236,15 +255,17 @@ function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrder
   const sectorCount = catData ? Math.max(4, catData.n) : 6;
   const jitter = (hashUnit(node.id + '_a') - 0.5) * (Math.PI / sectorCount) * 1.6;
 
-  // Core-to-periphery radius budget shared by every shape: the most-
-  // connected (most fundamental) terms in the category sit near its
-  // center; everything else orbits outward. Eased with a square (not sqrt)
-  // so only the genuinely top-tier hub terms get pulled in tight — a sqrt
-  // curve pulled every mid-degree term in too, which piled dozens of terms
-  // into the same small core zone and read as one overexposed blown-out
-  // cluster instead of a bright center + orbits.
+  // Core-to-periphery radius budget shared by every shape: the terms most
+  // connected to OTHER terms in their own galaxy sit near its center;
+  // everything else orbits outward. Intra-galaxy degree only (not total
+  // degree) drives this, so a term's centrality reflects its role within
+  // its own galaxy, not connections elsewhere. Eased with a square (not
+  // sqrt) so only the genuinely top-tier hub terms get pulled in tight —
+  // a sqrt curve pulled every mid-degree term in too, which piled dozens
+  // of terms into the same small core zone and read as one overexposed
+  // blown-out cluster instead of a bright center + orbits.
   const maxDeg = degreeMaxByCat[node.category] || 1;
-  const norm = Math.min(1, (degree[node.id] || 0) / maxDeg);
+  const norm = Math.min(1, (intraDegree[node.id] || 0) / maxDeg);
   const termCount = catTermCount[node.category] || 1;
   const outerR = Math.min(width, height) * Math.min(0.20, 0.075 + termCount * 0.0035);
   const innerR = 22;
@@ -341,6 +362,29 @@ function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrder
     }
   }
 
+  // Terms that reach into another galaxy lean toward it: the more of a
+  // term's total connections are cross-galaxy rather than local, the more
+  // its position (angle blended via vector sum, not naive interpolation —
+  // handles wraparound correctly; radius pushed outward) leans toward the
+  // direction of the galaxy(ies) it's actually connected to, like a tidal
+  // pull toward whatever it's linked to. A term with no local connections
+  // at all is already at the rim from the radius formula above; this adds
+  // the missing direction on top of that.
+  const crossAngle = crossGalaxyAngle(node, crossCatTargets, categories, width, height);
+  if(crossAngle !== null){
+    const cross = crossDegree[node.id] || 0;
+    const local = intraDegree[node.id] || 0;
+    const w = Math.min(1, (cross / (cross + local + 1e-6)) * 1.3);
+    const baseAngle = Math.atan2(y - cy, x - cx);
+    const baseR = Math.hypot(x - cx, y - cy);
+    const bx = Math.cos(baseAngle) * (1 - w) + Math.cos(crossAngle) * w;
+    const by = Math.sin(baseAngle) * (1 - w) + Math.sin(crossAngle) * w;
+    const blendedAngle = Math.atan2(by, bx);
+    const blendedR = baseR + (outerR - baseR) * w * 0.5;
+    x = cx + Math.cos(blendedAngle) * blendedR;
+    y = cy + Math.sin(blendedAngle) * blendedR;
+  }
+
   return { x, y };
 }
 
@@ -409,11 +453,30 @@ function computeCategoryStats(categories, terms){
   });
   const degree = {};
   links.forEach(l=>{ degree[l.source]=(degree[l.source]||0)+1; degree[l.target]=(degree[l.target]||0)+1; });
+  // Split each term's connections into "within its own galaxy" (drives how
+  // central it sits — see degreeMaxByCat below) vs "reaching into another
+  // galaxy" (drives which direction it leans — see crossCatTargets, used in
+  // radialTarget). A term with only cross-galaxy links naturally lands at
+  // the rim already, since its intra-degree is 0.
+  const intraDegree = {}, crossDegree = {}, crossCatTargets = {};
+  links.forEach(l=>{
+    const a = idIndex.get(l.source), b = idIndex.get(l.target);
+    if(!a || !b) return;
+    if(a.category === b.category){
+      intraDegree[l.source] = (intraDegree[l.source]||0) + 1;
+      intraDegree[l.target] = (intraDegree[l.target]||0) + 1;
+    } else {
+      crossDegree[l.source] = (crossDegree[l.source]||0) + 1;
+      crossDegree[l.target] = (crossDegree[l.target]||0) + 1;
+      (crossCatTargets[l.source] = crossCatTargets[l.source] || new Set()).add(b.category);
+      (crossCatTargets[l.target] = crossCatTargets[l.target] || new Set()).add(a.category);
+    }
+  });
   const degreeMaxByCat = {}, catTermCount = {}, catOrderIndex = {};
   nodes.forEach(n=>{
     catOrderIndex[n.id] = catTermCount[n.category] || 0;
     catTermCount[n.category] = (catTermCount[n.category]||0) + 1;
-    degreeMaxByCat[n.category] = Math.max(degreeMaxByCat[n.category]||0, degree[n.id]||0);
+    degreeMaxByCat[n.category] = Math.max(degreeMaxByCat[n.category]||0, intraDegree[n.id]||0);
   });
   nodes.forEach(n=> n.r = Math.min(17, 6.5 + (degree[n.id]||0)*1.15));
   nodes.forEach(n=> n.labelW = estimateLabelWorldWidth(n.name));
@@ -524,8 +587,8 @@ function computeCategoryStats(categories, terms){
   }
 
   const subAngleData = computeSubAngles(terms, categories);
-  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, degree, categories, width, height).x;
-  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, degree, categories, width, height).y;
+  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height).x;
+  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height).y;
 
   // Cross-galaxy links (a term related to one in a different category) stay
   // gentle — enough to bend a line across the gap and show the connection —
