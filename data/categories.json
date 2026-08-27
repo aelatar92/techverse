@@ -145,5 +145,20 @@
       "consensus": { "label_ar": "آليات التوافق", "label_en": "Consensus Mechanisms" },
       "web3": { "label_ar": "Web3", "label_en": "Web3" }
     }
+  },
+  "iot": {
+    "id": "iot",
+    "label_ar": "إنترنت الأشياء",
+    "label_en": "Internet of Things",
+    "color": "#a3e635",
+    "cx": 0.08,
+    "cy": 0.88,
+    "subcategories": {
+      "devices": { "label_ar": "الأجهزة", "label_en": "Devices" },
+      "connectivity": { "label_ar": "الاتصال", "label_en": "Connectivity" },
+      "platform": { "label_ar": "المنصة والمعالجة", "label_en": "Platform & Processing" },
+      "industrial": { "label_ar": "الأتمتة الصناعية", "label_en": "Industrial Automation" },
+      "security": { "label_ar": "الأمان", "label_en": "Security" }
+    }
   }
 }

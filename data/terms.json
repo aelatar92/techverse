@@ -117,7 +117,7 @@
     "aliases": [],
     "definition_ar": "نظام يراقب حركة المرور الداخلة والخارجة من الشبكة ويسمح بها أو يمنعها وفق قواعد أمنية محددة.",
     "definition_en": "A system that monitors incoming and outgoing network traffic and allows or blocks it according to defined security rules.",
-    "related": ["nat", "iptables", "ids_ips", "vpn", "proxy"],
+    "related": ["nat", "iptables", "ids_ips", "vpn", "proxy", "iot_security"],
     "date_added": "2026-08-27"
   },
   {
@@ -755,7 +755,7 @@
     "aliases": [],
     "definition_ar": "تقديم موارد الحوسبة (خوادم، تخزين، شبكات) عبر الإنترنت من مزود خارجي بدلًا من امتلاك بنية تحتية محلية.",
     "definition_en": "The delivery of computing resources — servers, storage, networking — over the internet from an external provider, instead of owning local infrastructure.",
-    "related": ["virtualization", "server", "kubernetes", "backup", "iaas", "paas", "saas"],
+    "related": ["virtualization", "server", "kubernetes", "backup", "iaas", "paas", "saas", "edge_computing"],
     "date_added": "2026-08-27"
   },
   {
@@ -887,7 +887,7 @@
     "aliases": ["Malicious Software"],
     "definition_ar": "مصطلح عام يشمل الفيروسات وبرامج الفدية وأحصنة طروادة، وهي برامج مصممة لإلحاق الضرر أو سرقة البيانات.",
     "definition_en": "An umbrella term covering viruses, ransomware, and trojans — software designed to cause damage or steal data.",
-    "related": ["phishing", "ddos", "ids_ips"],
+    "related": ["phishing", "ddos", "ids_ips", "iot_security"],
     "date_added": "2026-08-27"
   },
   {
@@ -975,7 +975,7 @@
     "aliases": ["Network Camera"],
     "definition_ar": "كاميرا مراقبة رقمية تتصل بالشبكة مباشرة وترسل الفيديو عبرها إلى جهاز NVR أو خادم تخزين.",
     "definition_en": "A digital surveillance camera that connects directly to the network and sends video over it to an NVR or storage server.",
-    "related": ["nvr", "poe", "onvif", "ptz", "motion_detection", "codec", "lens", "resolution"],
+    "related": ["nvr", "poe", "onvif", "ptz", "motion_detection", "codec", "lens", "resolution", "smart_home"],
     "date_added": "2026-08-27"
   },
   {
@@ -2769,6 +2769,193 @@
     "definition_ar": "تطبيق يعمل على شبكة بلوك تشين لامركزية بدلًا من خادم مركزي واحد، غالبًا معتمدًا على عقود ذكية لتنفيذ منطقه.",
     "definition_en": "An application that runs on a decentralized blockchain network instead of a single central server, typically relying on smart contracts for its logic.",
     "related": ["smart_contract", "blockchain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "iot",
+    "name": "Internet of Things",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": ["IoT"],
+    "definition_ar": "شبكة من الأجهزة المادية اليومية (حساسات، أجهزة منزلية، آلات صناعية) المتصلة بالإنترنت وقادرة على جمع البيانات وتبادلها والتحكم عن بُعد.",
+    "definition_en": "A network of everyday physical devices — sensors, home appliances, industrial machines — connected to the internet, able to collect and exchange data and be controlled remotely.",
+    "related": ["sensor", "embedded_system", "iot_gateway"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sensor",
+    "name": "Sensor",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": [],
+    "definition_ar": "مكوّن يقيس خاصية فيزيائية معيّنة (حرارة، رطوبة، حركة، ضوء) ويحوّلها إلى إشارة رقمية يمكن لجهاز IoT قراءتها ومعالجتها.",
+    "definition_en": "A component that measures a physical property — temperature, humidity, motion, light — and converts it into a digital signal an IoT device can read and process.",
+    "related": ["iot", "actuator", "embedded_system"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "actuator",
+    "name": "Actuator",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": [],
+    "definition_ar": "مكوّن يحوّل إشارة كهربائية إلى حركة أو فعل فيزيائي، مثل فتح صمام أو تدوير محرك، وهو الجزء الذي \"ينفّذ\" قرار جهاز IoT.",
+    "definition_en": "A component that converts an electrical signal into physical motion or action, such as opening a valve or spinning a motor — the part that \"acts\" on an IoT device's decision.",
+    "related": ["sensor", "iot"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "embedded_system",
+    "name": "Embedded System",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": [],
+    "definition_ar": "نظام حوسبة صغير مخصص لأداء مهمة محددة داخل جهاز أكبر (كغسالة أو سيارة)، بعكس الحاسوب العام الذي يشغّل برامج متنوعة.",
+    "definition_en": "A small, purpose-built computing system dedicated to a specific task inside a larger device (like a washing machine or a car), unlike a general-purpose computer that runs varied software.",
+    "related": ["iot", "microcontroller"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "microcontroller",
+    "name": "Microcontroller",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": ["MCU", "Arduino", "Raspberry Pi"],
+    "definition_ar": "شريحة حوسبة صغيرة ورخيصة تجمع معالجًا وذاكرة ومنافذ إدخال/إخراج في مكان واحد، وتُستخدم كعقل لمعظم أجهزة IoT الصغيرة مثل Arduino.",
+    "definition_en": "A small, low-cost computing chip combining a processor, memory, and input/output pins in one package, used as the brain of most small IoT devices, such as Arduino.",
+    "related": ["embedded_system", "sensor"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "mqtt",
+    "name": "MQTT",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": ["Message Queuing Telemetry Transport"],
+    "definition_ar": "بروتوكول رسائل خفيف مصمم خصيصًا لأجهزة IoT محدودة الموارد، يعتمد على نموذج نشر/اشتراك (Publish/Subscribe) لتبادل البيانات بكفاءة عبر شبكات ضعيفة.",
+    "definition_en": "A lightweight messaging protocol designed specifically for resource-constrained IoT devices, using a publish/subscribe model to exchange data efficiently over weak networks.",
+    "related": ["iot", "iot_gateway"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "zigbee",
+    "name": "Zigbee",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [],
+    "definition_ar": "معيار اتصال لاسلكي منخفض الطاقة وقصير المدى، شائع في أجهزة المنزل الذكي، ويدعم بناء شبكات Mesh تربط عشرات الأجهزة ببعضها.",
+    "definition_en": "A low-power, short-range wireless standard common in smart home devices, supporting mesh networks that link dozens of devices together.",
+    "related": ["iot", "lorawan"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "lorawan",
+    "name": "LoRaWAN",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [],
+    "definition_ar": "بروتوكول اتصال لاسلكي بعيد المدى منخفض استهلاك الطاقة، مصمم لنقل كميات صغيرة من البيانات لمسافات تصل لعدة كيلومترات، مناسب لتطبيقات IoT الصناعية والزراعية المنتشرة جغرافيًا.",
+    "definition_en": "A long-range, low-power wireless protocol designed to carry small amounts of data over distances of several kilometers, well suited to geographically spread industrial and agricultural IoT applications.",
+    "related": ["zigbee", "iot"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ble",
+    "name": "Bluetooth Low Energy",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": ["BLE"],
+    "definition_ar": "نسخة موفّرة للطاقة من تقنية البلوتوث، مصممة لنقل كميات صغيرة من البيانات دوريًا بأقل استهلاك ممكن للبطارية، شائعة في الأساور الذكية وأجهزة الاستشعار الصغيرة.",
+    "definition_en": "A power-efficient version of Bluetooth, designed to periodically transmit small amounts of data with minimal battery drain; common in smart wearables and small sensors.",
+    "related": ["iot", "zigbee"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "iot_gateway",
+    "name": "IoT Gateway",
+    "category": "iot",
+    "subcategory": "platform",
+    "aliases": [],
+    "definition_ar": "جهاز وسيط يجمع بيانات من عدة أجهزة IoT قريبة (غالبًا عبر بروتوكولات منخفضة الطاقة) ويعيد إرسالها لشبكة الإنترنت أو السحابة بصيغة موحدة.",
+    "definition_en": "An intermediary device that collects data from several nearby IoT devices — often over low-power protocols — and forwards it to the internet or cloud in a unified format.",
+    "related": ["iot", "mqtt", "edge_computing"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "edge_computing",
+    "name": "Edge Computing",
+    "category": "iot",
+    "subcategory": "platform",
+    "aliases": [],
+    "definition_ar": "معالجة البيانات بالقرب من مصدرها (كجهاز IoT نفسه أو بوابة قريبة) بدلًا من إرسالها بالكامل لخادم سحابي بعيد، لتقليل زمن الاستجابة واستهلاك النطاق الترددي.",
+    "definition_en": "Processing data close to where it's generated — on the IoT device itself or a nearby gateway — instead of sending everything to a distant cloud server, reducing latency and bandwidth use.",
+    "related": ["iot_gateway", "cloud"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "digital_twin",
+    "name": "Digital Twin",
+    "category": "iot",
+    "subcategory": "platform",
+    "aliases": [],
+    "definition_ar": "نسخة افتراضية دقيقة من جهاز أو نظام فيزيائي حقيقي، تُحدَّث باستمرار ببيانات حية من مستشعراته لمحاكاة سلوكه والتنبؤ بمشاكله قبل حدوثها.",
+    "definition_en": "A precise virtual replica of a real physical device or system, continuously updated with live sensor data to simulate its behavior and predict problems before they occur.",
+    "related": ["iot", "sensor"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "smart_home",
+    "name": "Smart Home",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": [],
+    "definition_ar": "منزل مزوّد بأجهزة IoT (إضاءة، تكييف، أقفال، كاميرات) يمكن التحكم بها والمراقبة عليها عن بُعد أو أتمتتها بناءً على شروط معيّنة.",
+    "definition_en": "A home equipped with IoT devices — lighting, climate control, locks, cameras — that can be remotely controlled, monitored, or automated based on set conditions.",
+    "related": ["iot", "ipcamera"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "rfid",
+    "name": "RFID",
+    "category": "iot",
+    "subcategory": "devices",
+    "aliases": ["Radio-Frequency Identification"],
+    "definition_ar": "تقنية تستخدم موجات راديو لتحديد وتتبّع بطاقة أو وسم (Tag) عن بُعد دون تلامس مباشر، تُستخدم في إدارة المخزون وبطاقات الدخول.",
+    "definition_en": "A technology that uses radio waves to identify and track a tag remotely without direct contact; used in inventory management and access cards.",
+    "related": ["iot", "sensor"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ot",
+    "name": "Operational Technology",
+    "category": "iot",
+    "subcategory": "industrial",
+    "aliases": ["OT"],
+    "definition_ar": "الأنظمة والأجهزة التي تراقب أو تتحكم في معدات صناعية وعمليات فيزيائية مباشرة (كخطوط الإنتاج ومحطات الطاقة)، بعكس IT التي تتعامل مع البيانات والمعلومات.",
+    "definition_en": "The systems and devices that monitor or control industrial equipment and physical processes directly — like production lines and power plants — as opposed to IT, which handles data and information.",
+    "related": ["iot", "scada"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "scada",
+    "name": "SCADA",
+    "category": "iot",
+    "subcategory": "industrial",
+    "aliases": ["Supervisory Control and Data Acquisition"],
+    "definition_ar": "نظام يُستخدم للإشراف على العمليات الصناعية الكبيرة (كمحطات المياه والكهرباء) وجمع بياناتها والتحكم بها من مركز مراقبة مركزي.",
+    "definition_en": "A system used to supervise large industrial processes — such as water and power plants — collecting their data and controlling them from a central monitoring hub.",
+    "related": ["ot", "iot"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "iot_security",
+    "name": "IoT Security",
+    "category": "iot",
+    "subcategory": "security",
+    "aliases": [],
+    "definition_ar": "مجال يركّز على حماية أجهزة IoT من الاختراق، وهو تحدٍّ خاص لأن أغلب هذه الأجهزة محدودة الموارد وقد لا تُحدَّث بانتظام، ما يجعلها هدفًا سهلًا للهجمات مثل بناء شبكات Botnet.",
+    "definition_en": "A field focused on protecting IoT devices from compromise; a particular challenge since most are resource-constrained and rarely updated, making them easy targets for attacks like building botnets.",
+    "related": ["iot", "malware", "firewall"],
     "date_added": "2026-08-27"
   }
 ]
