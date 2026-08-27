@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كون المصطلحات التقنية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root{
+  --bg-void:#05060d;
+  --bg-deep:#0a0e1f;
+  --networking:#4fd1ff;
+  --linux:#ffb454;
+  --systems:#7ee787;
+  --security:#ff5d8f;
+  --hardware:#b28dff;
+  --text-main:#e8ecf7;
+  --text-dim:#8891ab;
+  --panel-bg:rgba(8,11,24,0.94);
+  --font-display:'Tajawal',sans-serif;
+  --font-body:'IBM Plex Sans Arabic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:radial-gradient(ellipse at 30% 20%, #0d1230 0%, var(--bg-deep) 45%, var(--bg-void) 100%);
+  font-family:var(--font-body);
+  color:var(--text-main);
+}
+#stage{position:fixed;inset:0;}
+svg{width:100%;height:100%;display:block;cursor:grab;}
+svg:active{cursor:grabbing;}
+
+.bg-star{fill:#fff;animation:twinkle linear infinite;}
+@keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:.9;}}
+
+.link{stroke:#3a4166;stroke-width:1;fill:none;transition:stroke .35s, opacity .35s, stroke-width .35s;}
+.link.active{stroke-width:2.4;opacity:1;}
+.link.dim{opacity:.06;}
+
+.node circle{stroke:rgba(255,255,255,.55);stroke-width:1;transition:opacity .3s, r .3s, filter .3s;cursor:pointer;}
+.node text{
+  fill:var(--text-main);
+  font-family:var(--font-body);
+  font-size:10.5px;
+  pointer-events:none;
+  paint-order:stroke;
+  stroke:var(--bg-void);
+  stroke-width:3px;
+  opacity:0;
+  transition:opacity .25s;
+}
+.node.show-label text{opacity:.9;}
+.node.dim circle{opacity:.12;}
+.node.dim text{opacity:0 !important;}
+.node.active circle{filter:drop-shadow(0 0 10px currentColor);}
+.node.selected circle{stroke:#fff;stroke-width:2.5;}
+
+/* ---- top bar ---- */
+#topbar{
+  position:fixed;top:0;right:0;left:0;z-index:20;
+  display:flex;align-items:center;gap:14px;
+  padding:16px 22px;
+  background:linear-gradient(to bottom, rgba(5,6,13,.85), transparent);
+  pointer-events:none;
+}
+#topbar > *{pointer-events:auto;}
+#title{
+  font-family:var(--font-display);font-weight:900;font-size:19px;
+  letter-spacing:.3px;
+  background:linear-gradient(90deg,#7ee787,#4fd1ff 40%,#b28dff 75%,#ff5d8f);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  white-space:nowrap;
+}
+#subtitle{font-size:11.5px;color:var(--text-dim);display:block;margin-top:2px;font-weight:400;}
+#searchWrap{margin-inline-start:auto;position:relative;width:260px;}
+#search{
+  width:100%;padding:9px 14px;border-radius:20px;border:1px solid #2b3358;
+  background:rgba(15,19,38,.85);color:var(--text-main);font-family:var(--font-body);font-size:13px;
+  outline:none;
+}
+#search::placeholder{color:var(--text-dim);}
+#search:focus{border-color:var(--networking);}
+
+/* ---- legend ---- */
+#legend{
+  position:fixed;bottom:16px;right:16px;z-index:20;
+  display:flex;flex-wrap:wrap;gap:8px;max-width:260px;
+}
+.chip{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 11px;border-radius:16px;font-size:12px;cursor:pointer;
+  background:rgba(15,19,38,.85);border:1px solid rgba(255,255,255,.08);
+  color:var(--text-dim);user-select:none;transition:opacity .2s, transform .15s;
+}
+.chip:hover{transform:translateY(-1px);}
+.chip.off{opacity:.35;}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;}
+
+/* ---- zoom controls ---- */
+#zoomctl{position:fixed;bottom:16px;left:16px;z-index:20;display:flex;flex-direction:column;gap:6px;}
+#zoomctl button{
+  width:34px;height:34px;border-radius:9px;border:1px solid #2b3358;
+  background:rgba(15,19,38,.85);color:var(--text-main);font-size:16px;cursor:pointer;
+}
+#zoomctl button:hover{background:rgba(30,36,66,.95);}
+
+/* ---- hint ---- */
+#hint{
+  position:fixed;top:78px;right:22px;z-index:15;font-size:12px;color:var(--text-dim);
+  max-width:230px;line-height:1.7;background:rgba(10,13,27,.55);padding:10px 12px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+/* ---- panel ---- */
+#panel{
+  position:fixed;top:0;left:0;height:100%;width:360px;max-width:88vw;
+  background:var(--panel-bg);backdrop-filter:blur(6px);
+  border-left:1px solid rgba(255,255,255,.08);
+  transform:translateX(-100%);transition:transform .38s cubic-bezier(.2,.8,.2,1);
+  z-index:30;overflow-y:auto;
+}
+#panel.open{transform:translateX(0);}
+#panelInner{padding:26px 22px 40px;}
+#closePanel{
+  position:absolute;top:16px;left:16px;background:none;border:none;color:var(--text-dim);
+  font-size:20px;cursor:pointer;width:32px;height:32px;
+}
+#closePanel:hover{color:var(--text-main);}
+.badge{
+  display:inline-block;padding:4px 12px;border-radius:14px;font-size:11.5px;font-weight:600;
+  margin-bottom:14px;
+}
+#panelName{font-family:var(--font-display);font-weight:900;font-size:24px;margin-bottom:6px;line-height:1.3;}
+#panelDef{font-size:14.5px;line-height:2;color:#cfd4ea;margin-bottom:22px;}
+.relTitle{font-size:12px;color:var(--text-dim);margin-bottom:10px;letter-spacing:.3px;}
+#relList{display:flex;flex-wrap:wrap;gap:8px;}
+.relChip{
+  padding:7px 13px;border-radius:14px;font-size:12.5px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  transition:background .2s, transform .15s;
+}
+.relChip:hover{background:rgba(255,255,255,.12);transform:translateY(-1px);}
+
+@media (max-width:640px){
+  #searchWrap{width:150px;}
+  #hint{display:none;}
+  #title{font-size:16px;}
+}
+</style>
+</head>
+<body>
+
+<div id="stage"><svg id="svg"></svg></div>
+
+<div id="topbar">
+  <div>
+    <div id="title">كون المصطلحات التقنية</div>
+    <span id="subtitle">شبكات · لينكس · أنظمة · أمن سيبراني · مراقبة</span>
+  </div>
+  <div id="searchWrap">
+    <input id="search" list="termsList" placeholder="ابحث عن مصطلح…" autocomplete="off">
+    <datalist id="termsList"></datalist>
+  </div>
+</div>
+
+<div id="hint">اضغط على أي نجمة لعرض شرحها، وتنقّل بين المصطلحات عبر الروابط العصبية المتصلة بها.</div>
+
+<div id="legend"></div>
+
+<div id="zoomctl">
+  <button id="zoomIn">＋</button>
+  <button id="zoomOut">－</button>
+  <button id="zoomReset">⟳</button>
+</div>
+
+<div id="panel">
+  <button id="closePanel">✕</button>
+  <div id="panelInner">
+    <div id="panelBadge" class="badge"></div>
+    <div id="panelName"></div>
+    <div id="panelDef"></div>
+    <div class="relTitle">روابط عصبية مرتبطة</div>
+    <div id="relList"></div>
+  </div>
+</div>
+
+<script>
+/* ============================ البيانات ============================ */
+const categories = {
+  networking:{label:'الشبكات', color:'#4fd1ff', cx:0.26, cy:0.30},
+  linux:{label:'لينكس', color:'#ffb454', cx:0.74, cy:0.26},
+  systems:{label:'الأنظمة والبنية التحتية', color:'#7ee787', cx:0.5, cy:0.60},
+  security:{label:'الأمن السيبراني', color:'#ff5d8f', cx:0.20, cy:0.76},
+  hardware:{label:'الأجهزة والمراقبة CCTV', color:'#b28dff', cx:0.80, cy:0.78},
+};
+
+const terms = [
+// ---------------- الشبكات ----------------
+{id:'osi', name:'نموذج OSI', category:'networking', def:'إطار مرجعي مكوّن من سبع طبقات يفسّر كيف تنتقل البيانات بين جهازين عبر الشبكة، من الطبقة الفيزيائية حتى طبقة التطبيقات.', related:['tcp','ip','ethernet','port']},
+{id:'tcp', name:'TCP', category:'networking', def:'بروتوكول نقل موجّه بالاتصال يضمن وصول البيانات كاملة وبالترتيب الصحيح عبر تأكيد الاستلام وإعادة الإرسال عند الفقد.', related:['udp','ip','port','osi','http']},
+{id:'udp', name:'UDP', category:'networking', def:'بروتوكول نقل بلا اتصال وبلا ضمان استلام، أسرع من TCP، يُستخدم في التطبيقات الحساسة للزمن مثل البث والألعاب و DNS.', related:['tcp','dns','port']},
+{id:'ip', name:'عنوان IP', category:'networking', def:'المعرّف الرقمي الفريد لكل جهاز على الشبكة، يُستخدم لتوجيه البيانات إليه، ويأتي بإصدارين IPv4 و IPv6.', related:['subnet','router','dhcp','nat','arp'],},
+{id:'subnet', name:'Subnetting', category:'networking', def:'تقسيم شبكة IP كبيرة إلى شبكات فرعية أصغر لتحسين التنظيم والأمان وتقليل التصادم في الحركة المرورية.', related:['ip','vlan','gateway']},
+{id:'dns', name:'DNS', category:'networking', def:'نظام أسماء النطاقات، يترجم أسماء المواقع القابلة للقراءة (مثل google.com) إلى عناوين IP يفهمها الجهاز.', related:['udp','dhcp','activedirectory','https']},
+{id:'dhcp', name:'DHCP', category:'networking', def:'بروتوكول يوزّع عناوين IP وإعدادات الشبكة تلقائيًا على الأجهزة عند اتصالها، بدلًا من تهيئتها يدويًا.', related:['ip','dns','router','gateway']},
+{id:'vlan', name:'VLAN', category:'networking', def:'شبكة محلية افتراضية تقسّم سويتش فيزيائي واحد إلى عدة شبكات منطقية منفصلة لتحسين الأمان والأداء.', related:['switch','subnet','stp']},
+{id:'router', name:'راوتر', category:'networking', def:'جهاز يوجّه حزم البيانات بين شبكات مختلفة بناءً على عنوان IP، ويربط الشبكة المحلية بشبكات أخرى أو بالإنترنت.', related:['ip','dhcp','gateway','ospf','bgp','nat','switch']},
+{id:'switch', name:'سويتش', category:'networking', def:'جهاز يربط الأجهزة داخل نفس الشبكة المحلية ويوجّه البيانات بينها اعتمادًا على عنوان MAC.', related:['vlan','stp','arp','router','poe']},
+{id:'firewall', name:'جدار الحماية', category:'networking', def:'نظام يراقب حركة المرور الداخلة والخارجة من الشبكة ويسمح بها أو يمنعها وفق قواعد أمنية محددة.', related:['nat','iptables','ids_ips','vpn']},
+{id:'nat', name:'NAT', category:'networking', def:'تقنية تترجم عناوين IP الخاصة داخل الشبكة إلى عنوان عام واحد للخروج إلى الإنترنت، وتوفّر طبقة إخفاء وحماية إضافية.', related:['ip','router','firewall']},
+{id:'mac', name:'MAC Address', category:'networking', def:'عنوان فيزيائي فريد مسجّل في كرت الشبكة لكل جهاز، يُستخدم للتواصل داخل نفس الشبكة المحلية.', related:['arp','switch','ethernet']},
+{id:'arp', name:'ARP', category:'networking', def:'بروتوكول يترجم عنوان IP إلى عنوان MAC المقابل له داخل الشبكة المحلية حتى يتمكن الجهاز من إرسال البيانات فعليًا.', related:['ip','mac','switch']},
+{id:'icmp', name:'ICMP', category:'networking', def:'بروتوكول يُستخدم لإرسال رسائل تشخيصية وأخطاء بين الأجهزة، وهو الأساس الذي يعمل عليه أمر ping.', related:['ip','router']},
+{id:'http', name:'HTTP', category:'networking', def:'بروتوكول نقل النصوص الفائقة، الأساس الذي تُنقل به صفحات الويب بين المتصفح والخادم.', related:['https','tcp','port','server']},
+{id:'https', name:'HTTPS', category:'networking', def:'نسخة مشفّرة من HTTP تستخدم بروتوكول TLS لحماية البيانات المتبادلة بين المتصفح والخادم من التنصت والتلاعب.', related:['http','ssl_tls','certificate','encryption']},
+{id:'ftp', name:'FTP', category:'networking', def:'بروتوكول نقل الملفات بين جهازين عبر الشبكة، وله نسخة مشفّرة أكثر أمانًا تُعرف بـ SFTP.', related:['tcp','port','ssh']},
+{id:'ssh', name:'SSH', category:'networking', def:'بروتوكول يوفّر اتصالًا مشفّرًا وآمنًا للتحكم عن بُعد في الأجهزة والخوادم عبر سطر الأوامر.', related:['terminal','encryption','ftp','root']},
+{id:'telnet', name:'Telnet', category:'networking', def:'بروتوكول قديم للتحكم عن بُعد في الأجهزة، لكنه ينقل البيانات دون تشفير، لذا استُبدل غالبًا بـ SSH.', related:['ssh','port']},
+{id:'snmp', name:'SNMP', category:'networking', def:'بروتوكول يُستخدم لمراقبة وإدارة أجهزة الشبكة (راوترات، سويتشات، خوادم) وجمع بيانات أدائها.', related:['router','switch','server']},
+{id:'bgp', name:'BGP', category:'networking', def:'بروتوكول التوجيه المستخدم بين الشبكات الكبرى ومزودي الإنترنت لتبادل مسارات الوصول بين الأنظمة المستقلة.', related:['router','ospf','ip']},
+{id:'ospf', name:'OSPF', category:'networking', def:'بروتوكول توجيه داخلي يحسب أقصر مسار لنقل البيانات داخل نفس الشبكة اعتمادًا على حالة الروابط.', related:['router','bgp','ip']},
+{id:'stp', name:'STP', category:'networking', def:'بروتوكول يمنع حدوث حلقات لا نهائية في الشبكات ذات المسارات المتعددة بين السويتشات عبر تعطيل المسارات الزائدة مؤقتًا.', related:['switch','vlan']},
+{id:'vpn', name:'VPN', category:'networking', def:'شبكة افتراضية خاصة تنشئ نفقًا مشفّرًا بين الجهاز والشبكة الهدف، لتصفح آمن وخصوصية أعلى عبر شبكات غير موثوقة.', related:['encryption','ssl_tls','firewall','zerotrust']},
+{id:'mpls', name:'MPLS', category:'networking', def:'تقنية توجيه تعتمد على وسوم (Labels) بدلًا من فحص عنوان IP الكامل في كل قفزة، لتسريع نقل البيانات في الشبكات الكبيرة.', related:['router','qos']},
+{id:'qos', name:'QoS', category:'networking', def:'مجموعة آليات تعطي أولوية لأنواع معينة من حركة المرور (كالصوت والفيديو) لضمان جودة أداء أفضل عند ازدحام الشبكة.', related:['router','mpls','vpn']},
+{id:'wifi', name:'Wi-Fi', category:'networking', def:'تقنية اتصال لاسلكي تسمح للأجهزة بالانضمام إلى الشبكة المحلية دون كابلات، اعتمادًا على معايير IEEE 802.11.', related:['router','ethernet','lan']},
+{id:'ethernet', name:'Ethernet', category:'networking', def:'المعيار الأشهر للاتصال السلكي في الشبكات المحلية، يحدد كيفية إرسال البيانات عبر الكابلات النحاسية أو الضوئية.', related:['mac','switch','cable_utp','fiber']},
+{id:'port', name:'المنفذ (Port)', category:'networking', def:'رقم منطقي يحدد التطبيق أو الخدمة المستهدفة داخل الجهاز عند استقبال أو إرسال البيانات، مثل المنفذ 80 لـ HTTP.', related:['tcp','udp','http','ssh']},
+{id:'gateway', name:'البوابة الافتراضية', category:'networking', def:'عنوان الجهاز (غالبًا الراوتر) الذي يستخدمه أي جهاز في الشبكة المحلية للخروج إلى شبكات أو نطاقات أخرى.', related:['router','ip','dhcp']},
+{id:'wan', name:'WAN', category:'networking', def:'شبكة واسعة النطاق تربط مواقع جغرافية متباعدة ببعضها، مثل الربط بين فروع شركة في مدن مختلفة.', related:['lan','router','mpls']},
+{id:'lan', name:'LAN', category:'networking', def:'شبكة محلية محصورة في نطاق جغرافي صغير كمبنى أو مكتب، تربط الأجهزة ببعضها عبر سويتش أو Wi-Fi.', related:['wan','switch','wifi']},
+{id:'ccna', name:'CCNA', category:'networking', def:'شهادة سيسكو التأسيسية في مجال الشبكات، تغطي أساسيات التوجيه والتحويل والأمان وإدارة الشبكات.', related:['ccnp','router','switch']},
+{id:'ccnp', name:'CCNP', category:'networking', def:'شهادة سيسكو المتقدمة التي تبني على CCNA وتتعمق في التوجيه والتحويل المتقدم والشبكات المؤسسية.', related:['ccna','ospf','bgp']},
+
+// ---------------- لينكس ----------------
+{id:'kernel', name:'الكيرنل', category:'linux', def:'النواة هي جوهر نظام التشغيل، تدير الاتصال المباشر بين الأجهزة (المعالج، الذاكرة) والبرامج فوقها.', related:['os','process','shell','docker']},
+{id:'shell', name:'Shell', category:'linux', def:'الطبقة التي تستقبل أوامر المستخدم النصية وتُنفّذها عبر التواصل مع نواة النظام، مثل Bash أو Zsh.', related:['bash','terminal','kernel']},
+{id:'bash', name:'Bash', category:'linux', def:'أشهر برامج الـ Shell في أنظمة لينكس، يُستخدم لتنفيذ الأوامر وكتابة السكربتات لأتمتة المهام.', related:['shell','terminal','crontab']},
+{id:'terminal', name:'Terminal', category:'linux', def:'الواجهة النصية التي يتفاعل من خلالها المستخدم مع الـ Shell لتنفيذ الأوامر والتحكم في النظام.', related:['bash','ssh','root']},
+{id:'root', name:'Root', category:'linux', def:'حساب المستخدم الأعلى صلاحية في أنظمة لينكس، له صلاحية كاملة للتحكم في كل ملفات وإعدادات النظام.', related:['sudo','chmod','ssh']},
+{id:'sudo', name:'sudo', category:'linux', def:'أمر يسمح لمستخدم عادي بتنفيذ أوامر بصلاحيات المستخدم root مؤقتًا دون الحاجة لتسجيل الدخول كـ root بشكل كامل.', related:['root','chmod']},
+{id:'chmod', name:'chmod', category:'linux', def:'أمر يُستخدم لتغيير صلاحيات الوصول للملفات والمجلدات (قراءة، كتابة، تنفيذ) لمالكها ومجموعتها وباقي المستخدمين.', related:['chown','root','filesystem']},
+{id:'chown', name:'chown', category:'linux', def:'أمر يُستخدم لتغيير مالك الملف أو المجلد والمجموعة التابع لها، للتحكم في من يملك حق إدارته.', related:['chmod','root']},
+{id:'grep', name:'grep', category:'linux', def:'أداة سطر أوامر للبحث عن نص أو نمط معيّن داخل الملفات أو مخرجات الأوامر الأخرى.', related:['bash','logfile']},
+{id:'systemd', name:'systemd', category:'linux', def:'نظام إدارة الخدمات والعمليات الرئيسي في معظم توزيعات لينكس الحديثة، يشغّل ويوقف الخدمات ويديرها عند الإقلاع.', related:['daemon','process','kernel']},
+{id:'cron', name:'Cron', category:'linux', def:'خدمة نظام تُستخدم لجدولة تنفيذ المهام والأوامر تلقائيًا في أوقات أو فترات محددة.', related:['crontab','daemon','bash']},
+{id:'crontab', name:'crontab', category:'linux', def:'الملف الذي يحتوي على قائمة المهام المجدولة التي تُنفَّذ عبر خدمة Cron، بصيغة زمنية محددة.', related:['cron','bash']},
+{id:'packagemgr', name:'مدير الحزم (APT/YUM)', category:'linux', def:'أداة تُستخدم لتثبيت البرامج وتحديثها وحذفها في توزيعات لينكس، مثل APT في Ubuntu أو YUM/DNF في CentOS.', related:['os','filesystem']},
+{id:'filesystem', name:'نظام الملفات (ext4)', category:'linux', def:'الطريقة التي يخزّن بها النظام البيانات على القرص وينظّمها في ملفات ومجلدات، مثل ext4 في لينكس أو NTFS في ويندوز.', related:['partition','mount','chmod']},
+{id:'process', name:'العملية (Process)', category:'linux', def:'نسخة تشغيلية من برنامج قيد التنفيذ في الذاكرة، ولكل عملية معرّف رقمي فريد (PID) يديره النظام.', related:['kernel','daemon','systemd']},
+{id:'daemon', name:'Daemon', category:'linux', def:'برنامج يعمل في الخلفية دون تدخل مباشر من المستخدم، لتقديم خدمة مستمرة مثل خادم الويب أو خدمة SSH.', related:['systemd','process','cron']},
+{id:'iptables', name:'iptables', category:'linux', def:'أداة إدارة جدار الحماية المدمجة في لينكس، تسمح بكتابة قواعد للسماح أو المنع لحركة المرور الشبكية.', related:['firewall','root']},
+{id:'symlink', name:'الرابط الرمزي', category:'linux', def:'ملف قصير يشير إلى مسار ملف أو مجلد آخر، يُستخدم للوصول السريع دون نسخ الملف الأصلي.', related:['filesystem']},
+{id:'mount', name:'Mount', category:'linux', def:'عملية ربط قرص أو قسم تخزين بمسار معيّن داخل شجرة الملفات ليصبح قابلًا للوصول من النظام.', related:['partition','filesystem','swap']},
+{id:'partition', name:'Partition', category:'linux', def:'تقسيم منطقي للقرص الصلب إلى أجزاء مستقلة، كل جزء يمكن أن يحمل نظام ملفات خاصًا به.', related:['filesystem','mount','raid']},
+{id:'swap', name:'Swap Memory', category:'linux', def:'مساحة على القرص تُستخدم كذاكرة احتياطية عندما تمتلئ الذاكرة العشوائية (RAM)، لتفادي توقف النظام.', related:['ram','mount']},
+{id:'etcdir', name:'/etc', category:'linux', def:'المجلد الذي يحتوي على معظم ملفات الإعدادات (Configuration) الخاصة بالنظام والخدمات في لينكس.', related:['filesystem','daemon']},
+{id:'logfile', name:'ملفات السجلات (Logs)', category:'linux', def:'ملفات تسجّل أحداث النظام والخدمات والأخطاء، تُستخدم لتشخيص المشاكل ومراقبة الأداء والأمان.', related:['grep','daemon','ids_ips']},
+
+// ---------------- الأنظمة والبنية التحتية ----------------
+{id:'os', name:'نظام التشغيل', category:'systems', def:'البرنامج الأساسي الذي يدير موارد الجهاز (المعالج، الذاكرة، التخزين) ويوفّر بيئة لتشغيل البرامج الأخرى فوقه.', related:['kernel','server','virtualization']},
+{id:'cpu', name:'المعالج', category:'systems', def:'وحدة المعالجة المركزية، العقل المسؤول عن تنفيذ التعليمات والعمليات الحسابية في الجهاز.', related:['ram','motherboard','virtualization']},
+{id:'ram', name:'الذاكرة العشوائية', category:'systems', def:'ذاكرة مؤقتة سريعة يخزّن فيها الجهاز البيانات والبرامج قيد التشغيل، وتُفرَّغ محتوياتها عند إيقاف التشغيل.', related:['cpu','swap','motherboard']},
+{id:'motherboard', name:'اللوحة الأم', category:'systems', def:'اللوحة الرئيسية التي تربط جميع مكوّنات الجهاز (المعالج، الذاكرة، التخزين، المنافذ) ببعضها.', related:['cpu','ram','bios']},
+{id:'bios', name:'BIOS/UEFI', category:'systems', def:'برنامج ثابت يعمل قبل إقلاع نظام التشغيل، يهيّئ المكوّنات المادية للجهاز ويحدد جهاز الإقلاع.', related:['motherboard','os']},
+{id:'virtualization', name:'المحاكاة الافتراضية', category:'systems', def:'تقنية تسمح بتشغيل عدة أنظمة تشغيل مستقلة على نفس الجهاز الفيزيائي بمشاركة موارده.', related:['hypervisor','vm','cpu','cloud']},
+{id:'hypervisor', name:'Hypervisor', category:'systems', def:'البرنامج المسؤول عن إنشاء وإدارة الآلات الافتراضية وتوزيع موارد الجهاز المضيف عليها.', related:['virtualization','vm']},
+{id:'vm', name:'الآلة الافتراضية', category:'systems', def:'نسخة برمجية كاملة من جهاز حاسوب، تعمل فوق Hypervisor وتملك نظام تشغيل ومواردها المخصصة.', related:['hypervisor','virtualization','docker']},
+{id:'docker', name:'Docker', category:'systems', def:'منصة لتشغيل التطبيقات داخل حاويات (Containers) خفيفة تشارك نواة نظام التشغيل، دون الحاجة لآلة افتراضية كاملة.', related:['kubernetes','vm','kernel']},
+{id:'kubernetes', name:'Kubernetes', category:'systems', def:'نظام لإدارة وتنسيق عدد كبير من حاويات Docker عبر عدة خوادم تلقائيًا، من حيث النشر والتوسع والمراقبة.', related:['docker','cloud','loadbalancer']},
+{id:'cloud', name:'الحوسبة السحابية', category:'systems', def:'تقديم موارد الحوسبة (خوادم، تخزين، شبكات) عبر الإنترنت من مزود خارجي بدلًا من امتلاك بنية تحتية محلية.', related:['virtualization','server','kubernetes','backup']},
+{id:'loadbalancer', name:'موازن الأحمال', category:'systems', def:'نظام يوزّع الطلبات الواردة على عدة خوادم لتفادي إرهاق خادم واحد وضمان استمرارية الخدمة.', related:['server','kubernetes','clientserver']},
+{id:'server', name:'الخادم', category:'systems', def:'جهاز أو برنامج يقدّم خدمة أو موارد لأجهزة أخرى (العملاء) عبر الشبكة، مثل خادم ويب أو خادم قواعد بيانات.', related:['clientserver','os','database','http']},
+{id:'clientserver', name:'نموذج Client-Server', category:'systems', def:'نمط معماري يطلب فيه جهاز العميل خدمة من جهاز الخادم عبر الشبكة، وهو الأساس لمعظم تطبيقات الإنترنت.', related:['server','api','loadbalancer']},
+{id:'database', name:'قاعدة البيانات', category:'systems', def:'نظام منظّم لتخزين البيانات واسترجاعها بكفاءة، وقد تكون علائقية مثل MySQL أو غير علائقية مثل MongoDB.', related:['server','api','backup']},
+{id:'api', name:'API', category:'systems', def:'واجهة برمجية تتيح لبرنامج ما التواصل مع برنامج آخر وتبادل البيانات وفق قواعد محددة.', related:['clientserver','database','http']},
+{id:'activedirectory', name:'Active Directory', category:'systems', def:'خدمة مايكروسوفت لإدارة المستخدمين والأجهزة والصلاحيات مركزيًا داخل شبكة المؤسسة.', related:['dns','server','mfa']},
+{id:'raid', name:'RAID', category:'systems', def:'تقنية تجمع عدة أقراص صلبة معًا لتحسين الأداء أو توفير حماية من فقدان البيانات عند تلف أحد الأقراص.', related:['backup','partition','server']},
+{id:'backup', name:'النسخ الاحتياطي', category:'systems', def:'عملية إنشاء نسخة إضافية من البيانات لاستعادتها في حال فقدانها أو تعرضها لعطل أو هجوم.', related:['raid','cloud','database']},
+
+// ---------------- الأمن السيبراني ----------------
+{id:'encryption', name:'التشفير', category:'security', def:'تحويل البيانات إلى صيغة غير مفهومة إلا لمن يملك المفتاح الصحيح لفك تشفيرها، لحماية سريتها أثناء النقل أو التخزين.', related:['ssl_tls','vpn','ssh']},
+{id:'ids_ips', name:'IDS/IPS', category:'security', def:'أنظمة لكشف التسلل (IDS) أو منعه (IPS)، تراقب حركة الشبكة لاكتشاف الأنشطة المشبوهة والتصدي لها.', related:['firewall','logfile','ddos']},
+{id:'zerotrust', name:'Zero Trust', category:'security', def:'نموذج أمني لا يثق تلقائيًا بأي مستخدم أو جهاز داخل الشبكة أو خارجها، ويتحقق من الهوية والصلاحية في كل مرة.', related:['mfa','vpn','ids_ips']},
+{id:'malware', name:'البرمجيات الخبيثة', category:'security', def:'مصطلح عام يشمل الفيروسات وبرامج الفدية وأحصنة طروادة، وهي برامج مصممة لإلحاق الضرر أو سرقة البيانات.', related:['phishing','ddos','ids_ips']},
+{id:'phishing', name:'التصيّد الاحتيالي', category:'security', def:'أسلوب هجوم يخدع المستخدم برسائل أو مواقع مزيفة لسرقة بياناته الحساسة مثل كلمات المرور.', related:['malware','mfa']},
+{id:'ddos', name:'هجوم DDoS', category:'security', def:'إغراق خادم أو خدمة بكم هائل من الطلبات من مصادر متعددة لتعطيلها عن العمل الطبيعي.', related:['malware','loadbalancer','ids_ips']},
+{id:'mfa', name:'المصادقة الثنائية', category:'security', def:'طبقة حماية إضافية تتطلب أكثر من وسيلة للتحقق من هوية المستخدم عند تسجيل الدخول، مثل كلمة مرور مع رمز مؤقت.', related:['zerotrust','phishing','activedirectory']},
+{id:'ssl_tls', name:'SSL/TLS', category:'security', def:'بروتوكولات تشفير تؤمّن الاتصال بين طرفين عبر الشبكة، وهي الأساس الذي يعمل عليه HTTPS.', related:['https','encryption','certificate']},
+{id:'certificate', name:'الشهادة الرقمية', category:'security', def:'ملف إلكتروني يثبت هوية موقع أو خادم ويحمل مفتاحه العام، تصدره جهة موثوقة لتفعيل الاتصال المشفّر.', related:['ssl_tls','https']},
+
+// ---------------- الأجهزة والمراقبة CCTV ----------------
+{id:'nvr', name:'NVR', category:'hardware', def:'جهاز تسجيل شبكي يستقبل ويخزّن فيديو كاميرات المراقبة الرقمية (IP) عبر الشبكة.', related:['ipcamera','poe','dvr']},
+{id:'dvr', name:'DVR', category:'hardware', def:'جهاز تسجيل تناظري تقليدي للكاميرات المتصلة بأسلاك مباشرة، على عكس NVR الذي يعمل عبر الشبكة.', related:['nvr','cable_utp']},
+{id:'ipcamera', name:'كاميرا IP', category:'hardware', def:'كاميرا مراقبة رقمية تتصل بالشبكة مباشرة وترسل الفيديو عبرها إلى جهاز NVR أو خادم تخزين.', related:['nvr','poe','onvif']},
+{id:'poe', name:'PoE', category:'hardware', def:'تقنية تنقل الطاقة الكهربائية والبيانات معًا عبر كابل الشبكة نفسه، تُستخدم كثيرًا لتغذية كاميرات IP ونقاط الوصول اللاسلكية.', related:['ipcamera','switch','cable_utp']},
+{id:'onvif', name:'ONVIF', category:'hardware', def:'معيار مفتوح يضمن توافق كاميرات المراقبة وأجهزة التسجيل من ماركات مختلفة مع بعضها البعض.', related:['ipcamera','nvr']},
+{id:'cable_utp', name:'كابل UTP/Cat6', category:'hardware', def:'كابل نحاسي مزدوج الأسلاك يُستخدم لنقل بيانات الشبكة، وتختلف فئاته (Cat5e, Cat6...) حسب السرعة والمسافة المدعومة.', related:['ethernet','poe','patchpanel']},
+{id:'fiber', name:'الألياف الضوئية', category:'hardware', def:'كابل ينقل البيانات كإشارات ضوئية بدلًا من كهربائية، يوفّر سرعات أعلى ومسافات أطول من الكابل النحاسي.', related:['ethernet','wan']},
+{id:'patchpanel', name:'Patch Panel', category:'hardware', def:'لوحة توصيل تجمع كابلات الشبكة القادمة من نقاط مختلفة في مكان واحد منظم قبل توصيلها بالسويتش.', related:['cable_utp','switch','rack']},
+{id:'rack', name:'Rack Cabinet', category:'hardware', def:'خزانة معيارية لتركيب وتنظيم أجهزة الشبكة والخوادم (سويتشات، راوترات، Patch Panel) بشكل مرتب وآمن.', related:['patchpanel','server','switch']},
+];
+
+/* ============================ إعداد الرسم ============================ */
+const idIndex = new Map(terms.map(t=>[t.id,t]));
+const nodes = terms.map(t=>({...t}));
+const linkSet = new Set();
+const links = [];
+terms.forEach(t=>{
+  (t.related||[]).forEach(rid=>{
+    if(!idIndex.has(rid)) return;
+    const key = [t.id,rid].sort().join('__');
+    if(linkSet.has(key)) return;
+    linkSet.add(key);
+    links.push({source:t.id, target:rid});
+  });
+});
+const degree = {};
+links.forEach(l=>{ degree[l.source]=(degree[l.source]||0)+1; degree[l.target]=(degree[l.target]||0)+1; });
+nodes.forEach(n=> n.r = Math.min(17, 6.5 + (degree[n.id]||0)*1.15));
+
+const svg = d3.select('#svg');
+let width = window.innerWidth, height = window.innerHeight;
+
+const defs = svg.append('defs');
+Object.entries(categories).forEach(([key,c])=>{
+  const filt = defs.append('filter').attr('id','glow-'+key).attr('x','-100%').attr('y','-100%').attr('width','300%').attr('height','300%');
+  filt.append('feGaussianBlur').attr('stdDeviation','3.2').attr('result','coloredBlur');
+  const merge = filt.append('feMerge');
+  merge.append('feMergeNode').attr('in','coloredBlur');
+  merge.append('feMergeNode').attr('in','SourceGraphic');
+});
+
+const zoomLayer = svg.append('g').attr('class','zoom-layer');
+const bgLayer = zoomLayer.append('g').attr('class','bg-layer');
+const linkLayer = zoomLayer.append('g').attr('class','link-layer');
+const nodeLayer = zoomLayer.append('g').attr('class','node-layer');
+
+// حقل نجوم زخرفي في الخلفية
+const bgStars = d3.range(160).map(()=>({
+  x: Math.random()*width*1.4 - width*0.2,
+  y: Math.random()*height*1.4 - height*0.2,
+  r: Math.random()*1.4 + 0.3,
+  dur: (Math.random()*3+2).toFixed(2),
+  delay:(Math.random()*3).toFixed(2)
+}));
+bgLayer.selectAll('circle').data(bgStars).enter().append('circle')
+  .attr('class','bg-star')
+  .attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',d=>d.r)
+  .style('animation-duration',d=>d.dur+'s')
+  .style('animation-delay',d=>d.delay+'s');
+
+const zoom = d3.zoom().scaleExtent([0.25,3.5]).on('zoom', ev=>{
+  zoomLayer.attr('transform', ev.transform);
+});
+svg.call(zoom);
+
+const linkSel = linkLayer.selectAll('line').data(links).enter().append('line').attr('class','link');
+
+const nodeSel = nodeLayer.selectAll('g').data(nodes).enter().append('g')
+  .attr('class', d=>'node')
+  .call(d3.drag()
+    .on('start', (ev,d)=>{ if(!ev.active) sim.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; })
+    .on('drag', (ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
+    .on('end', (ev,d)=>{ if(!ev.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
+  )
+  .on('click', (ev,d)=>{ ev.stopPropagation(); selectNode(d.id); })
+  .on('mouseenter', function(){ d3.select(this).classed('show-label',true); })
+  .on('mouseleave', function(d,i){ if(selectedId !== d3.select(this).datum().id) d3.select(this).classed('show-label',false); });
+
+nodeSel.append('circle')
+  .attr('r', d=>d.r)
+  .attr('fill', d=>categories[d.category].color)
+  .style('color', d=>categories[d.category].color)
+  .attr('filter', d=>'url(#glow-'+d.category+')');
+
+nodeSel.append('text')
+  .text(d=>d.name)
+  .attr('text-anchor','middle')
+  .attr('y', d=> -(d.r+7));
+
+const sim = d3.forceSimulation(nodes)
+  .force('link', d3.forceLink(links).id(d=>d.id).distance(64).strength(0.45))
+  .force('charge', d3.forceManyBody().strength(-95))
+  .force('collide', d3.forceCollide(d=>d.r+8))
+  .force('x', d3.forceX(d=> categories[d.category].cx*width).strength(0.075))
+  .force('y', d3.forceY(d=> categories[d.category].cy*height).strength(0.075))
+  .on('tick', ticked);
+
+function ticked(){
+  linkSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+  nodeSel.attr('transform', d=>`translate(${d.x},${d.y})`);
+}
+
+window.addEventListener('resize', ()=>{
+  width = window.innerWidth; height = window.innerHeight;
+  sim.force('x', d3.forceX(d=> categories[d.category].cx*width).strength(0.075));
+  sim.force('y', d3.forceY(d=> categories[d.category].cy*height).strength(0.075));
+  sim.alpha(0.3).restart();
+});
+
+/* ============================ التفاعل ============================ */
+let selectedId = null;
+const neighborMap = {};
+nodes.forEach(n=> neighborMap[n.id] = new Set());
+links.forEach(l=>{
+  neighborMap[l.source.id||l.source].add(l.target.id||l.target);
+  neighborMap[l.target.id||l.target].add(l.source.id||l.source);
+});
+
+function selectNode(id){
+  selectedId = id;
+  const neigh = neighborMap[id];
+  nodeSel.classed('dim', d=> d.id!==id && !neigh.has(d.id));
+  nodeSel.classed('active', d=> d.id===id || neigh.has(d.id));
+  nodeSel.classed('selected', d=> d.id===id);
+  nodeSel.classed('show-label', d=> d.id===id || neigh.has(d.id));
+  linkSel.classed('active', l=> (l.source.id||l.source)===id || (l.target.id||l.target)===id);
+  linkSel.classed('dim', l=> !((l.source.id||l.source)===id || (l.target.id||l.target)===id));
+  openPanel(idIndex.get(id));
+  centerOn(id);
+}
+
+function centerOn(id){
+  const n = nodes.find(x=>x.id===id);
+  if(!n) return;
+  const scale = 1.25;
+  const t = d3.zoomIdentity.translate(width/2 - n.x*scale, height/2 - n.y*scale).scale(scale);
+  svg.transition().duration(600).call(zoom.transform, t);
+}
+
+function openPanel(term){
+  const cat = categories[term.category];
+  d3.select('#panelBadge').text(cat.label).style('background', cat.color+'22').style('color', cat.color).style('border','1px solid '+cat.color+'55');
+  d3.select('#panelName').text(term.name).style('color', cat.color);
+  d3.select('#panelDef').text(term.def);
+  const relList = d3.select('#relList').html('');
+  (term.related||[]).forEach(rid=>{
+    const r = idIndex.get(rid);
+    if(!r) return;
+    relList.append('div').attr('class','relChip')
+      .style('border-color', categories[r.category].color+'55')
+      .text(r.name)
+      .on('click', ()=> selectNode(rid));
+  });
+  d3.select('#panel').classed('open', true);
+}
+
+d3.select('#closePanel').on('click', ()=>{
+  d3.select('#panel').classed('open', false);
+  selectedId = null;
+  nodeSel.classed('dim',false).classed('active',false).classed('selected',false).classed('show-label',false);
+  linkSel.classed('active',false).classed('dim',false);
+});
+
+svg.on('click', ()=>{ if(selectedId){ d3.select('#closePanel').dispatch('click'); } });
+
+/* ---- الشريط الجانبي: legend ---- */
+const legendSel = d3.select('#legend');
+Object.entries(categories).forEach(([key,c])=>{
+  const chip = legendSel.append('div').attr('class','chip').attr('data-cat',key);
+  chip.append('div').attr('class','dot').style('background', c.color);
+  chip.append('span').text(c.label);
+  chip.on('click', function(){
+    const off = chip.classed('off');
+    chip.classed('off', !off);
+    nodeSel.filter(d=>d.category===key).style('display', off ? null : 'none');
+    linkSel.filter(l=> (l.source.category||idIndex.get(l.source.id||l.source).category)===key || (l.target.category||idIndex.get(l.target.id||l.target).category)===key)
+      .style('display', off ? null : 'none');
+  });
+});
+
+/* ---- البحث ---- */
+const dl = d3.select('#termsList');
+terms.forEach(t=> dl.append('option').attr('value', t.name));
+d3.select('#search').on('change keyup', function(ev){
+  if(ev.key && ev.key !== 'Enter') return;
+  const val = this.value.trim();
+  const match = terms.find(t=> t.name === val) || terms.find(t=> t.name.includes(val));
+  if(match){ selectNode(match.id); this.value=''; }
+});
+
+/* ---- عناصر التحكم بالتكبير ---- */
+d3.select('#zoomIn').on('click', ()=> svg.transition().duration(300).call(zoom.scaleBy, 1.35));
+d3.select('#zoomOut').on('click', ()=> svg.transition().duration(300).call(zoom.scaleBy, 0.74));
+d3.select('#zoomReset').on('click', ()=> svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity));
+</script>
+</body>
+</html>

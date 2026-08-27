@@ -1,0 +1,76 @@
+{
+  "networking": {
+    "id": "networking",
+    "label_ar": "الشبكات",
+    "label_en": "Networking",
+    "color": "#4fd1ff",
+    "cx": 0.26,
+    "cy": 0.30,
+    "subcategories": {
+      "protocols": { "label_ar": "بروتوكولات", "label_en": "Protocols" },
+      "addressing": { "label_ar": "العنونة", "label_en": "Addressing" },
+      "devices": { "label_ar": "أجهزة", "label_en": "Devices" },
+      "routing-switching": { "label_ar": "التوجيه والتحويل", "label_en": "Routing & Switching" },
+      "security": { "label_ar": "أمن الشبكات", "label_en": "Network Security" },
+      "certifications": { "label_ar": "شهادات", "label_en": "Certifications" }
+    }
+  },
+  "linux": {
+    "id": "linux",
+    "label_ar": "لينكس",
+    "label_en": "Linux",
+    "color": "#ffb454",
+    "cx": 0.74,
+    "cy": 0.26,
+    "subcategories": {
+      "core": { "label_ar": "جوهر النظام", "label_en": "Core System" },
+      "shell": { "label_ar": "الطرفية والأوامر", "label_en": "Shell & Commands" },
+      "permissions": { "label_ar": "الصلاحيات", "label_en": "Permissions" },
+      "process-management": { "label_ar": "إدارة العمليات", "label_en": "Process Management" },
+      "filesystem": { "label_ar": "نظام الملفات", "label_en": "Filesystem" },
+      "scheduling": { "label_ar": "الجدولة", "label_en": "Scheduling" }
+    }
+  },
+  "systems": {
+    "id": "systems",
+    "label_ar": "الأنظمة والبنية التحتية",
+    "label_en": "Systems & Infrastructure",
+    "color": "#7ee787",
+    "cx": 0.5,
+    "cy": 0.60,
+    "subcategories": {
+      "hardware": { "label_ar": "المكوّنات المادية", "label_en": "Hardware" },
+      "virtualization": { "label_ar": "المحاكاة الافتراضية", "label_en": "Virtualization" },
+      "cloud": { "label_ar": "الحوسبة السحابية", "label_en": "Cloud Computing" },
+      "servers-services": { "label_ar": "الخوادم والخدمات", "label_en": "Servers & Services" },
+      "storage": { "label_ar": "التخزين", "label_en": "Storage" }
+    }
+  },
+  "security": {
+    "id": "security",
+    "label_ar": "الأمن السيبراني",
+    "label_en": "Cybersecurity",
+    "color": "#ff5d8f",
+    "cx": 0.20,
+    "cy": 0.76,
+    "subcategories": {
+      "cryptography": { "label_ar": "التشفير", "label_en": "Cryptography" },
+      "threats": { "label_ar": "التهديدات", "label_en": "Threats" },
+      "defense": { "label_ar": "الحماية والدفاع", "label_en": "Defense" },
+      "identity": { "label_ar": "الهوية والمصادقة", "label_en": "Identity & Authentication" }
+    }
+  },
+  "hardware": {
+    "id": "hardware",
+    "label_ar": "الأجهزة والمراقبة CCTV",
+    "label_en": "Hardware & CCTV",
+    "color": "#b28dff",
+    "cx": 0.80,
+    "cy": 0.78,
+    "subcategories": {
+      "cctv": { "label_ar": "أنظمة المراقبة", "label_en": "Surveillance Systems" },
+      "cabling": { "label_ar": "الكابلات", "label_en": "Cabling" },
+      "rack-infrastructure": { "label_ar": "بنية الخزائن", "label_en": "Rack Infrastructure" }
+    }
+  }
+}
