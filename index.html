@@ -31,6 +31,7 @@
     <input id="search" list="termsList" autocomplete="off">
     <datalist id="termsList"></datalist>
   </div>
+  <button id="statsBtn">📊</button>
   <button id="langToggle"></button>
 </div>
 
@@ -56,6 +57,19 @@
 </div>
 
 <div id="notFound"></div>
+
+<div id="statsPanel">
+  <button id="closeStats">✕</button>
+  <div id="statsInner">
+    <div id="statsTitleRecent" class="statsSectionTitle"></div>
+    <div id="recentList"></div>
+    <div id="statsTitleGalaxies" class="statsSectionTitle"></div>
+    <div id="galaxyStats"></div>
+    <div id="statsTitleConstellations" class="statsSectionTitle"></div>
+    <div id="constellationList"></div>
+    <div id="constellationSteps"></div>
+  </div>
+</div>
 
 <div id="footerbar">
   <span id="visitorCount">👁 <span data-goatcounter-visits>—</span></span>

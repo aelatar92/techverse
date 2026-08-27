@@ -48,6 +48,13 @@ html,body{
 #search::placeholder{color:var(--text-dim);}
 #search:focus{border-color:var(--networking);}
 
+#statsBtn{
+  padding:9px 12px;border-radius:20px;border:1px solid #2b3358;
+  background:rgba(15,19,38,.85);color:var(--text-main);font-size:14px;
+  cursor:pointer;
+}
+#statsBtn:hover{background:rgba(30,36,66,.95);}
+
 #langToggle{
   padding:9px 14px;border-radius:20px;border:1px solid #2b3358;
   background:rgba(15,19,38,.85);color:var(--text-main);font-family:var(--font-body);font-size:12.5px;
@@ -109,6 +116,11 @@ html[dir="rtl"] #panel{transform:translateX(100%);}
   display:inline-block;padding:3px 10px;border-radius:12px;font-size:10.5px;font-weight:700;
   margin-inline-start:8px;background:rgba(255,255,255,.12);color:#fff;letter-spacing:.4px;
 }
+.subBadge{
+  display:inline-block;padding:3px 10px;border-radius:12px;font-size:10.5px;font-weight:500;
+  margin-inline-start:8px;background:rgba(255,255,255,.05);color:var(--text-dim);
+  border:1px solid rgba(255,255,255,.08);
+}
 #panelName{font-family:var(--font-display);font-weight:900;font-size:24px;margin-bottom:14px;line-height:1.3;}
 .defBlock{margin-bottom:16px;}
 .defLangTag{font-size:10.5px;font-weight:700;letter-spacing:.6px;color:var(--text-dim);text-transform:uppercase;margin-bottom:5px;display:block;}
@@ -132,6 +144,59 @@ html[dir="rtl"] #panel{transform:translateX(100%);}
 #notFound.show{display:block;}
 #notFound .nfTitle{font-weight:700;margin-bottom:10px;color:var(--security);}
 #notFound .nfSuggestions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
+
+/* ---- stats / recent discoveries panel ---- */
+#statsPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;
+  background:var(--panel-bg);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;width:440px;max-width:90vw;max-height:78vh;overflow-y:auto;
+  padding:26px;display:none;
+}
+#statsPanel.open{display:block;}
+#closeStats{
+  position:absolute;top:14px;inset-inline-start:14px;background:none;border:none;color:var(--text-dim);
+  font-size:18px;cursor:pointer;width:30px;height:30px;
+}
+#closeStats:hover{color:var(--text-main);}
+.statsSectionTitle{
+  font-family:var(--font-display);font-weight:700;font-size:15px;margin:6px 0 14px;color:var(--text-main);
+}
+#statsTitleGalaxies{margin-top:26px;}
+.recentRow{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;
+  transition:background .15s;
+}
+.recentRow:hover{background:rgba(255,255,255,.06);}
+.recentRow .rDot{width:8px;height:8px;border-radius:50%;flex:none;}
+.recentRow .rName{flex:1;font-size:13.5px;}
+.recentRow .rDate{font-size:11px;color:var(--text-dim);}
+.galaxyRow{margin-bottom:14px;}
+.galaxyRow .gHead{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;}
+.galaxyRow .gDot{width:9px;height:9px;border-radius:50%;flex:none;}
+.galaxyRow .gCount{margin-inline-start:auto;color:var(--text-dim);font-size:11.5px;}
+.galaxyRow .gBarTrack{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;}
+.galaxyRow .gBarFill{height:100%;border-radius:4px;}
+.galaxyRow .gDensity{font-size:10.5px;color:var(--text-dim);margin-top:4px;}
+
+#statsTitleConstellations{margin-top:26px;}
+#constellationList{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+.constChip{
+  padding:8px 13px;border-radius:14px;font-size:12.5px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  transition:background .2s, transform .15s;
+}
+.constChip:hover{background:rgba(255,255,255,.12);transform:translateY(-1px);}
+.constChip.active{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);}
+.constDesc{font-size:12px;color:var(--text-dim);line-height:1.6;margin:10px 0;}
+.constStep{
+  display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;cursor:pointer;
+  font-size:13px;transition:background .15s;
+}
+.constStep:hover{background:rgba(255,255,255,.06);}
+.constStep .stepNum{
+  width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;font-size:10.5px;flex:none;color:var(--text-dim);
+}
 
 /* ---- footer bar: counter + coffee ---- */
 #footerbar{

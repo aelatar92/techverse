@@ -276,33 +276,38 @@ export function createStarMap({ canvas, width, height, categories }){
   let hiddenCategories = new Set();
   let currentSelected = null;
   let currentNeighbors = new Set();
+  let currentConstellation = null; // Set of ids, or null
 
   function setSelection(selectedId, neighborSet){
     currentSelected = selectedId;
     currentNeighbors = neighborSet || new Set();
 
+    const constellationActive = currentConstellation && currentConstellation.size > 0;
+
     nodeEntries.forEach((entry, id)=>{
       const hidden = hiddenCategories.has(entry.node.category);
       const isSelected = id === selectedId;
       const isNeighbor = currentNeighbors.has(id);
-      const isActive = !selectedId || isSelected || isNeighbor;
+      const inConstellation = constellationActive && currentConstellation.has(id);
       entry.holder.visible = !hidden;
-      const dim = selectedId && !isSelected && !isNeighbor;
-      entry.glowMat.opacity = hidden ? 0 : (dim ? 0.12 : 0.9);
-      entry.coreMat.opacity = hidden ? 0 : (dim ? 0.15 : 1);
-      entry.ringMat.opacity = isSelected ? 0.95 : 0;
-      entry.labelMat.opacity = hidden ? 0 : ((isSelected || isNeighbor) ? 0.95 : 0);
+      const dim = constellationActive ? !inConstellation : (selectedId && !isSelected && !isNeighbor);
+      entry.glowMat.opacity = hidden ? 0 : (dim ? 0.1 : 0.9);
+      entry.coreMat.opacity = hidden ? 0 : (dim ? 0.12 : 1);
+      entry.ringMat.opacity = (isSelected || inConstellation) ? 0.95 : 0;
+      entry.labelMat.opacity = hidden ? 0 : ((isSelected || isNeighbor || inConstellation) ? 0.95 : 0);
     });
 
     if(linkGeometry){
       const colArr = linkGeometry.attributes.color.array;
       linkData.forEach((l, i)=>{
-        const touches = l.a.id === selectedId || l.b.id === selectedId;
         const hidden = hiddenCategories.has(l.a.category) || hiddenCategories.has(l.b.category);
         let intensity;
         if(hidden) intensity = 0;
+        else if(constellationActive){
+          intensity = (currentConstellation.has(l.a.id) && currentConstellation.has(l.b.id)) ? 0.9 : 0.02;
+        }
         else if(!selectedId) intensity = 0.22;
-        else if(touches) intensity = 0.9;
+        else if(l.a.id === selectedId || l.b.id === selectedId) intensity = 0.9;
         else intensity = 0.03;
         const c = new THREE.Color(0x8fa2ff);
         colArr[i*6+0] = c.r*intensity; colArr[i*6+1] = c.g*intensity; colArr[i*6+2] = c.b*intensity;
@@ -310,6 +315,11 @@ export function createStarMap({ canvas, width, height, categories }){
       });
       linkGeometry.attributes.color.needsUpdate = true;
     }
+  }
+
+  function setConstellation(ids){
+    currentConstellation = ids && ids.length ? new Set(ids) : null;
+    setSelection(null, new Set());
   }
 
   function setCategoryVisible(catId, visible){
@@ -459,6 +469,7 @@ export function createStarMap({ canvas, width, height, categories }){
     buildGraph,
     syncPositions,
     setSelection,
+    setConstellation,
     setCategoryVisible,
     setHoverLabel,
     zoomBy,

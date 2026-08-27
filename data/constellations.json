@@ -1,0 +1,42 @@
+[
+  {
+    "id": "ccna_path",
+    "name_ar": "مسار CCNA",
+    "name_en": "CCNA Path",
+    "description_ar": "أساسيات الشبكات المطلوبة لشهادة سيسكو CCNA، من نموذج OSI حتى التوجيه والتحويل.",
+    "description_en": "The networking fundamentals covered by Cisco's CCNA certification, from the OSI model through routing and switching.",
+    "term_ids": ["osi", "tcp", "ip", "subnet", "vlan", "switch", "router", "nat", "ospf", "bgp", "ccna"]
+  },
+  {
+    "id": "cybersecurity_path",
+    "name_ar": "مسار الأمن السيبراني",
+    "name_en": "Cybersecurity Fundamentals Path",
+    "description_ar": "المفاهيم الأساسية لبناء فهم متين للأمن السيبراني، من مثلث CIA حتى الدفاعات العملية.",
+    "description_en": "The core concepts for building a solid cybersecurity foundation, from the CIA triad to practical defenses.",
+    "term_ids": ["cia_triad", "encryption", "firewall", "vpn", "mfa", "zerotrust", "ids_ips", "phishing", "malware", "pentest"]
+  },
+  {
+    "id": "ai_fundamentals_path",
+    "name_ar": "مسار أساسيات الذكاء الاصطناعي",
+    "name_en": "AI Fundamentals Path",
+    "description_ar": "رحلة من أساسيات الذكاء الاصطناعي وتعلّم الآلة حتى نماذج اللغة الكبيرة والذكاء التوليدي.",
+    "description_en": "A journey from the basics of AI and machine learning to large language models and generative AI.",
+    "term_ids": ["artificial_intelligence", "machine_learning", "supervised_learning", "neural_network", "deep_learning", "transformer", "large_language_model", "generative_ai", "prompt_engineering"]
+  },
+  {
+    "id": "web_developer_path",
+    "name_ar": "مسار مطوّر الويب",
+    "name_en": "Web Developer Path",
+    "description_ar": "المفاهيم الأساسية لبناء وتشغيل موقع ويب، من HTML حتى الاستضافة وقواعد البيانات.",
+    "description_en": "The core concepts behind building and running a website, from HTML to hosting and databases.",
+    "term_ids": ["html", "css", "javascript", "dom", "api", "rest_api", "database", "sql", "web_server", "hosting", "cdn"]
+  },
+  {
+    "id": "cloud_devops_path",
+    "name_ar": "مسار السحابة وDevOps",
+    "name_en": "Cloud & DevOps Path",
+    "description_ar": "من الحوسبة الافتراضية والحاويات حتى التسليم المستمر وإدارة الموثوقية.",
+    "description_en": "From virtualization and containers through continuous delivery and reliability engineering.",
+    "term_ids": ["virtualization", "docker", "kubernetes", "cloud", "iaas", "paas", "saas", "cicd", "devops", "sre", "highavailability"]
+  }
+]

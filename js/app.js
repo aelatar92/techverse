@@ -15,7 +15,12 @@ const i18n = {
     notFoundBody: name => `مفيش نجمة بالاسم "${name}" في الكون حاليًا.`,
     suggestions: 'أقرب المصطلحات:',
     close: 'إغلاق',
-    coffee: 'ادعم المشروع'
+    coffee: 'ادعم المشروع',
+    recentTitle: '🌟 أحدث الاكتشافات',
+    galaxiesTitle: '🌌 اكتمال المجرات',
+    constellationsTitle: '🌠 كوكبات (مسارات تعلّم)',
+    daysAgo: n => n===0 ? 'اليوم' : n===1 ? 'من يوم' : `من ${n} أيام`,
+    density: d => `كثافة الروابط: ${d}%`
   },
   en: {
     dir: 'ltr',
@@ -30,18 +35,24 @@ const i18n = {
     notFoundBody: name => `No star named "${name}" exists in the universe yet.`,
     suggestions: 'Closest matches:',
     close: 'Close',
-    coffee: 'Support the project'
+    coffee: 'Support the project',
+    recentTitle: '🌟 Recent Discoveries',
+    galaxiesTitle: '🌌 Galaxy Completeness',
+    constellationsTitle: '🌠 Constellations (Learning Paths)',
+    daysAgo: n => n===0 ? 'Today' : n===1 ? '1 day ago' : `${n} days ago`,
+    density: d => `Link density: ${d}%`
   }
 };
 let lang = 'ar';
 
 /* ============================ Data loading ============================ */
 async function loadData(){
-  const [categories, terms] = await Promise.all([
+  const [categories, terms, constellations] = await Promise.all([
     fetch('data/categories.json').then(r=>r.json()),
-    fetch('data/terms.json').then(r=>r.json())
+    fetch('data/terms.json').then(r=>r.json()),
+    fetch('data/constellations.json').then(r=>r.json())
   ]);
-  return {categories, terms};
+  return {categories, terms, constellations};
 }
 
 /* ============================ Fuzzy search ============================ */
@@ -89,9 +100,71 @@ function logFailedSearch(query){
   }catch(e){ /* localStorage unavailable */ }
 }
 
+/* ============================ Sub-galaxy clustering ============================
+   Large categories (many terms/subcategories) get visually crowded when every
+   term is pulled toward one single anchor point. Instead, terms are pulled
+   toward a secondary anchor offset from the category center based on their
+   subcategory, arranging subcategories in a ring around the galaxy so related
+   terms cluster together without the whole category collapsing into one blob. */
+function computeSubAngles(terms){
+  const bySubcat = {};
+  terms.forEach(t=>{
+    if(!t.subcategory) return;
+    if(!bySubcat[t.category]) bySubcat[t.category] = new Set();
+    bySubcat[t.category].add(t.subcategory);
+  });
+  const result = {};
+  Object.entries(bySubcat).forEach(([catId, set])=>{
+    const keys = [...set].sort();
+    const n = keys.length;
+    const angles = {};
+    keys.forEach((k,i)=>{ angles[k] = (i/n) * Math.PI * 2; });
+    result[catId] = { angles, n };
+  });
+  return result;
+}
+
+function subOffset(node, subAngleData, width, height){
+  const catData = subAngleData[node.category];
+  if(!catData || catData.n <= 1 || !node.subcategory || !(node.subcategory in catData.angles)){
+    return { ox: 0, oy: 0 };
+  }
+  const angle = catData.angles[node.subcategory];
+  const radiusFrac = Math.min(0.14, 0.05 + catData.n * 0.012);
+  const R = Math.min(width, height) * radiusFrac;
+  return { ox: Math.cos(angle) * R, oy: Math.sin(angle) * R };
+}
+
+/* ============================ Galaxy stats ============================ */
+function computeCategoryStats(categories, terms){
+  const stats = {};
+  Object.keys(categories).forEach(catId=>{
+    stats[catId] = { count: 0, internalLinks: 0 };
+  });
+  terms.forEach(t=>{ if(stats[t.category]) stats[t.category].count++; });
+  const idIndex = new Map(terms.map(t=>[t.id, t]));
+  const seen = new Set();
+  terms.forEach(t=>{
+    (t.related||[]).forEach(rid=>{
+      const other = idIndex.get(rid);
+      if(!other) return;
+      const key = [t.id, rid].sort().join('__');
+      if(seen.has(key)) return;
+      seen.add(key);
+      if(other.category === t.category && stats[t.category]) stats[t.category].internalLinks++;
+    });
+  });
+  const maxCount = Math.max(1, ...Object.values(stats).map(s=>s.count));
+  Object.values(stats).forEach(s=>{
+    s.maxCount = maxCount;
+    s.density = s.count > 1 ? Math.round((2*s.internalLinks / (s.count*(s.count-1))) * 100) : 0;
+  });
+  return stats;
+}
+
 /* ============================ Main ============================ */
 (async function main(){
-  const {categories, terms} = await loadData();
+  const {categories, terms, constellations} = await loadData();
   const idIndex = new Map(terms.map(t=>[t.id,t]));
   const nodes = terms.map(t=>({...t}));
   const linkSet = new Set();
@@ -121,19 +194,21 @@ function logFailedSearch(query){
 
   starMap.buildGraph(nodes, links);
 
+  const subAngleData = computeSubAngles(terms);
+
   const sim = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d=>d.id).distance(64).strength(0.45))
     .force('charge', d3.forceManyBody().strength(-95))
     .force('collide', d3.forceCollide(d=>d.r+8))
-    .force('x', d3.forceX(d=> categories[d.category].cx*width).strength(0.075))
-    .force('y', d3.forceY(d=> categories[d.category].cy*height).strength(0.075))
+    .force('x', d3.forceX(d=> categories[d.category].cx*width + subOffset(d, subAngleData, width, height).ox).strength(0.075))
+    .force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075))
     .on('tick', ()=> starMap.syncPositions());
 
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
     starMap.resize(width, height);
-    sim.force('x', d3.forceX(d=> categories[d.category].cx*width).strength(0.075));
-    sim.force('y', d3.forceY(d=> categories[d.category].cy*height).strength(0.075));
+    sim.force('x', d3.forceX(d=> categories[d.category].cx*width + subOffset(d, subAngleData, width, height).ox).strength(0.075));
+    sim.force('y', d3.forceY(d=> categories[d.category].cy*height + subOffset(d, subAngleData, width, height).oy).strength(0.075));
     sim.alpha(0.3).restart();
   });
 
@@ -152,8 +227,12 @@ function logFailedSearch(query){
     neighborMap[l.target.id||l.target].add(l.source.id||l.source);
   });
 
+  let activeConstellationId = null;
+
   function selectNode(id){
     selectedId = id;
+    activeConstellationId = null;
+    starMap.setConstellation(null);
     starMap.setSelection(id, neighborMap[id]);
     openPanel(idIndex.get(id));
     starMap.centerOn(id);
@@ -168,6 +247,12 @@ function logFailedSearch(query){
       .text(lang==='ar' ? cat.label_ar : cat.label_en);
     const existingBadge = document.querySelector('.newBadge');
     if(existingBadge) existingBadge.remove();
+    const existingSub = document.querySelector('.subBadge');
+    if(existingSub) existingSub.remove();
+    const sub = cat.subcategories && cat.subcategories[term.subcategory];
+    if(sub){
+      badge.node().insertAdjacentHTML('afterend', `<span class="subBadge">${lang==='ar' ? sub.label_ar : sub.label_en}</span>`);
+    }
     if(isRecent(term.date_added)){
       badge.node().insertAdjacentHTML('afterend', `<span class="newBadge">★ ${i18n[lang].newBadge}</span>`);
     }
@@ -201,7 +286,12 @@ function logFailedSearch(query){
   }
   d3.select('#closePanel').on('click', closePanel);
   starMap.onNodeClick(id => selectNode(id));
-  starMap.onBackgroundClick(()=>{ if(selectedId) closePanel(); hideNotFound(); });
+  starMap.onBackgroundClick(()=>{
+    if(selectedId) closePanel();
+    if(activeConstellationId){ activeConstellationId = null; starMap.setConstellation(null); }
+    hideNotFound();
+    d3.select('#statsPanel').classed('open', false);
+  });
 
   /* ---- legend ---- */
   const legendSel = d3.select('#legend');
@@ -219,6 +309,82 @@ function logFailedSearch(query){
     });
   }
   renderLegend();
+
+  /* ---- stats / recent discoveries / constellations panel ---- */
+  const categoryStats = computeCategoryStats(categories, terms);
+
+  function renderConstellationSteps(constellation){
+    const stepsSel = d3.select('#constellationSteps').html('');
+    if(!constellation) return;
+    const desc = stepsSel.append('div').attr('class','constDesc')
+      .text(lang==='ar' ? constellation.description_ar : constellation.description_en);
+    constellation.term_ids.forEach((tid, i)=>{
+      const t = idIndex.get(tid);
+      if(!t) return;
+      const row = stepsSel.append('div').attr('class','constStep')
+        .on('click', ()=>{ d3.select('#statsPanel').classed('open', false); selectNode(tid); });
+      row.append('div').attr('class','stepNum').text(i+1);
+      row.append('div').style('color', categories[t.category].color).text(t.name);
+    });
+  }
+
+  function renderStats(){
+    d3.select('#statsTitleRecent').text(i18n[lang].recentTitle);
+    d3.select('#statsTitleGalaxies').text(i18n[lang].galaxiesTitle);
+    d3.select('#statsTitleConstellations').text(i18n[lang].constellationsTitle);
+
+    const constSel = d3.select('#constellationList').html('');
+    constellations.forEach(c=>{
+      constSel.append('div')
+        .attr('class', 'constChip' + (activeConstellationId===c.id ? ' active' : ''))
+        .text(lang==='ar' ? c.name_ar : c.name_en)
+        .on('click', ()=>{
+          if(activeConstellationId === c.id){
+            activeConstellationId = null;
+            starMap.setConstellation(null);
+          } else {
+            activeConstellationId = c.id;
+            starMap.setConstellation(c.term_ids);
+          }
+          renderStats();
+        });
+    });
+    if(activeConstellationId){
+      renderConstellationSteps(constellations.find(c=>c.id===activeConstellationId));
+    }
+
+    const recent = [...terms].filter(t=>t.date_added)
+      .sort((a,b)=> new Date(b.date_added) - new Date(a.date_added))
+      .slice(0, 15);
+    const recentSel = d3.select('#recentList').html('');
+    recent.forEach(t=>{
+      const days = Math.floor((Date.now() - new Date(t.date_added).getTime()) / 86400000);
+      const row = recentSel.append('div').attr('class','recentRow')
+        .on('click', ()=>{ d3.select('#statsPanel').classed('open', false); selectNode(t.id); });
+      row.append('div').attr('class','rDot').style('background', categories[t.category].color);
+      row.append('div').attr('class','rName').text(t.name);
+      row.append('div').attr('class','rDate').text(i18n[lang].daysAgo(days));
+    });
+
+    const galaxySel = d3.select('#galaxyStats').html('');
+    Object.entries(categories).forEach(([key, cat])=>{
+      const s = categoryStats[key];
+      const row = galaxySel.append('div').attr('class','galaxyRow');
+      const head = row.append('div').attr('class','gHead');
+      head.append('div').attr('class','gDot').style('background', cat.color);
+      head.append('span').text(lang==='ar' ? cat.label_ar : cat.label_en);
+      head.append('span').attr('class','gCount').text(s.count);
+      row.append('div').attr('class','gBarTrack').append('div').attr('class','gBarFill')
+        .style('width', Math.round((s.count / s.maxCount) * 100) + '%')
+        .style('background', cat.color);
+      row.append('div').attr('class','gDensity').text(i18n[lang].density(s.density));
+    });
+  }
+  d3.select('#statsBtn').on('click', ()=>{
+    renderStats();
+    d3.select('#statsPanel').classed('open', true);
+  });
+  d3.select('#closeStats').on('click', ()=> d3.select('#statsPanel').classed('open', false));
 
   /* ---- not found panel ---- */
   function showNotFound(query, suggestions){
@@ -272,6 +438,7 @@ function logFailedSearch(query){
     d3.select('#coffeeLink').text('☕ ' + t.coffee);
     renderLegend();
     if(selectedId) openPanel(idIndex.get(selectedId));
+    if(document.querySelector('#statsPanel').classList.contains('open')) renderStats();
   }
   d3.select('#langToggle').on('click', ()=>{
     lang = lang === 'ar' ? 'en' : 'ar';
