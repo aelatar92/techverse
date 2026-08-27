@@ -95,7 +95,7 @@
     "aliases": [],
     "definition_ar": "جهاز يوجّه حزم البيانات بين شبكات مختلفة بناءً على عنوان IP، ويربط الشبكة المحلية بشبكات أخرى أو بالإنترنت.",
     "definition_en": "A network device that forwards data packets between different networks based on IP addresses, connecting a local network to other networks or the internet.",
-    "related": ["ip", "dhcp", "gateway", "ospf", "bgp", "nat", "switch"],
+    "related": ["ip", "dhcp", "gateway", "ospf", "bgp", "nat", "switch", "accesspoint", "traceroute"],
     "date_added": "2026-08-27"
   },
   {
@@ -106,7 +106,7 @@
     "aliases": [],
     "definition_ar": "جهاز يربط الأجهزة داخل نفس الشبكة المحلية ويوجّه البيانات بينها اعتمادًا على عنوان MAC.",
     "definition_en": "A network device that connects devices within the same local network and forwards data between them based on MAC addresses.",
-    "related": ["vlan", "stp", "arp", "router", "poe"],
+    "related": ["vlan", "stp", "arp", "router", "poe", "collision_domain", "broadcast_domain"],
     "date_added": "2026-08-27"
   },
   {
@@ -117,7 +117,7 @@
     "aliases": [],
     "definition_ar": "نظام يراقب حركة المرور الداخلة والخارجة من الشبكة ويسمح بها أو يمنعها وفق قواعد أمنية محددة.",
     "definition_en": "A system that monitors incoming and outgoing network traffic and allows or blocks it according to defined security rules.",
-    "related": ["nat", "iptables", "ids_ips", "vpn"],
+    "related": ["nat", "iptables", "ids_ips", "vpn", "proxy"],
     "date_added": "2026-08-27"
   },
   {
@@ -161,7 +161,7 @@
     "aliases": ["Internet Control Message Protocol"],
     "definition_ar": "بروتوكول يُستخدم لإرسال رسائل تشخيصية وأخطاء بين الأجهزة، وهو الأساس الذي يعمل عليه أمر ping.",
     "definition_en": "A protocol (RFC 792) used to send diagnostic and error messages between devices; it is the basis on which the ping utility operates.",
-    "related": ["ip", "router"],
+    "related": ["ip", "router", "ping", "traceroute"],
     "date_added": "2026-08-27"
   },
   {
@@ -304,7 +304,7 @@
     "aliases": ["Wireless Fidelity", "IEEE 802.11"],
     "definition_ar": "تقنية اتصال لاسلكي تسمح للأجهزة بالانضمام إلى الشبكة المحلية دون كابلات، اعتمادًا على معايير IEEE 802.11.",
     "definition_en": "A wireless connectivity technology that lets devices join a local network without cables, based on the IEEE 802.11 family of standards.",
-    "related": ["router", "ethernet", "lan"],
+    "related": ["router", "ethernet", "lan", "accesspoint"],
     "date_added": "2026-08-27"
   },
   {
@@ -315,7 +315,7 @@
     "aliases": ["IEEE 802.3"],
     "definition_ar": "المعيار الأشهر للاتصال السلكي في الشبكات المحلية، يحدد كيفية إرسال البيانات عبر الكابلات النحاسية أو الضوئية.",
     "definition_en": "The most common wired LAN standard (IEEE 802.3), defining how data is framed and sent over copper or fiber cables.",
-    "related": ["mac", "switch", "cable_utp", "fiber"],
+    "related": ["mac", "switch", "cable_utp", "fiber", "duplex", "mtu"],
     "date_added": "2026-08-27"
   },
   {
@@ -414,7 +414,7 @@
     "aliases": ["Bourne Again Shell"],
     "definition_ar": "أشهر برامج الـ Shell في أنظمة لينكس، يُستخدم لتنفيذ الأوامر وكتابة السكربتات لأتمتة المهام.",
     "definition_en": "The most widely used shell on Linux systems, used to run commands and write scripts that automate tasks.",
-    "related": ["shell", "terminal", "crontab"],
+    "related": ["shell", "terminal", "crontab", "alias", "curl", "env", "tar"],
     "date_added": "2026-08-27"
   },
   {
@@ -436,7 +436,7 @@
     "aliases": ["Superuser"],
     "definition_ar": "حساب المستخدم الأعلى صلاحية في أنظمة لينكس، له صلاحية كاملة للتحكم في كل ملفات وإعدادات النظام.",
     "definition_en": "The highest-privilege user account on Linux systems, with full control over every file and system setting.",
-    "related": ["sudo", "chmod", "ssh"],
+    "related": ["sudo", "chmod", "ssh", "least_privilege"],
     "date_added": "2026-08-27"
   },
   {
@@ -524,7 +524,7 @@
     "aliases": ["APT", "YUM", "DNF", "package management system"],
     "definition_ar": "أداة تُستخدم لتثبيت البرامج وتحديثها وحذفها في توزيعات لينكس، مثل APT في Ubuntu أو YUM/DNF في CentOS.",
     "definition_en": "A tool used to install, update, and remove software on Linux distributions, such as APT on Ubuntu or YUM/DNF on CentOS.",
-    "related": ["os", "filesystem"],
+    "related": ["os", "filesystem", "patch_management"],
     "date_added": "2026-08-27"
   },
   {
@@ -535,7 +535,7 @@
     "aliases": ["ext4", "File System"],
     "definition_ar": "الطريقة التي يخزّن بها النظام البيانات على القرص وينظّمها في ملفات ومجلدات، مثل ext4 في لينكس أو NTFS في ويندوز.",
     "definition_en": "The way an operating system stores data on disk and organizes it into files and directories, such as ext4 on Linux or NTFS on Windows.",
-    "related": ["partition", "mount", "chmod"],
+    "related": ["partition", "mount", "chmod", "inode"],
     "date_added": "2026-08-27"
   },
   {
@@ -546,7 +546,7 @@
     "aliases": ["PID"],
     "definition_ar": "نسخة تشغيلية من برنامج قيد التنفيذ في الذاكرة، ولكل عملية معرّف رقمي فريد (PID) يديره النظام.",
     "definition_en": "A running instance of a program in memory; every process is assigned a unique numeric identifier (PID) managed by the operating system.",
-    "related": ["kernel", "daemon", "systemd"],
+    "related": ["kernel", "daemon", "systemd", "ps", "kill", "top"],
     "date_added": "2026-08-27"
   },
   {
@@ -656,7 +656,7 @@
     "aliases": ["Central Processing Unit", "Processor"],
     "definition_ar": "وحدة المعالجة المركزية، العقل المسؤول عن تنفيذ التعليمات والعمليات الحسابية في الجهاز.",
     "definition_en": "The Central Processing Unit is the component responsible for executing instructions and carrying out computations in a device.",
-    "related": ["ram", "motherboard", "virtualization"],
+    "related": ["ram", "motherboard", "virtualization", "top"],
     "date_added": "2026-08-27"
   },
   {
@@ -755,7 +755,7 @@
     "aliases": [],
     "definition_ar": "تقديم موارد الحوسبة (خوادم، تخزين، شبكات) عبر الإنترنت من مزود خارجي بدلًا من امتلاك بنية تحتية محلية.",
     "definition_en": "The delivery of computing resources — servers, storage, networking — over the internet from an external provider, instead of owning local infrastructure.",
-    "related": ["virtualization", "server", "kubernetes", "backup"],
+    "related": ["virtualization", "server", "kubernetes", "backup", "iaas", "paas", "saas"],
     "date_added": "2026-08-27"
   },
   {
@@ -766,7 +766,7 @@
     "aliases": [],
     "definition_ar": "نظام يوزّع الطلبات الواردة على عدة خوادم لتفادي إرهاق خادم واحد وضمان استمرارية الخدمة.",
     "definition_en": "A system that distributes incoming requests across multiple servers to avoid overloading any single one and to ensure service continuity.",
-    "related": ["server", "kubernetes", "clientserver"],
+    "related": ["server", "kubernetes", "clientserver", "highavailability"],
     "date_added": "2026-08-27"
   },
   {
@@ -777,7 +777,7 @@
     "aliases": [],
     "definition_ar": "جهاز أو برنامج يقدّم خدمة أو موارد لأجهزة أخرى (العملاء) عبر الشبكة، مثل خادم ويب أو خادم قواعد بيانات.",
     "definition_en": "A device or program that provides a service or resources to other devices (clients) over a network, such as a web server or database server.",
-    "related": ["clientserver", "os", "database", "http"],
+    "related": ["clientserver", "os", "database", "http", "middleware", "microservices"],
     "date_added": "2026-08-27"
   },
   {
@@ -865,7 +865,7 @@
     "aliases": ["Intrusion Detection System", "Intrusion Prevention System"],
     "definition_ar": "أنظمة لكشف التسلل (IDS) أو منعه (IPS)، تراقب حركة الشبكة لاكتشاف الأنشطة المشبوهة والتصدي لها.",
     "definition_en": "Systems that detect (IDS) or actively block (IPS) intrusions by monitoring network traffic for suspicious activity.",
-    "related": ["firewall", "logfile", "ddos"],
+    "related": ["firewall", "logfile", "ddos", "siem", "pentest"],
     "date_added": "2026-08-27"
   },
   {
@@ -876,7 +876,7 @@
     "aliases": ["Zero Trust Architecture"],
     "definition_ar": "نموذج أمني لا يثق تلقائيًا بأي مستخدم أو جهاز داخل الشبكة أو خارجها، ويتحقق من الهوية والصلاحية في كل مرة.",
     "definition_en": "A security model that never automatically trusts any user or device, inside or outside the network, and verifies identity and authorization every time.",
-    "related": ["mfa", "vpn", "ids_ips"],
+    "related": ["mfa", "vpn", "ids_ips", "cia_triad", "least_privilege", "pentest"],
     "date_added": "2026-08-27"
   },
   {
@@ -898,7 +898,7 @@
     "aliases": [],
     "definition_ar": "أسلوب هجوم يخدع المستخدم برسائل أو مواقع مزيفة لسرقة بياناته الحساسة مثل كلمات المرور.",
     "definition_en": "An attack technique that tricks users with fake messages or websites into revealing sensitive data such as passwords.",
-    "related": ["malware", "mfa"],
+    "related": ["malware", "mfa", "social_engineering"],
     "date_added": "2026-08-27"
   },
   {
@@ -953,7 +953,7 @@
     "aliases": ["Network Video Recorder"],
     "definition_ar": "جهاز تسجيل شبكي يستقبل ويخزّن فيديو كاميرات المراقبة الرقمية (IP) عبر الشبكة.",
     "definition_en": "A network device that receives and stores video from digital IP surveillance cameras over the network.",
-    "related": ["ipcamera", "poe", "dvr"],
+    "related": ["ipcamera", "poe", "dvr", "ptz", "motion_detection", "codec"],
     "date_added": "2026-08-27"
   },
   {
@@ -975,7 +975,7 @@
     "aliases": ["Network Camera"],
     "definition_ar": "كاميرا مراقبة رقمية تتصل بالشبكة مباشرة وترسل الفيديو عبرها إلى جهاز NVR أو خادم تخزين.",
     "definition_en": "A digital surveillance camera that connects directly to the network and sends video over it to an NVR or storage server.",
-    "related": ["nvr", "poe", "onvif"],
+    "related": ["nvr", "poe", "onvif", "ptz", "motion_detection", "codec", "lens", "resolution"],
     "date_added": "2026-08-27"
   },
   {
@@ -1042,6 +1042,424 @@
     "definition_ar": "خزانة معيارية لتركيب وتنظيم أجهزة الشبكة والخوادم (سويتشات، راوترات، Patch Panel) بشكل مرتب وآمن.",
     "definition_en": "A standardized cabinet for mounting and organizing network and server equipment — switches, routers, patch panels — in a neat, secure way.",
     "related": ["patchpanel", "server", "switch"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ping",
+    "name": "Ping",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": ["ICMP Echo"],
+    "definition_ar": "أداة تشخيصية ترسل رسائل ICMP Echo لجهاز معيّن لقياس هل هو متاح على الشبكة ومدة زمن استجابته.",
+    "definition_en": "A diagnostic utility that sends ICMP Echo Request messages to a target host to check its reachability and measure round-trip response time.",
+    "related": ["icmp", "traceroute"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "traceroute",
+    "name": "Traceroute",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": ["tracert"],
+    "definition_ar": "أداة تُظهر المسار الكامل (كل القفزات/الراوترات) الذي تمر به الحزمة من جهازك حتى وجهتها، وتساعد في تشخيص أماكن التأخير أو الانقطاع.",
+    "definition_en": "A diagnostic tool that reveals the full path — every hop and router — a packet takes from your device to its destination, helping pinpoint where delay or failure occurs.",
+    "related": ["ping", "icmp", "router"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ntp",
+    "name": "NTP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": ["Network Time Protocol"],
+    "definition_ar": "بروتوكول يُستخدم لمزامنة ساعة الأجهزة عبر الشبكة مع مصدر زمني دقيق، وهو أساسي لصحة السجلات والشهادات الرقمية والمصادقة.",
+    "definition_en": "A protocol (RFC 5905) used to synchronize device clocks across a network with an accurate time source; essential for valid logs, digital certificates, and authentication.",
+    "related": ["logfile", "certificate"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "proxy",
+    "name": "Proxy Server",
+    "category": "networking",
+    "subcategory": "devices",
+    "aliases": ["Forward Proxy"],
+    "definition_ar": "خادم وسيط يستقبل طلبات المستخدمين ويمررها للوجهة نيابة عنهم، ويُستخدم للتخزين المؤقت، إخفاء الهوية، أو تطبيق سياسات وصول.",
+    "definition_en": "An intermediary server that receives client requests and forwards them to their destination on the client's behalf, used for caching, anonymity, or enforcing access policies.",
+    "related": ["vpn", "firewall", "http"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "mtu",
+    "name": "MTU",
+    "category": "networking",
+    "subcategory": "performance",
+    "aliases": ["Maximum Transmission Unit"],
+    "definition_ar": "أقصى حجم لحزمة بيانات واحدة يمكن نقلها عبر رابط شبكة معيّن دون تقسيمها (Fragmentation)، وتبلغ قيمته الشائعة 1500 بايت في Ethernet.",
+    "definition_en": "The largest single data packet size that can be transmitted over a given network link without fragmentation; commonly 1500 bytes on Ethernet.",
+    "related": ["ethernet", "ip"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "broadcast_domain",
+    "name": "Broadcast Domain",
+    "category": "networking",
+    "subcategory": "addressing",
+    "aliases": [],
+    "definition_ar": "مجموعة الأجهزة التي تستقبل جميعها أي رسالة بث (Broadcast) يرسلها أي جهاز داخل نفس النطاق، وتحدّها عادةً حدود الراوتر أو الـ VLAN.",
+    "definition_en": "The set of devices that all receive any broadcast message sent by a device within the same domain; typically bounded by a router or VLAN.",
+    "related": ["vlan", "switch", "router"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "collision_domain",
+    "name": "Collision Domain",
+    "category": "networking",
+    "subcategory": "addressing",
+    "aliases": [],
+    "definition_ar": "جزء من الشبكة يمكن أن تتصادم فيه إشارتان مرسلتان في نفس الوقت، وهو مفهوم كان أساسيًا في شبكات Hub التقليدية ويقل أثره مع السويتشات الحديثة.",
+    "definition_en": "A network segment in which two devices transmitting at the same time can collide; a core concept in legacy hub-based networks, largely eliminated by modern switches.",
+    "related": ["switch", "duplex"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "duplex",
+    "name": "Duplex",
+    "category": "networking",
+    "subcategory": "performance",
+    "aliases": ["Full Duplex", "Half Duplex"],
+    "definition_ar": "يصف اتجاه الاتصال على رابط الشبكة: Half-Duplex يسمح بالإرسال أو الاستقبال في وقت واحد فقط، بينما Full-Duplex يسمح بالاثنين في نفس الوقت.",
+    "definition_en": "Describes the direction of communication on a link: half-duplex allows sending or receiving at one time, while full-duplex allows both simultaneously.",
+    "related": ["ethernet", "collision_domain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "accesspoint",
+    "name": "Wireless Access Point",
+    "category": "networking",
+    "subcategory": "devices",
+    "aliases": ["AP", "WAP"],
+    "definition_ar": "جهاز يوفّر نقطة اتصال لاسلكية تسمح للأجهزة بالانضمام إلى شبكة سلكية موجودة عبر Wi-Fi.",
+    "definition_en": "A device that provides a wireless connection point, letting Wi-Fi devices join an existing wired network.",
+    "related": ["wifi", "router", "poe"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "bandwidth",
+    "name": "Bandwidth",
+    "category": "networking",
+    "subcategory": "performance",
+    "aliases": [],
+    "definition_ar": "أقصى كمية بيانات يمكن نقلها عبر رابط شبكة في وحدة زمنية معينة، وتُقاس عادة بالميجابت أو الجيجابت في الثانية.",
+    "definition_en": "The maximum amount of data that can be transferred over a network link in a given time period, typically measured in Mbps or Gbps.",
+    "related": ["latency", "qos"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "latency",
+    "name": "Latency",
+    "category": "networking",
+    "subcategory": "performance",
+    "aliases": ["Network Delay"],
+    "definition_ar": "الزمن المستغرق لوصول حزمة بيانات من المُرسل إلى المُستقبل، ويؤثر بشكل مباشر على تجربة التطبيقات الحساسة للزمن كالألعاب والاتصال الصوتي.",
+    "definition_en": "The time it takes for a data packet to travel from sender to receiver; directly affects time-sensitive applications like gaming and voice calls.",
+    "related": ["bandwidth", "qos"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "multicast",
+    "name": "Multicast",
+    "category": "networking",
+    "subcategory": "addressing",
+    "aliases": [],
+    "definition_ar": "أسلوب إرسال بيانات من مصدر واحد إلى مجموعة محددة من الأجهزة المهتمة فقط، بدلًا من إرسالها للجميع (Broadcast) أو لجهاز واحد (Unicast).",
+    "definition_en": "A method of sending data from one source to a specific group of interested receivers, rather than to everyone (broadcast) or a single host (unicast).",
+    "related": ["broadcast_domain", "ip"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ps",
+    "name": "ps",
+    "category": "linux",
+    "subcategory": "process-management",
+    "aliases": ["process status"],
+    "definition_ar": "أمر يعرض قائمة بالعمليات (Processes) الجارية حاليًا على النظام مع تفاصيلها مثل معرّف العملية (PID) واستهلاك الموارد.",
+    "definition_en": "A command that lists the processes currently running on the system, along with details like PID and resource usage.",
+    "related": ["process", "kill", "top"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "kill",
+    "name": "kill",
+    "category": "linux",
+    "subcategory": "process-management",
+    "aliases": [],
+    "definition_ar": "أمر يُستخدم لإرسال إشارة (Signal) لعملية معيّنة، غالبًا لإنهائها، بالاعتماد على معرّفها الرقمي (PID).",
+    "definition_en": "A command used to send a signal to a process — most commonly to terminate it — identified by its PID.",
+    "related": ["process", "ps", "sudo"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "top",
+    "name": "top",
+    "category": "linux",
+    "subcategory": "process-management",
+    "aliases": ["htop"],
+    "definition_ar": "أداة تفاعلية تعرض العمليات الجارية مرتبة حسب استهلاكها للمعالج والذاكرة، وتتحدّث مباشرةً لحظة بلحظة.",
+    "definition_en": "An interactive tool that displays running processes ranked by CPU and memory usage, updating live in real time.",
+    "related": ["process", "cpu", "ram"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "tar",
+    "name": "tar",
+    "category": "linux",
+    "subcategory": "shell",
+    "aliases": ["tarball"],
+    "definition_ar": "أداة سطر أوامر لتجميع عدة ملفات في أرشيف واحد (وغالبًا ضغطه)، وتُستخدم بكثرة في النسخ الاحتياطي وتوزيع الملفات في لينكس.",
+    "definition_en": "A command-line utility that bundles multiple files into a single archive (often compressed), widely used for backups and file distribution on Linux.",
+    "related": ["backup", "bash"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "curl",
+    "name": "curl",
+    "category": "linux",
+    "subcategory": "shell",
+    "aliases": ["client URL"],
+    "definition_ar": "أداة سطر أوامر لإرسال طلبات عبر بروتوكولات الشبكة (أبرزها HTTP/HTTPS) واختبار الـ APIs مباشرة من الطرفية.",
+    "definition_en": "A command-line tool for sending requests over network protocols — most commonly HTTP/HTTPS — often used to test APIs directly from the terminal.",
+    "related": ["http", "api", "bash"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "env",
+    "name": "Environment Variables",
+    "category": "linux",
+    "subcategory": "shell",
+    "aliases": ["env", "PATH"],
+    "definition_ar": "متغيّرات يخزّنها نظام التشغيل تحمل إعدادات تؤثر على سلوك الأوامر والبرامج، مثل PATH الذي يحدد أماكن البحث عن البرامج القابلة للتنفيذ.",
+    "definition_en": "Variables stored by the operating system that hold settings affecting how commands and programs behave, such as PATH, which defines where executables are searched for.",
+    "related": ["shell", "bash"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "inode",
+    "name": "inode",
+    "category": "linux",
+    "subcategory": "filesystem",
+    "aliases": ["index node"],
+    "definition_ar": "بنية بيانات في نظام الملفات تخزّن كل معلومات الملف (الصلاحيات، المالك، الحجم، مكان تخزينه) ما عدا اسمه.",
+    "definition_en": "A filesystem data structure that stores all of a file's metadata — permissions, owner, size, storage location — except its name.",
+    "related": ["filesystem", "symlink"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "alias",
+    "name": "Alias",
+    "category": "linux",
+    "subcategory": "shell",
+    "aliases": [],
+    "definition_ar": "اختصار يعرّفه المستخدم لأمر طويل أو متكرر الاستخدام في الـ Shell، لتسهيل وتسريع كتابة الأوامر.",
+    "definition_en": "A shortcut a user defines in the shell for a long or frequently used command, making commands faster and easier to type.",
+    "related": ["bash", "shell"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "middleware",
+    "name": "Middleware",
+    "category": "systems",
+    "subcategory": "servers-services",
+    "aliases": [],
+    "definition_ar": "طبقة برمجية وسيطة تربط بين تطبيقات أو مكوّنات مختلفة وتُسهّل تبادل البيانات والخدمات بينها دون أن يعرف كل طرف تفاصيل الطرف الآخر.",
+    "definition_en": "Software that sits between different applications or components, facilitating data and service exchange between them without either side needing to know the other's internals.",
+    "related": ["api", "clientserver", "server"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "microservices",
+    "name": "Microservices",
+    "category": "systems",
+    "subcategory": "servers-services",
+    "aliases": [],
+    "definition_ar": "أسلوب معماري يُقسّم التطبيق إلى خدمات صغيرة مستقلة، كل واحدة مسؤولة عن وظيفة محددة وتتواصل مع البقية عبر APIs.",
+    "definition_en": "An architectural style that splits an application into small, independent services, each responsible for a specific function and communicating with the rest via APIs.",
+    "related": ["api", "docker", "kubernetes"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "highavailability",
+    "name": "High Availability",
+    "category": "systems",
+    "subcategory": "reliability",
+    "aliases": ["HA"],
+    "definition_ar": "تصميم أنظمة بحيث تبقى الخدمة متاحة لأطول وقت ممكن بأقل قدر من الانقطاع، غالبًا عبر التكرار (Redundancy) وتوزيع الأحمال.",
+    "definition_en": "Designing systems so a service stays available with minimal downtime, typically through redundancy and load distribution.",
+    "related": ["loadbalancer", "raid", "backup"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sla",
+    "name": "SLA",
+    "category": "systems",
+    "subcategory": "reliability",
+    "aliases": ["Service Level Agreement"],
+    "definition_ar": "اتفاقية بين مزوّد خدمة وعميله تحدد مستوى الخدمة المتوقع (كنسبة التوفر) والالتزامات في حال عدم الوفاء به.",
+    "definition_en": "An agreement between a service provider and its customer defining the expected service level — such as uptime percentage — and remedies if it isn't met.",
+    "related": ["highavailability", "cloud"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "iaas",
+    "name": "IaaS",
+    "category": "systems",
+    "subcategory": "cloud",
+    "aliases": ["Infrastructure as a Service"],
+    "definition_ar": "نموذج سحابي يوفّر بنية تحتية أساسية (خوادم افتراضية، تخزين، شبكات) للعميل ليديرها ويثبّت عليها ما يريد، مثل Amazon EC2.",
+    "definition_en": "A cloud model that provides raw infrastructure — virtual servers, storage, networking — for the customer to manage and configure themselves, such as Amazon EC2.",
+    "related": ["cloud", "virtualization", "paas"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "paas",
+    "name": "PaaS",
+    "category": "systems",
+    "subcategory": "cloud",
+    "aliases": ["Platform as a Service"],
+    "definition_ar": "نموذج سحابي يوفّر بيئة جاهزة لتطوير وتشغيل التطبيقات دون الحاجة لإدارة الخوادم أو أنظمة التشغيل تحتها.",
+    "definition_en": "A cloud model that provides a ready-made environment for building and running applications, without needing to manage the underlying servers or OS.",
+    "related": ["cloud", "iaas", "saas"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "saas",
+    "name": "SaaS",
+    "category": "systems",
+    "subcategory": "cloud",
+    "aliases": ["Software as a Service"],
+    "definition_ar": "نموذج سحابي يقدّم تطبيقًا جاهزًا للاستخدام مباشرة عبر الإنترنت دون تثبيت أو إدارة، مثل Gmail أو Office 365.",
+    "definition_en": "A cloud model that delivers a ready-to-use application directly over the internet, with no installation or management required, such as Gmail or Office 365.",
+    "related": ["cloud", "paas"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cia_triad",
+    "name": "CIA Triad",
+    "category": "security",
+    "subcategory": "fundamentals",
+    "aliases": ["Confidentiality Integrity Availability"],
+    "definition_ar": "النموذج الأساسي في الأمن السيبراني القائم على ثلاثة مبادئ: السرية (منع الوصول غير المصرح به)، السلامة (منع التعديل غير المصرح به)، والتوافر (ضمان الوصول عند الحاجة).",
+    "definition_en": "The foundational information-security model built on three principles: confidentiality (preventing unauthorized access), integrity (preventing unauthorized modification), and availability (ensuring access when needed).",
+    "related": ["encryption", "zerotrust"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "siem",
+    "name": "SIEM",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": ["Security Information and Event Management"],
+    "definition_ar": "نظام يجمع سجلات (Logs) وأحداث الأمان من مصادر متعددة عبر الشبكة، ويحللها لحظيًا لاكتشاف التهديدات والاستجابة لها.",
+    "definition_en": "A system that aggregates security logs and events from multiple sources across a network and analyzes them in real time to detect and respond to threats.",
+    "related": ["logfile", "ids_ips"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "pentest",
+    "name": "Penetration Testing",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": ["Pen Test", "Ethical Hacking"],
+    "definition_ar": "محاكاة هجوم إلكتروني حقيقي بتصريح رسمي على نظام أو شبكة، لاكتشاف الثغرات قبل أن يستغلّها مهاجم فعلي.",
+    "definition_en": "An authorized simulated cyberattack against a system or network, aimed at uncovering vulnerabilities before a real attacker can exploit them.",
+    "related": ["ids_ips", "zerotrust"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "social_engineering",
+    "name": "Social Engineering",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [],
+    "definition_ar": "أسلوب هجوم يعتمد على التلاعب النفسي بالأشخاص لدفعهم للإفصاح عن معلومات حساسة أو اتخاذ إجراء يخلّ بالأمان، والتصيّد الاحتيالي أحد أشكاله.",
+    "definition_en": "An attack technique that relies on psychologically manipulating people into revealing sensitive information or taking an action that compromises security; phishing is one form of it.",
+    "related": ["phishing", "mfa"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "patch_management",
+    "name": "Patch Management",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": [],
+    "definition_ar": "العملية المنظّمة لمتابعة وتثبيت تحديثات الأمان (Patches) على الأنظمة والبرامج لسدّ الثغرات المعروفة أولًا بأول.",
+    "definition_en": "The organized process of tracking and applying security patches to systems and software, closing known vulnerabilities promptly.",
+    "related": ["packagemgr", "malware"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "least_privilege",
+    "name": "Principle of Least Privilege",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": ["Least Privilege"],
+    "definition_ar": "مبدأ أمني ينص على منح كل مستخدم أو نظام أقل قدر من الصلاحيات اللازمة فقط لأداء مهمته، لتقليل الضرر المحتمل عند اختراقه.",
+    "definition_en": "A security principle stating that every user or system should be granted only the minimum permissions necessary to perform its task, limiting potential damage if compromised.",
+    "related": ["root", "zerotrust"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ptz",
+    "name": "PTZ Camera",
+    "category": "hardware",
+    "subcategory": "cctv",
+    "aliases": ["Pan-Tilt-Zoom"],
+    "definition_ar": "كاميرا مراقبة يمكن التحكم بها عن بُعد للدوران أفقيًا وعموديًا والتكبير، على عكس الكاميرات الثابتة.",
+    "definition_en": "A surveillance camera that can be remotely controlled to pan, tilt, and zoom, unlike fixed cameras.",
+    "related": ["ipcamera", "nvr"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "motion_detection",
+    "name": "Motion Detection",
+    "category": "hardware",
+    "subcategory": "cctv",
+    "aliases": [],
+    "definition_ar": "ميزة في أنظمة المراقبة تكتشف الحركة داخل مجال رؤية الكاميرا تلقائيًا وتطلق تنبيهًا أو تبدأ التسجيل.",
+    "definition_en": "A surveillance feature that automatically detects movement within a camera's field of view and triggers an alert or starts recording.",
+    "related": ["ipcamera", "nvr"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "codec",
+    "name": "Video Codec",
+    "category": "hardware",
+    "subcategory": "cctv",
+    "aliases": ["H.264", "H.265"],
+    "definition_ar": "تقنية ضغط وفك ضغط الفيديو، تحدد جودة الصورة وحجم الملف المطلوب لتخزينه، وأشهرها H.264 وH.265 في أنظمة المراقبة.",
+    "definition_en": "A technology for compressing and decompressing video, balancing image quality against storage size; H.264 and H.265 are the most common in surveillance systems.",
+    "related": ["nvr", "ipcamera"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "lens",
+    "name": "Camera Lens",
+    "category": "hardware",
+    "subcategory": "cctv",
+    "aliases": ["Focal Length"],
+    "definition_ar": "الجزء البصري في الكاميرا الذي يحدد زاوية الرؤية والمسافة التي يمكن تمييز التفاصيل فيها بوضوح.",
+    "definition_en": "The optical component of a camera that determines its field of view and the distance at which details remain clearly visible.",
+    "related": ["ipcamera", "ptz"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "resolution",
+    "name": "Video Resolution",
+    "category": "hardware",
+    "subcategory": "cctv",
+    "aliases": ["Megapixel"],
+    "definition_ar": "عدد البكسلات المكوّنة لصورة الفيديو (مثل 1080p أو 4K)، وكلما زادت زادت وضوح التفاصيل وحجم الملف المطلوب تخزينه.",
+    "definition_en": "The number of pixels making up a video image (e.g. 1080p or 4K); higher resolution means clearer detail but larger storage requirements.",
+    "related": ["codec", "ipcamera"],
     "date_added": "2026-08-27"
   }
 ]

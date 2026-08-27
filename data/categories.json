@@ -12,7 +12,8 @@
       "devices": { "label_ar": "أجهزة", "label_en": "Devices" },
       "routing-switching": { "label_ar": "التوجيه والتحويل", "label_en": "Routing & Switching" },
       "security": { "label_ar": "أمن الشبكات", "label_en": "Network Security" },
-      "certifications": { "label_ar": "شهادات", "label_en": "Certifications" }
+      "certifications": { "label_ar": "شهادات", "label_en": "Certifications" },
+      "performance": { "label_ar": "الأداء", "label_en": "Performance" }
     }
   },
   "linux": {
@@ -43,7 +44,8 @@
       "virtualization": { "label_ar": "المحاكاة الافتراضية", "label_en": "Virtualization" },
       "cloud": { "label_ar": "الحوسبة السحابية", "label_en": "Cloud Computing" },
       "servers-services": { "label_ar": "الخوادم والخدمات", "label_en": "Servers & Services" },
-      "storage": { "label_ar": "التخزين", "label_en": "Storage" }
+      "storage": { "label_ar": "التخزين", "label_en": "Storage" },
+      "reliability": { "label_ar": "الموثوقية والاستمرارية", "label_en": "Reliability & Continuity" }
     }
   },
   "security": {
@@ -57,7 +59,8 @@
       "cryptography": { "label_ar": "التشفير", "label_en": "Cryptography" },
       "threats": { "label_ar": "التهديدات", "label_en": "Threats" },
       "defense": { "label_ar": "الحماية والدفاع", "label_en": "Defense" },
-      "identity": { "label_ar": "الهوية والمصادقة", "label_en": "Identity & Authentication" }
+      "identity": { "label_ar": "الهوية والمصادقة", "label_en": "Identity & Authentication" },
+      "fundamentals": { "label_ar": "أساسيات", "label_en": "Fundamentals" }
     }
   },
   "hardware": {
