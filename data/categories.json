@@ -91,5 +91,18 @@
       "genai": { "label_ar": "الذكاء التوليدي", "label_en": "Generative AI" },
       "applications": { "label_ar": "تطبيقات", "label_en": "Applications" }
     }
+  },
+  "softdev": {
+    "id": "softdev",
+    "label_ar": "تطوير البرمجيات",
+    "label_en": "Software Development",
+    "color": "#60a5fa",
+    "cx": 0.10,
+    "cy": 0.50,
+    "subcategories": {
+      "version-control": { "label_ar": "التحكم بالإصدارات", "label_en": "Version Control" },
+      "apis": { "label_ar": "واجهات برمجية", "label_en": "APIs" },
+      "practices": { "label_ar": "ممارسات وأدوات", "label_en": "Practices & Tools" }
+    }
   }
 }

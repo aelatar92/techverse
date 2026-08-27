@@ -172,7 +172,7 @@
     "aliases": ["HyperText Transfer Protocol"],
     "definition_ar": "بروتوكول نقل النصوص الفائقة، الأساس الذي تُنقل به صفحات الويب بين المتصفح والخادم.",
     "definition_en": "The HyperText Transfer Protocol (RFC 9110) is the foundation on which web pages are transferred between a browser and a server.",
-    "related": ["https", "tcp", "port", "server"],
+    "related": ["https", "tcp", "port", "server", "rest_api"],
     "date_added": "2026-08-27"
   },
   {
@@ -810,7 +810,7 @@
     "aliases": ["Application Programming Interface"],
     "definition_ar": "واجهة برمجية تتيح لبرنامج ما التواصل مع برنامج آخر وتبادل البيانات وفق قواعد محددة.",
     "definition_en": "A programming interface that lets one piece of software communicate with another and exchange data according to defined rules.",
-    "related": ["clientserver", "database", "http"],
+    "related": ["clientserver", "database", "http", "rest_api", "graphql", "json", "sdk"],
     "date_added": "2026-08-27"
   },
   {
@@ -2021,6 +2021,193 @@
     "definition_ar": "ظاهرة يولّد فيها نموذج ذكاء اصطناعي (خاصة نماذج اللغة) معلومات تبدو منطقية لكنها غير صحيحة أو غير موجودة أصلًا، دون وعي منه بخطئها.",
     "definition_en": "A phenomenon where an AI model — especially a language model — generates information that sounds plausible but is factually incorrect or entirely fabricated, without being aware it's wrong.",
     "related": ["large_language_model", "generative_ai"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "git",
+    "name": "Git",
+    "category": "softdev",
+    "subcategory": "version-control",
+    "aliases": [],
+    "definition_ar": "نظام تحكم بالإصدارات موزّع يسجّل تاريخ التعديلات على الكود بمرور الوقت، ويتيح للمطورين العمل بالتوازي ودمج تغييراتهم دون فقدان أي عمل.",
+    "definition_en": "A distributed version control system that tracks changes to code over time, letting developers work in parallel and merge their changes without losing work.",
+    "related": ["github", "commit", "branch", "merge"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "category": "softdev",
+    "subcategory": "version-control",
+    "aliases": ["GitLab", "Bitbucket"],
+    "definition_ar": "منصة سحابية تستضيف مستودعات Git وتضيف عليها أدوات تعاون مثل طلبات السحب (Pull Requests) ومتابعة المشاكل (Issues) والتكامل مع أنظمة CI/CD.",
+    "definition_en": "A cloud platform that hosts Git repositories and adds collaboration tools on top, such as pull requests, issue tracking, and CI/CD integration.",
+    "related": ["git", "pull_request", "cicd"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "commit",
+    "name": "Commit",
+    "category": "softdev",
+    "subcategory": "version-control",
+    "aliases": [],
+    "definition_ar": "لقطة محفوظة من تغييرات الكود في تاريخ Git، مصحوبة برسالة توضّح ماذا تغيّر ولماذا.",
+    "definition_en": "A saved snapshot of code changes in Git's history, accompanied by a message describing what changed and why.",
+    "related": ["git", "branch"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "branch",
+    "name": "Branch",
+    "category": "softdev",
+    "subcategory": "version-control",
+    "aliases": [],
+    "definition_ar": "نسخة مستقلة من الكود يمكن تطوير ميزة أو إصلاح عليها بمعزل عن الفرع الرئيسي، ثم دمجها لاحقًا.",
+    "definition_en": "An independent line of code where a feature or fix can be developed in isolation from the main line, then merged back later.",
+    "related": ["git", "merge", "commit"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "merge",
+    "name": "Merge",
+    "category": "softdev",
+    "subcategory": "version-control",
+    "aliases": ["Merge Conflict"],
+    "definition_ar": "عملية دمج التغييرات من فرع إلى آخر في Git؛ قد تنشأ عنها تعارضات (Merge Conflicts) إذا عُدِّل نفس السطر في الفرعين.",
+    "definition_en": "The process of combining changes from one Git branch into another; conflicts can arise if the same line was edited differently in both branches.",
+    "related": ["branch", "git", "pull_request"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "pull_request",
+    "name": "Pull Request",
+    "category": "softdev",
+    "subcategory": "version-control",
+    "aliases": ["PR", "Merge Request"],
+    "definition_ar": "طلب رسمي لدمج التغييرات من فرع إلى آخر، يتيح لبقية الفريق مراجعة الكود والتعليق عليه قبل الموافقة على الدمج.",
+    "definition_en": "A formal request to merge changes from one branch into another, letting the rest of the team review and comment on the code before approving the merge.",
+    "related": ["github", "merge", "code_review"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "code_review",
+    "name": "Code Review",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [],
+    "definition_ar": "عملية يفحص فيها مطوّر آخر تغييرات الكود قبل دمجها، للتأكد من جودتها وصحتها واتساقها مع معايير المشروع.",
+    "definition_en": "The process where another developer examines code changes before they're merged, checking quality, correctness, and consistency with project standards.",
+    "related": ["pull_request", "git"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "rest_api",
+    "name": "REST API",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": ["Representational State Transfer"],
+    "definition_ar": "أسلوب معماري شائع لبناء APIs يعتمد على بروتوكول HTTP وعمليات قياسية (GET, POST, PUT, DELETE) للتعامل مع الموارد عبر روابط (URLs) واضحة.",
+    "definition_en": "A popular architectural style for building APIs, using HTTP and standard operations (GET, POST, PUT, DELETE) to interact with resources via clear URLs.",
+    "related": ["api", "http", "json"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "graphql",
+    "name": "GraphQL",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": [],
+    "definition_ar": "لغة استعلام لواجهات API تتيح للعميل تحديد بالضبط البيانات التي يريدها في طلب واحد، بدلًا من الاعتماد على نقاط نهاية متعددة كما في REST.",
+    "definition_en": "A query language for APIs that lets the client specify exactly what data it needs in a single request, instead of relying on multiple endpoints as in REST.",
+    "related": ["rest_api", "api"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "json",
+    "name": "JSON",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": ["JavaScript Object Notation"],
+    "definition_ar": "صيغة تبادل بيانات خفيفة ومقروءة للبشر، تعتمد على أزواج مفتاح-قيمة، وأصبحت الصيغة الافتراضية لتبادل البيانات بين معظم الـ APIs الحديثة.",
+    "definition_en": "A lightweight, human-readable data-interchange format based on key-value pairs; it has become the default format most modern APIs use to exchange data.",
+    "related": ["api", "rest_api"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "webhook",
+    "name": "Webhook",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": [],
+    "definition_ar": "آلية يرسل بها نظام إشعارًا تلقائيًا لنظام آخر فور حدوث حدث معيّن (كدفعة كود جديدة)، بدلًا من أن يضطر النظام الآخر للسؤال المستمر عن وجود تحديث.",
+    "definition_en": "A mechanism where a system automatically notifies another system the moment a specific event occurs (like a new code push), instead of that system having to repeatedly poll for updates.",
+    "related": ["api", "cicd"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "framework",
+    "name": "Framework",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [],
+    "definition_ar": "هيكل برمجي جاهز يوفّر بنية وأدوات أساسية لبناء التطبيقات، ويفرض على المطوّر اتباع نمط معيّن بدلًا من كتابة كل شيء من الصفر.",
+    "definition_en": "A pre-built software structure providing the foundation and tools for building applications, guiding the developer to follow a certain pattern instead of writing everything from scratch.",
+    "related": ["sdk", "api"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sdk",
+    "name": "SDK",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": ["Software Development Kit"],
+    "definition_ar": "مجموعة أدوات ومكتبات وتوثيق جاهزة يوفرها مزوّد منصة معينة (مثل Android أو iOS) لتسهيل بناء تطبيقات متوافقة معها.",
+    "definition_en": "A bundle of tools, libraries, and documentation provided by a platform vendor (such as Android or iOS) to make building compatible applications easier.",
+    "related": ["framework", "api"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cicd",
+    "name": "CI/CD",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": ["Continuous Integration", "Continuous Deployment", "Continuous Delivery"],
+    "definition_ar": "ممارسة تُدمج فيها تغييرات الكود تلقائيًا وتُختبر وتُنشر بشكل مستمر، لتقليل الوقت بين كتابة الكود ووصوله للمستخدم بأمان.",
+    "definition_en": "A practice where code changes are automatically integrated, tested, and deployed continuously, shrinking the time between writing code and safely getting it to users.",
+    "related": ["git", "webhook", "agile"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "agile",
+    "name": "Agile",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [],
+    "definition_ar": "منهجية لإدارة مشاريع البرمجيات تعتمد على تسليم العمل على دفعات صغيرة ومتكررة (Iterations)، مع تعديل مستمر بناءً على تغذية راجعة سريعة بدلًا من خطة جامدة طويلة المدى.",
+    "definition_en": "A software project management approach based on delivering work in small, repeated iterations, adapting continuously based on fast feedback instead of a rigid long-term plan.",
+    "related": ["scrum", "cicd"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "scrum",
+    "name": "Scrum",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [],
+    "definition_ar": "إطار عملي شائع لتطبيق منهجية Agile، ينظّم العمل في دورات زمنية قصيرة (Sprints) مع اجتماعات يومية قصيرة لمتابعة التقدم.",
+    "definition_en": "A popular framework for implementing Agile, organizing work into short time-boxed cycles called sprints, with brief daily meetings to track progress.",
+    "related": ["agile"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ide",
+    "name": "IDE",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": ["Integrated Development Environment"],
+    "definition_ar": "برنامج متكامل يجمع محرر أكواد وأدوات تصحيح أخطاء (Debugging) وبناء المشروع (Build) في واجهة واحدة، لتسهيل عملية الكتابة والتطوير.",
+    "definition_en": "An integrated program combining a code editor, debugging tools, and build tools in one interface, streamlining the coding and development process.",
+    "related": ["git"],
     "date_added": "2026-08-27"
   }
 ]
