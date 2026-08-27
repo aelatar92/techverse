@@ -162,7 +162,7 @@ const linkFragmentShader = `
   varying float vT;
   varying float vPhase;
   void main(){
-    float breathe = 0.65 + 0.35 * sin(uTime * 0.55 + vPhase * 6.2831853);
+    float breathe = 0.78 + 0.22 * sin(uTime * 0.55 + vPhase * 6.2831853);
     float pulsePos = fract(uTime * 0.22 + vPhase);
     float d = abs(vT - pulsePos);
     d = min(d, 1.0 - d);
@@ -265,7 +265,8 @@ export function createStarMap({ canvas, width, height, categories }){
       const label = new THREE.Sprite(labelMat);
       const labelH = 15;
       label.scale.set(labelH*aspect, labelH, 1);
-      label.position.set(0, node.r + 13, 0.3);
+      const labelBaseY = node.r + 13;
+      label.position.set(0, labelBaseY, 0.3);
 
       const holder = new THREE.Group();
       holder.userData.id = node.id;
@@ -278,7 +279,12 @@ export function createStarMap({ canvas, width, height, categories }){
         driftSpeedX: 0.14 + Math.random()*0.10,
         driftSpeedY: 0.11 + Math.random()*0.10,
         driftAmpX: 2.5 + Math.random()*3,
-        driftAmpY: 2.5 + Math.random()*3
+        driftAmpY: 2.5 + Math.random()*3,
+        labelBaseY,
+        labelHalfW: (labelH*aspect)/2 + 3,
+        labelHalfH: labelH/2 + 2,
+        labelOffX: 0,
+        labelOffY: 0
       });
     });
 
@@ -337,6 +343,50 @@ export function createStarMap({ canvas, width, height, categories }){
     }
   }
 
+  /* ---- label collision avoidance ----
+     Recomputed from scratch every frame: a few relaxation passes push apart
+     any label bounding boxes that overlap, so crowded areas spread labels out
+     instead of letting them stack illegibly on top of each other. */
+  function resolveLabelLayout(){
+    const active = [];
+    nodeEntries.forEach(entry=>{
+      if(!entry.holder.visible || entry.labelMat.opacity <= 0.02) return;
+      entry.labelOffX = 0;
+      entry.labelOffY = 0;
+      active.push(entry);
+    });
+
+    const ITER = 3;
+    for(let iter=0; iter<ITER; iter++){
+      for(let i=0; i<active.length; i++){
+        const A = active[i];
+        const ax = A.holder.position.x + A.labelOffX;
+        const ay = A.holder.position.y + A.labelBaseY + A.labelOffY;
+        for(let j=i+1; j<active.length; j++){
+          const B = active[j];
+          const bx = B.holder.position.x + B.labelOffX;
+          const by = B.holder.position.y + B.labelBaseY + B.labelOffY;
+          const dx = bx - ax, dy = by - ay;
+          const overlapX = (A.labelHalfW + B.labelHalfW) - Math.abs(dx);
+          const overlapY = (A.labelHalfH + B.labelHalfH) - Math.abs(dy);
+          if(overlapX > 0 && overlapY > 0){
+            if(overlapX < overlapY){
+              const push = (overlapX/2) * (dx >= 0 ? 1 : -1);
+              A.labelOffX -= push; B.labelOffX += push;
+            } else {
+              const push = (overlapY/2) * (dy >= 0 ? 1 : -1);
+              A.labelOffY -= push; B.labelOffY += push;
+            }
+          }
+        }
+      }
+    }
+
+    active.forEach(entry=>{
+      entry.label.position.set(entry.labelOffX, entry.labelBaseY + entry.labelOffY, 0.3);
+    });
+  }
+
   let hiddenCategories = new Set();
   let currentSelected = null;
   let currentNeighbors = new Set();
@@ -348,17 +398,20 @@ export function createStarMap({ canvas, width, height, categories }){
 
     const constellationActive = currentConstellation && currentConstellation.size > 0;
 
+    const focused = constellationActive || !!selectedId;
+
     nodeEntries.forEach((entry, id)=>{
       const hidden = hiddenCategories.has(entry.node.category);
       const isSelected = id === selectedId;
       const isNeighbor = currentNeighbors.has(id);
       const inConstellation = constellationActive && currentConstellation.has(id);
+      const emphasized = isSelected || isNeighbor || inConstellation;
       entry.holder.visible = !hidden;
       const dim = constellationActive ? !inConstellation : (selectedId && !isSelected && !isNeighbor);
       entry.glowMat.opacity = hidden ? 0 : (dim ? 0.1 : 0.9);
       entry.coreMat.opacity = hidden ? 0 : (dim ? 0.12 : 1);
       entry.ringMat.opacity = (isSelected || inConstellation) ? 0.95 : 0;
-      entry.labelMat.opacity = hidden ? 0 : ((isSelected || isNeighbor || inConstellation) ? 0.95 : 0);
+      entry.labelMat.opacity = hidden ? 0 : (emphasized ? 1.0 : (focused ? 0.22 : 0.75));
     });
 
     if(linkGeometry){
@@ -370,9 +423,9 @@ export function createStarMap({ canvas, width, height, categories }){
         else if(constellationActive){
           intensity = (currentConstellation.has(l.a.id) && currentConstellation.has(l.b.id)) ? 0.9 : 0.02;
         }
-        else if(!selectedId) intensity = 0.22;
+        else if(!selectedId) intensity = 0.34;
         else if(l.a.id === selectedId || l.b.id === selectedId) intensity = 0.9;
-        else intensity = 0.03;
+        else intensity = 0.04;
         const c = new THREE.Color(0x8fa2ff);
         colArr[i*6+0] = c.r*intensity; colArr[i*6+1] = c.g*intensity; colArr[i*6+2] = c.b*intensity;
         colArr[i*6+3] = c.r*intensity; colArr[i*6+4] = c.g*intensity; colArr[i*6+5] = c.b*intensity;
@@ -394,8 +447,11 @@ export function createStarMap({ canvas, width, height, categories }){
   function setHoverLabel(id, show){
     const entry = nodeEntries.get(id);
     if(!entry) return;
-    if(currentSelected === id || currentNeighbors.has(id)) return; // already shown
-    entry.labelMat.opacity = show ? 0.85 : 0;
+    const constellationActive = currentConstellation && currentConstellation.size > 0;
+    if(currentSelected === id || currentNeighbors.has(id) || (constellationActive && currentConstellation.has(id))) return; // already emphasized
+    if(show){ entry.labelMat.opacity = 1.0; return; }
+    const focused = constellationActive || !!currentSelected;
+    entry.labelMat.opacity = focused ? 0.22 : 0.75;
   }
 
   /* ---- pan & zoom (screen-pixel semantics, matches the previous D3/SVG feel) ---- */
@@ -531,6 +587,7 @@ export function createStarMap({ canvas, width, height, categories }){
     for(const mat of farGroup.children.map(c=>c.material)){ if(mat.uniforms) mat.uniforms.uTime.value = t; }
     if(linkMaterial && linkMaterial.uniforms) linkMaterial.uniforms.uTime.value = t;
     syncPositions(t);
+    resolveLabelLayout();
     composer.render();
     requestAnimationFrame(animate);
   }
