@@ -145,6 +145,19 @@ function hashUnit(str){
   return (h >>> 0) / 4294967296;
 }
 
+// Labels are a fixed offset above their star (see starmap.js buildGraph) —
+// they never reposition themselves to dodge overlaps — so the collision
+// force below has to give each star enough room for its own label text,
+// not just its glow. Mirrors starmap.js's makeLabelTexture sizing (same
+// font/size/padding) so the estimate matches what actually renders.
+const _labelMeasure = document.createElement('canvas').getContext('2d');
+function estimateLabelWorldWidth(name){
+  _labelMeasure.font = "700 34px 'Tajawal', Arial, sans-serif";
+  const w = _labelMeasure.measureText(name).width + 32;
+  const h = 34 + 22;
+  return 15 * (w / h);
+}
+
 function computeSubAngles(terms, categories){
   const bySubcat = {};
   terms.forEach(t=>{
@@ -403,6 +416,7 @@ function computeCategoryStats(categories, terms){
     degreeMaxByCat[n.category] = Math.max(degreeMaxByCat[n.category]||0, degree[n.id]||0);
   });
   nodes.forEach(n=> n.r = Math.min(17, 6.5 + (degree[n.id]||0)*1.15));
+  nodes.forEach(n=> n.labelW = estimateLabelWorldWidth(n.name));
 
   let width = window.innerWidth, height = window.innerHeight;
   const canvas = document.getElementById('stage-canvas');
@@ -529,7 +543,16 @@ function computeCategoryStats(categories, terms){
     // together no matter how much collision spacing is added elsewhere.
     .force('link', d3.forceLink(links).id(d=>d.id).distance(d=> 50 + (d.source.r||8)*0.8 + (d.target.r||8)*0.8).strength(linkStrength))
     .force('charge', d3.forceManyBody().strength(-95))
-    .force('collide', d3.forceCollide(d=>d.r*1.25 + 11))
+    // Sized to cover the star's own fixed label too (see estimateLabelWorldWidth
+    // above and starmap.js buildGraph), not just its glow — since the label no
+    // longer dodges overlaps on its own, keeping stars (and their attached
+    // labels) apart is the only thing preventing text from overlapping.
+    .force('collide', d3.forceCollide(d=>{
+      const nodeR = d.r*1.25 + 11;
+      const labelUp = d.r + 28; // ~labelBaseY + half label height, in starmap.js
+      const labelR = Math.sqrt((d.labelW/2)**2 + labelUp*labelUp) + 4;
+      return Math.max(nodeR, labelR);
+    }))
     // Pulls each term toward its core-to-periphery position within its own
     // circular galaxy (see radialTarget) — stronger than before so that
     // clear per-galaxy structure wins out over the general link/charge pull.

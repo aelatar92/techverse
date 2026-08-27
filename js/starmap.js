@@ -446,13 +446,7 @@ export function createStarMap({ canvas, width, height, categories }){
         breathePhase: Math.random()*Math.PI*2,
         breatheSpeed: 0.35 + Math.random()*0.25,
         labelBaseY,
-        labelScaleX, labelScaleY,
-        labelHalfW: (labelH*aspect)/2 + 3,
-        labelHalfH: labelH/2 + 2,
-        labelOffX: 0,
-        labelOffY: 0,
-        labelDispX: 0,
-        labelDispY: 0
+        labelScaleX, labelScaleY
       });
     });
 
@@ -570,74 +564,6 @@ export function createStarMap({ canvas, width, height, categories }){
       });
       linkGeometry.attributes.position.needsUpdate = true;
     }
-  }
-
-  /* ---- label collision avoidance ----
-     The relaxation target is recomputed from scratch every frame (a few
-     iterations pushing apart overlapping label boxes), but a crowded cluster
-     with no single stable layout can flip which direction it pushes labels
-     from one frame to the next as stars drift — applied directly, that reads
-     as jittering/ghosted text, worse at high zoom. So the raw target is only
-     used to steer a slower-moving displayed offset (lerp), which damps the
-     flicker into smooth, stable motion.
-     Runs in screen-space pixels (not world x/y): under an orbiting camera,
-     world-space proximity no longer implies screen proximity, so overlap has
-     to be measured the way it actually looks on screen. */
-  const _labelAnchor = new THREE.Vector3();
-  const _labelTarget = new THREE.Vector3();
-  function resolveLabelLayout(){
-    const rect = canvas.getBoundingClientRect();
-    if(!rect.width || !rect.height) return;
-    const active = [];
-    nodeEntries.forEach(entry=>{
-      if(!entry.holder.visible || entry.labelMat.opacity <= 0.02) return;
-      entry.holder.updateWorldMatrix(true, false);
-      entry.holder.localToWorld(_labelAnchor.set(0, entry.labelBaseY, 0.3));
-      _labelAnchor.project(camera);
-      entry._ndcX = _labelAnchor.x; entry._ndcY = _labelAnchor.y; entry._ndcZ = _labelAnchor.z;
-      entry.screenX = rect.left + (_labelAnchor.x*0.5+0.5) * rect.width;
-      entry.screenY = rect.top + (1 - (_labelAnchor.y*0.5+0.5)) * rect.height;
-      entry.labelOffX = 0;
-      entry.labelOffY = 0;
-      active.push(entry);
-    });
-
-    const ITER = 3;
-    for(let iter=0; iter<ITER; iter++){
-      for(let i=0; i<active.length; i++){
-        const A = active[i];
-        const ax = A.screenX + A.labelOffX;
-        const ay = A.screenY + A.labelOffY;
-        for(let j=i+1; j<active.length; j++){
-          const B = active[j];
-          const bx = B.screenX + B.labelOffX;
-          const by = B.screenY + B.labelOffY;
-          const dx = bx - ax, dy = by - ay;
-          const overlapX = (A.labelHalfW + B.labelHalfW) - Math.abs(dx);
-          const overlapY = (A.labelHalfH + B.labelHalfH) - Math.abs(dy);
-          if(overlapX > 0 && overlapY > 0){
-            if(overlapX < overlapY){
-              const push = (overlapX/2) * (dx >= 0 ? 1 : -1);
-              A.labelOffX -= push; B.labelOffX += push;
-            } else {
-              const push = (overlapY/2) * (dy >= 0 ? 1 : -1);
-              A.labelOffY -= push; B.labelOffY += push;
-            }
-          }
-        }
-      }
-    }
-
-    active.forEach(entry=>{
-      entry.labelDispX += (entry.labelOffX - entry.labelDispX) * 0.18;
-      entry.labelDispY += (entry.labelOffY - entry.labelDispY) * 0.18;
-      const ndcDX = (entry.labelDispX / rect.width) * 2;
-      const ndcDY = -(entry.labelDispY / rect.height) * 2;
-      _labelTarget.set(entry._ndcX + ndcDX, entry._ndcY + ndcDY, entry._ndcZ);
-      _labelTarget.unproject(camera);
-      entry.holder.worldToLocal(_labelTarget);
-      entry.label.position.copy(_labelTarget);
-    });
   }
 
   let hiddenCategories = new Set();
@@ -1068,7 +994,6 @@ export function createStarMap({ canvas, width, height, categories }){
     }
   }
 
-  let frameCount = 0;
   function animate(now){
     if(!running) return;
     const t = now/1000;
@@ -1078,13 +1003,11 @@ export function createStarMap({ canvas, width, height, categories }){
     stepCameraTween(now);
     controls.update();
     camera.updateMatrixWorld();
+    // Labels are a fixed child offset of their star's holder (see buildGraph)
+    // rather than independently repositioned to dodge overlaps — the star
+    // itself is what moves (via the force layout's collision spacing, sized
+    // to cover the label too) so text never has to jump around on its own.
     syncPositions(t);
-    // The label-collision relaxation target only needs to settle within the
-    // existing 0.18 lerp's own smoothing window, so recomputing it every
-    // other frame instead of every frame roughly halves its O(n^2) cost with
-    // no visible difference.
-    frameCount++;
-    if(frameCount % 2 === 0) resolveLabelLayout();
     updateFocus();
     composer.render();
     requestAnimationFrame(animate);
