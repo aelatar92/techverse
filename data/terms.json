@@ -139,7 +139,7 @@
     "aliases": ["Media Access Control Address", "Physical Address"],
     "definition_ar": "عنوان فيزيائي فريد مسجّل في كرت الشبكة لكل جهاز، يُستخدم للتواصل داخل نفس الشبكة المحلية.",
     "definition_en": "A unique physical address burned into a device's network interface card, used for communication within the same local network.",
-    "related": ["arp", "switch", "ethernet"],
+    "related": ["arp", "switch", "ethernet", "nic"],
     "date_added": "2026-08-27"
   },
   {
@@ -656,7 +656,7 @@
     "aliases": ["Central Processing Unit", "Processor"],
     "definition_ar": "وحدة المعالجة المركزية، العقل المسؤول عن تنفيذ التعليمات والعمليات الحسابية في الجهاز.",
     "definition_en": "The Central Processing Unit is the component responsible for executing instructions and carrying out computations in a device.",
-    "related": ["ram", "motherboard", "virtualization", "top"],
+    "related": ["ram", "motherboard", "virtualization", "top", "cpu_core", "clock_speed", "cache_memory", "hyperthreading", "heatsink"],
     "date_added": "2026-08-27"
   },
   {
@@ -667,7 +667,7 @@
     "aliases": ["Random Access Memory"],
     "definition_ar": "ذاكرة مؤقتة سريعة يخزّن فيها الجهاز البيانات والبرامج قيد التشغيل، وتُفرَّغ محتوياتها عند إيقاف التشغيل.",
     "definition_en": "Fast, temporary memory where a device stores data and running programs; its contents are cleared when the device powers off.",
-    "related": ["cpu", "swap", "motherboard"],
+    "related": ["cpu", "swap", "motherboard", "ddr", "dual_channel", "ecc_ram", "cache_memory", "vram"],
     "date_added": "2026-08-27"
   },
   {
@@ -678,7 +678,7 @@
     "aliases": ["Mainboard"],
     "definition_ar": "اللوحة الرئيسية التي تربط جميع مكوّنات الجهاز (المعالج، الذاكرة، التخزين، المنافذ) ببعضها.",
     "definition_en": "The main board that connects all of a device's components — CPU, memory, storage, ports — to one another.",
-    "related": ["cpu", "ram", "bios"],
+    "related": ["cpu", "ram", "bios", "cpu_socket", "psu", "nic"],
     "date_added": "2026-08-27"
   },
   {
@@ -799,7 +799,7 @@
     "aliases": ["DB"],
     "definition_ar": "نظام منظّم لتخزين البيانات واسترجاعها بكفاءة، وقد تكون علائقية مثل MySQL أو غير علائقية مثل MongoDB.",
     "definition_en": "An organized system for storing and retrieving data efficiently; it may be relational, like MySQL, or non-relational, like MongoDB.",
-    "related": ["server", "api", "backup"],
+    "related": ["server", "api", "backup", "iops"],
     "date_added": "2026-08-27"
   },
   {
@@ -832,7 +832,7 @@
     "aliases": ["Redundant Array of Independent Disks"],
     "definition_ar": "تقنية تجمع عدة أقراص صلبة معًا لتحسين الأداء أو توفير حماية من فقدان البيانات عند تلف أحد الأقراص.",
     "definition_en": "A technology that combines multiple hard drives to improve performance or protect against data loss if a drive fails.",
-    "related": ["backup", "partition", "server"],
+    "related": ["backup", "partition", "server", "hdd", "ssd", "iops"],
     "date_added": "2026-08-27"
   },
   {
@@ -1460,6 +1460,204 @@
     "definition_ar": "عدد البكسلات المكوّنة لصورة الفيديو (مثل 1080p أو 4K)، وكلما زادت زادت وضوح التفاصيل وحجم الملف المطلوب تخزينه.",
     "definition_en": "The number of pixels making up a video image (e.g. 1080p or 4K); higher resolution means clearer detail but larger storage requirements.",
     "related": ["codec", "ipcamera"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cpu_core",
+    "name": "CPU Core",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Multi-core", "Processor Core"],
+    "definition_ar": "وحدة معالجة مستقلة داخل المعالج قادرة على تنفيذ التعليمات بمفردها؛ المعالجات الحديثة تحتوي على عدة أنوية (Multi-core) لتنفيذ مهام متعددة بالتوازي.",
+    "definition_en": "An independent processing unit within a CPU capable of executing instructions on its own; modern processors pack multiple cores to run tasks in parallel.",
+    "related": ["cpu", "hyperthreading", "clock_speed"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "clock_speed",
+    "name": "Clock Speed",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["CPU Frequency", "GHz"],
+    "definition_ar": "عدد الدورات التي ينفذها المعالج في الثانية الواحدة، تُقاس بالجيجاهرتز (GHz)، وتعكس جزئيًا سرعة تنفيذ التعليمات.",
+    "definition_en": "The number of cycles a CPU executes per second, measured in gigahertz (GHz); it partially reflects how fast instructions are processed.",
+    "related": ["cpu", "cpu_core"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cache_memory",
+    "name": "CPU Cache",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["L1 Cache", "L2 Cache", "L3 Cache"],
+    "definition_ar": "ذاكرة صغيرة فائقة السرعة داخل المعالج أو قريبة منه، تخزّن البيانات الأكثر استخدامًا لتقليل زمن الوصول مقارنة بالذاكرة العشوائية، وتُقسّم عادة لمستويات L1/L2/L3.",
+    "definition_en": "A very fast, small memory built into or close to the CPU that stores frequently used data to reduce access time compared to RAM; typically split into L1/L2/L3 levels.",
+    "related": ["cpu", "ram"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "hyperthreading",
+    "name": "Hyper-Threading",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["SMT", "Simultaneous Multithreading"],
+    "definition_ar": "تقنية تسمح لنواة معالج واحدة بمعالجة سلسلتي تعليمات (Threads) في آن واحد، لتحسين استغلال موارد المعالج دون إضافة نواة فعلية.",
+    "definition_en": "A technology that lets a single CPU core process two instruction threads at once, improving resource utilization without adding a physical core.",
+    "related": ["cpu_core", "cpu"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cpu_socket",
+    "name": "CPU Socket",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Processor Socket"],
+    "definition_ar": "المنفذ الفيزيائي على اللوحة الأم الذي يُركَّب فيه المعالج، ويحدد نوعه (مثل LGA أو AM5) أي المعالجات المتوافقة مع اللوحة.",
+    "definition_en": "The physical connector on the motherboard where the CPU is installed; its type (such as LGA or AM5) determines which processors are compatible with the board.",
+    "related": ["cpu", "motherboard"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ddr",
+    "name": "DDR RAM",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["DDR4", "DDR5", "Double Data Rate"],
+    "definition_ar": "معيار الذاكرة العشوائية الأكثر شيوعًا في الأجهزة الحديثة، ينقل البيانات مرتين في كل دورة ساعة؛ كل جيل جديد (DDR4، DDR5...) يقدّم سرعة أعلى واستهلاك طاقة أقل.",
+    "definition_en": "The most common RAM standard in modern devices, transferring data twice per clock cycle; each new generation (DDR4, DDR5...) offers higher speed and lower power use.",
+    "related": ["ram"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "dual_channel",
+    "name": "Dual-Channel Memory",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Multi-Channel Memory"],
+    "definition_ar": "تقنية تشغّل عصا ذاكرتين (أو أكثر) معًا كمسارين متوازيين لمضاعفة عرض النطاق الترددي للذاكرة مقارنة بعصا واحدة (Single-Channel).",
+    "definition_en": "A technique that runs two (or more) memory sticks together as parallel channels, roughly doubling memory bandwidth compared to a single stick.",
+    "related": ["ram", "ddr"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ecc_ram",
+    "name": "ECC RAM",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Error-Correcting Code Memory"],
+    "definition_ar": "نوع من الذاكرة العشوائية يكتشف ويصحح الأخطاء البسيطة في البيانات المخزّنة تلقائيًا، يُستخدم غالبًا في الخوادم حيث دقة البيانات أهم من التكلفة الإضافية.",
+    "definition_en": "A type of RAM that automatically detects and corrects minor data errors; commonly used in servers where data accuracy outweighs the extra cost.",
+    "related": ["ram", "server"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "hdd",
+    "name": "HDD",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Hard Disk Drive"],
+    "definition_ar": "وحدة تخزين تقليدية تعتمد على أقراص مغناطيسية دوّارة ورأس قراءة/كتابة ميكانيكي؛ سعتها كبيرة وتكلفتها منخفضة نسبيًا لكنها أبطأ من SSD.",
+    "definition_en": "A traditional storage device using spinning magnetic platters and a mechanical read/write head; offers large capacity at relatively low cost but is slower than an SSD.",
+    "related": ["ssd", "partition", "raid"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ssd",
+    "name": "SSD",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Solid State Drive"],
+    "definition_ar": "وحدة تخزين تعتمد على ذاكرة فلاش بدون أجزاء متحركة، أسرع بكثير من HDD في القراءة والكتابة وأكثر تحملًا للصدمات.",
+    "definition_en": "A storage device built on flash memory with no moving parts, far faster than an HDD for read/write operations and more resistant to physical shock.",
+    "related": ["hdd", "nvme", "sata"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "nvme",
+    "name": "NVMe",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Non-Volatile Memory Express"],
+    "definition_ar": "بروتوكول اتصال حديث مصمم خصيصًا لأقراص SSD يتصل مباشرة عبر منفذ PCIe، ويوفّر سرعات أعلى بكثير من واجهة SATA التقليدية.",
+    "definition_en": "A modern storage protocol designed specifically for SSDs, connecting directly over PCIe and delivering far higher speeds than the traditional SATA interface.",
+    "related": ["ssd", "sata"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sata",
+    "name": "SATA",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Serial ATA"],
+    "definition_ar": "واجهة توصيل تقليدية لربط أقراص التخزين (HDD أو SSD) باللوحة الأم، أبطأ من NVMe لكنها لا تزال شائعة خاصة مع الأقراص الصلبة التقليدية.",
+    "definition_en": "A traditional interface for connecting storage drives (HDD or SSD) to the motherboard; slower than NVMe but still common, especially with traditional hard drives.",
+    "related": ["hdd", "ssd", "nvme"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "iops",
+    "name": "IOPS",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Input/Output Operations Per Second"],
+    "definition_ar": "مقياس لعدد عمليات القراءة/الكتابة التي يمكن لوحدة تخزين تنفيذها في الثانية، ومؤشر مهم لأداء الخوادم وقواعد البيانات أكثر من السعة الخام.",
+    "definition_en": "A measure of how many read/write operations a storage device can perform per second; often a more meaningful performance indicator for servers and databases than raw capacity.",
+    "related": ["ssd", "database", "raid"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "gpu",
+    "name": "GPU",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Graphics Processing Unit", "Video Card"],
+    "definition_ar": "معالج متخصص في تنفيذ آلاف العمليات الحسابية المتوازية، مصمم أصلًا لمعالجة الرسوميات وأصبح أساسيًا اليوم في الذكاء الاصطناعي والتعلّم العميق.",
+    "definition_en": "A processor specialized in running thousands of parallel calculations; originally built for graphics rendering, it is now central to AI and deep learning workloads.",
+    "related": ["cpu", "vram"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "vram",
+    "name": "VRAM",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Video RAM"],
+    "definition_ar": "ذاكرة مخصصة لكرت الشاشة تخزّن بيانات الصور والقوام (Textures) التي يعالجها الـ GPU مباشرة، منفصلة عن ذاكرة النظام الرئيسية (RAM).",
+    "definition_en": "Dedicated memory on a graphics card that stores image and texture data for the GPU to process directly, separate from the system's main RAM.",
+    "related": ["gpu", "ram"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "psu",
+    "name": "PSU",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Power Supply Unit"],
+    "definition_ar": "الوحدة التي تحوّل التيار الكهربائي من المقبس المنزلي إلى الجهد والتيار المناسبين لتغذية كل مكوّنات الجهاز (المعالج، اللوحة الأم، الأقراص...).",
+    "definition_en": "The component that converts wall power into the correct voltages and current to feed every part of the machine — CPU, motherboard, drives, and more.",
+    "related": ["motherboard", "cpu"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "nic",
+    "name": "NIC",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["Network Interface Card", "Network Adapter"],
+    "definition_ar": "كرت الشبكة، القطعة المادية التي تربط الجهاز بالشبكة سلكيًا (Ethernet) أو لاسلكيًا، ويحمل عنوان MAC الفريد الخاص به.",
+    "definition_en": "The physical network adapter that connects a device to a network, wired (Ethernet) or wireless, and carries its unique MAC address.",
+    "related": ["mac", "ethernet", "motherboard"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "heatsink",
+    "name": "Heat Sink",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": ["CPU Cooler", "Cooling"],
+    "definition_ar": "مكوّن معدني (أحيانًا مع مروحة أو تبريد سائل) يمتص الحرارة الناتجة عن عمل المعالج أو كرت الشاشة ويبدّدها لمنع ارتفاع درجة الحرارة الزائد.",
+    "definition_en": "A metal component (sometimes paired with a fan or liquid cooling) that absorbs heat generated by the CPU or GPU and dissipates it to prevent overheating.",
+    "related": ["cpu", "gpu"],
     "date_added": "2026-08-27"
   }
 ]
