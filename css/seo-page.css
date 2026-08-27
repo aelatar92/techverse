@@ -1,0 +1,47 @@
+:root{
+  --bg-void:#05060d;
+  --bg-deep:#0a0e1f;
+  --text-main:#e8ecf7;
+  --text-dim:#8891ab;
+  --font-display:'Tajawal',sans-serif;
+  --font-body:'IBM Plex Sans Arabic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  min-height:100%;
+  background:radial-gradient(ellipse at 30% 0%, #0d1230 0%, var(--bg-deep) 45%, var(--bg-void) 100%);
+  font-family:Arial, sans-serif;
+  color:var(--text-main);
+  line-height:1.8;
+}
+.wrap{max-width:640px;margin:0 auto;padding:40px 22px 70px;}
+.brand{
+  display:inline-block;font-weight:900;font-size:18px;text-decoration:none;
+  background:linear-gradient(90deg,#7ee787,#4fd1ff 40%,#b28dff 75%,#ff5d8f);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:22px;
+}
+.badge{
+  display:inline-block;padding:5px 13px;border-radius:14px;font-size:12.5px;font-weight:600;
+  color:var(--c,#4fd1ff);background:color-mix(in srgb, var(--c,#4fd1ff) 15%, transparent);
+  border:1px solid color-mix(in srgb, var(--c,#4fd1ff) 40%, transparent);
+  margin-bottom:14px;
+}
+h1{font-size:30px;font-weight:900;margin-bottom:6px;}
+h1 .sub{display:block;font-size:16px;font-weight:400;color:var(--text-dim);margin-top:4px;}
+.aliases{color:var(--text-dim);font-size:13.5px;margin-bottom:22px;}
+.def{margin-bottom:20px;}
+.def h2{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;}
+.def p{font-size:16px;color:#cfd4ea;}
+.def p[lang="ar"]{font-family:var(--font-body);}
+h3{font-size:13px;color:var(--text-dim);margin:26px 0 10px;font-weight:600;}
+ul.rel{list-style:none;display:flex;flex-wrap:wrap;gap:9px;margin-bottom:26px;}
+ul.rel li a{
+  display:inline-block;padding:8px 14px;border-radius:13px;font-size:14px;text-decoration:none;
+  color:var(--text-main);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+}
+ul.rel li a:hover{background:rgba(255,255,255,.12);}
+.explore{
+  display:inline-block;margin-top:10px;padding:12px 20px;border-radius:16px;font-size:14px;font-weight:600;
+  color:#05060d;background:linear-gradient(90deg,#7ee787,#4fd1ff);text-decoration:none;
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://techverse.aelatar.com/sitemap.xml

@@ -362,6 +362,13 @@ function computeCategoryStats(categories, terms){
     if(newIds.length) starMap.triggerBirth(newIds);
   }, 900);
 
+  // Deep link support (?term=<id>) — lets the static SEO pages and shared
+  // links jump straight to a specific star once the layout has settled.
+  const deepLinkId = new URLSearchParams(window.location.search).get('term');
+  if(deepLinkId && idIndex.has(deepLinkId)){
+    setTimeout(()=> selectNode(deepLinkId), 950);
+  }
+
   /* ---- interaction ---- */
   let selectedId = null;
   const neighborMap = {};
