@@ -433,7 +433,7 @@ export function createStarMap({ canvas, width, height, categories }){
       nodeEntries.set(node.id, {
         node, holder, glow, core, ring, visitedRing, label, hitArea, z,
         glowMat, coreMat, ringMat, visitedMat, labelMat, baseColor: color,
-        glowSize, coreSize,
+        glowSize, coreSize, hitSize,
         // Wider, slightly slower drift than before so stars read as freely
         // floating rather than statically pinned in place — links (redrawn
         // live from actual positions every frame) follow along naturally.
@@ -501,6 +501,10 @@ export function createStarMap({ canvas, width, height, categories }){
   }
 
   const LINK_HALF_WIDTH = 1.3;
+  // Never let a star's glow/core/hit-area shrink below this fraction of its
+  // apparent size at the default camera distance (D0), no matter how far
+  // the camera dollies out.
+  const GLOW_FLOOR = 0.4;
   const _camWorld = new THREE.Vector3();
   const _camLocal = new THREE.Vector3();
   const _linkA = new THREE.Vector3();
@@ -522,11 +526,21 @@ export function createStarMap({ canvas, width, height, categories }){
       const dy = Math.cos(time*entry.driftSpeedY + entry.driftPhaseY) * entry.driftAmpY;
       entry.holder.position.set((entry.node.x||0)+dx, (entry.node.y||0)+dy, entry.z);
       const breathe = 1 + 0.035 * Math.sin(time*entry.breatheSpeed + entry.breathePhase);
-      entry.glow.scale.set(entry.glowSize*breathe, entry.glowSize*breathe, 1);
-      entry.core.scale.set(entry.coreSize*breathe, entry.coreSize*breathe, 1);
+      const distToCam = entry.holder.position.distanceTo(_camLocal);
+      // Real perspective shrink (sizeAttenuation) is a good depth cue up
+      // close, but taken all the way out at max dolly distance it shrinks
+      // stars into near-invisible specks while the link ribbons (constant
+      // world-space width, unaffected by distance) stay full-strength —
+      // flipping the scene into a mesh of crossing lines with no visible
+      // stars. boost only kicks in once natural shrink would go below the
+      // floor, and exactly cancels it from there — normal close-up
+      // attenuation is untouched.
+      const boost = Math.max(1, GLOW_FLOOR * distToCam / D0);
+      entry.glow.scale.set(entry.glowSize*breathe*boost, entry.glowSize*breathe*boost, 1);
+      entry.core.scale.set(entry.coreSize*breathe*boost, entry.coreSize*breathe*boost, 1);
+      entry.hitArea.scale.set(entry.hitSize*boost, entry.hitSize*boost, 1);
       // Counteract real perspective shrink so the label reads at a constant
       // apparent size regardless of dolly distance (see comment at creation).
-      const distToCam = entry.holder.position.distanceTo(_camLocal);
       const labelScale = distToCam / D0;
       entry.label.scale.set(entry.labelScaleX*labelScale, entry.labelScaleY*labelScale, 1);
     });
