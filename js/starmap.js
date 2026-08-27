@@ -38,6 +38,21 @@ function makeDotTexture(size = 32){
   return tex;
 }
 
+function makeRingTexture(size = 64){
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const ctx = c.getContext('2d');
+  ctx.strokeStyle = 'rgba(255,255,255,1)';
+  ctx.lineWidth = size * 0.10;
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size*0.34, 0, Math.PI*2);
+  ctx.stroke();
+  try{ ctx.filter = 'blur(2px)'; ctx.stroke(); }catch(e){ /* filter unsupported, ignore */ }
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
 function makeNebulaTexture(hex, size = 512){
   const c = document.createElement('canvas');
   c.width = c.height = size;
@@ -139,6 +154,84 @@ function makeStarfield(count, spread, dotTexture){
 }
 
 /* ---------------------------------------------------------------------
+   Cosmic dust — slow-drifting tinted particles around each galaxy core,
+   distinct from the twinkling starfield: bigger, colored, lazier motion.
+--------------------------------------------------------------------- */
+const dustVertexShader = `
+  attribute vec3 color;
+  attribute float aSize;
+  attribute float aPhase;
+  attribute float aSpeed;
+  attribute vec2 aAmp;
+  uniform float uTime;
+  varying vec3 vColor;
+  void main(){
+    vColor = color;
+    vec3 p = position;
+    p.x += sin(uTime*aSpeed + aPhase) * aAmp.x;
+    p.y += cos(uTime*aSpeed*0.8 + aPhase*1.3) * aAmp.y;
+    vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    gl_PointSize = aSize;
+  }
+`;
+const dustFragmentShader = `
+  uniform sampler2D uTex;
+  varying vec3 vColor;
+  void main(){
+    vec4 tex = texture2D(uTex, gl_PointCoord);
+    gl_FragColor = vec4(vColor, tex.a * 0.5);
+  }
+`;
+
+function makeDust(categories, width, height, dotTexture){
+  const perCat = 22;
+  const cats = Object.values(categories);
+  const count = cats.length * perCat;
+  const positions = new Float32Array(count*3);
+  const colors = new Float32Array(count*3);
+  const sizes = new Float32Array(count);
+  const phases = new Float32Array(count);
+  const speeds = new Float32Array(count);
+  const amps = new Float32Array(count*2);
+  let i = 0;
+  cats.forEach(cat=>{
+    const col = new THREE.Color(cat.color);
+    const cx = cat.cx*width - width/2;
+    const cy = height/2 - cat.cy*height;
+    const spread = Math.max(width, height) * 0.16;
+    for(let k=0;k<perCat;k++){
+      positions[i*3+0] = cx + (Math.random()-0.5)*spread*2;
+      positions[i*3+1] = cy + (Math.random()-0.5)*spread*2;
+      positions[i*3+2] = 0;
+      colors[i*3+0] = col.r; colors[i*3+1] = col.g; colors[i*3+2] = col.b;
+      sizes[i] = Math.random()*10 + 4;
+      phases[i] = Math.random()*Math.PI*2;
+      speeds[i] = Math.random()*0.06 + 0.02;
+      amps[i*2+0] = Math.random()*30 + 12;
+      amps[i*2+1] = Math.random()*30 + 12;
+      i++;
+    }
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+  geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
+  geo.setAttribute('aSpeed', new THREE.BufferAttribute(speeds, 1));
+  geo.setAttribute('aAmp', new THREE.BufferAttribute(amps, 2));
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uTex: { value: dotTexture }, uTime: { value: 0 } },
+    vertexShader: dustVertexShader,
+    fragmentShader: dustFragmentShader,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  return new THREE.Points(geo, mat);
+}
+
+/* ---------------------------------------------------------------------
    Neural links — a traveling light pulse plus a slow breathing opacity,
    so the connections between stars read as alive rather than static wires.
 --------------------------------------------------------------------- */
@@ -189,7 +282,7 @@ export function createStarMap({ canvas, width, height, categories }){
 
   // Parallax layers, farthest first
   const farGroup = new THREE.Group();   // distant starfield
-  const nebulaGroup = new THREE.Group(); // category nebula clouds
+  const nebulaGroup = new THREE.Group(); // category nebula clouds + dust
   const rawGroup = new THREE.Group();    // nodes + links + labels (screen-space coords, flipped)
   rawGroup.scale.set(1, -1, 1);
   rawGroup.position.set(-width/2, height/2, 0);
@@ -202,6 +295,7 @@ export function createStarMap({ canvas, width, height, categories }){
 
   const dotTex = makeDotTexture();
   const glowTex = makeGlowTexture();
+  const ringTex = makeRingTexture();
 
   farGroup.position.z = -400;
   farGroup.add(makeStarfield(500, { w: width*2.4, h: height*2.4 }, dotTex));
@@ -219,17 +313,21 @@ export function createStarMap({ canvas, width, height, categories }){
     sprite.scale.set(s, s, 1);
     nebulaGroup.add(sprite);
   });
+  const dustPoints = makeDust(categories, width, height, dotTex);
+  nebulaGroup.add(dustPoints);
 
   /* ---- links (single LineSegments, per-vertex color for active/dim states) ---- */
   const linkGroup = new THREE.Group();
   rawGroup.add(linkGroup);
   let linkGeometry, linkMaterial, linkMesh;
-  let linkData = []; // {a: node, b: node, baseColor: THREE.Color}
+  let linkData = []; // {a: node, b: node}
+  let linkBaseColorArr = new Float32Array(0);
+  let hoveredLinkIndex = -1;
 
   /* ---- nodes ---- */
   const nodeGroup = new THREE.Group();
   rawGroup.add(nodeGroup);
-  const nodeEntries = new Map(); // id -> {node, core, glow, ring, label}
+  const nodeEntries = new Map(); // id -> {node, core, glow, ring, label, ...}
 
   let nodesRef = [];
   let onNodeClickCb = null;
@@ -242,18 +340,23 @@ export function createStarMap({ canvas, width, height, categories }){
 
     nodes.forEach(node=>{
       const color = new THREE.Color(categories[node.category].color);
+      const glowSize = node.r * 4.2;
       const glowMat = new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9 });
       const glow = new THREE.Sprite(glowMat);
-      const glowSize = node.r * 4.2;
       glow.scale.set(glowSize, glowSize, 1);
 
+      const coreSize = node.r*1.15;
       const coreMat = new THREE.SpriteMaterial({ map: dotTex, color: 0xffffff, transparent: true, depthWrite: false });
       const core = new THREE.Sprite(coreMat);
-      core.scale.set(node.r*1.15, node.r*1.15, 1);
+      core.scale.set(coreSize, coreSize, 1);
 
       const ringMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, depthWrite: false, opacity: 0 });
       const ring = new THREE.Sprite(ringMat);
       ring.scale.set(node.r*2.4, node.r*2.4, 1);
+
+      const visitedMat = new THREE.SpriteMaterial({ map: ringTex, color: 0xffd76a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 });
+      const visitedRing = new THREE.Sprite(visitedMat);
+      visitedRing.scale.set(node.r*2.05, node.r*2.05, 1);
 
       const hitMat = new THREE.SpriteMaterial({ transparent: true, opacity: 0 });
       const hitArea = new THREE.Sprite(hitMat);
@@ -270,16 +373,20 @@ export function createStarMap({ canvas, width, height, categories }){
 
       const holder = new THREE.Group();
       holder.userData.id = node.id;
-      holder.add(glow, core, ring, label, hitArea);
+      holder.add(glow, core, ring, visitedRing, label, hitArea);
       nodeGroup.add(holder);
       nodeEntries.set(node.id, {
-        node, holder, glow, core, ring, label, hitArea, glowMat, coreMat, ringMat, labelMat, baseColor: color,
+        node, holder, glow, core, ring, visitedRing, label, hitArea,
+        glowMat, coreMat, ringMat, visitedMat, labelMat, baseColor: color,
+        glowSize, coreSize,
         driftPhaseX: Math.random()*Math.PI*2,
         driftPhaseY: Math.random()*Math.PI*2,
         driftSpeedX: 0.14 + Math.random()*0.10,
         driftSpeedY: 0.11 + Math.random()*0.10,
         driftAmpX: 2.5 + Math.random()*3,
         driftAmpY: 2.5 + Math.random()*3,
+        breathePhase: Math.random()*Math.PI*2,
+        breatheSpeed: 0.35 + Math.random()*0.25,
         labelBaseY,
         labelHalfW: (labelH*aspect)/2 + 3,
         labelHalfH: labelH/2 + 2,
@@ -318,6 +425,8 @@ export function createStarMap({ canvas, width, height, categories }){
     if(linkMesh) linkGroup.remove(linkMesh);
     linkMesh = new THREE.LineSegments(linkGeometry, linkMaterial);
     linkGroup.add(linkMesh);
+    linkBaseColorArr = new Float32Array(linkData.length*6);
+    hoveredLinkIndex = -1;
 
     syncPositions(0);
     setSelection(null, new Set());
@@ -329,6 +438,9 @@ export function createStarMap({ canvas, width, height, categories }){
       const dx = Math.sin(time*entry.driftSpeedX + entry.driftPhaseX) * entry.driftAmpX;
       const dy = Math.cos(time*entry.driftSpeedY + entry.driftPhaseY) * entry.driftAmpY;
       entry.holder.position.set((entry.node.x||0)+dx, (entry.node.y||0)+dy, 0);
+      const breathe = 1 + 0.035 * Math.sin(time*entry.breatheSpeed + entry.breathePhase);
+      entry.glow.scale.set(entry.glowSize*breathe, entry.glowSize*breathe, 1);
+      entry.core.scale.set(entry.coreSize*breathe, entry.coreSize*breathe, 1);
     });
     if(linkGeometry){
       const pos = linkGeometry.attributes.position.array;
@@ -427,11 +539,26 @@ export function createStarMap({ canvas, width, height, categories }){
         else if(l.a.id === selectedId || l.b.id === selectedId) intensity = 0.9;
         else intensity = 0.04;
         const c = new THREE.Color(0x8fa2ff);
-        colArr[i*6+0] = c.r*intensity; colArr[i*6+1] = c.g*intensity; colArr[i*6+2] = c.b*intensity;
-        colArr[i*6+3] = c.r*intensity; colArr[i*6+4] = c.g*intensity; colArr[i*6+5] = c.b*intensity;
+        const r = c.r*intensity, g = c.g*intensity, b = c.b*intensity;
+        colArr[i*6+0] = r; colArr[i*6+1] = g; colArr[i*6+2] = b;
+        colArr[i*6+3] = r; colArr[i*6+4] = g; colArr[i*6+5] = b;
+        linkBaseColorArr[i*6+0] = r; linkBaseColorArr[i*6+1] = g; linkBaseColorArr[i*6+2] = b;
+        linkBaseColorArr[i*6+3] = r; linkBaseColorArr[i*6+4] = g; linkBaseColorArr[i*6+5] = b;
       });
       linkGeometry.attributes.color.needsUpdate = true;
+      if(hoveredLinkIndex >= 0) setLinkHover(hoveredLinkIndex, true);
     }
+  }
+
+  function setLinkHover(idx, hovering){
+    if(idx == null || idx < 0 || !linkGeometry || idx >= linkData.length) return;
+    const colArr = linkGeometry.attributes.color.array;
+    if(hovering){
+      for(let k=0;k<6;k++) colArr[idx*6+k] = Math.min(1.4, linkBaseColorArr[idx*6+k]*2.4 + 0.12);
+    } else {
+      for(let k=0;k<6;k++) colArr[idx*6+k] = linkBaseColorArr[idx*6+k];
+    }
+    linkGeometry.attributes.color.needsUpdate = true;
   }
 
   function setConstellation(ids){
@@ -452,6 +579,13 @@ export function createStarMap({ canvas, width, height, categories }){
     if(show){ entry.labelMat.opacity = 1.0; return; }
     const focused = constellationActive || !!currentSelected;
     entry.labelMat.opacity = focused ? 0.22 : 0.75;
+  }
+
+  function setVisited(idArray){
+    const set = new Set(idArray || []);
+    nodeEntries.forEach((entry, id)=>{
+      entry.visitedMat.opacity = set.has(id) ? 0.6 : 0;
+    });
   }
 
   /* ---- pan & zoom (screen-pixel semantics, matches the previous D3/SVG feel) ---- */
@@ -485,26 +619,69 @@ export function createStarMap({ canvas, width, height, categories }){
     const nx = entry.node.x, ny = entry.node.y;
     const tx = curW/2 - nx*scale;
     const ty = curH/2 - ny*scale;
-    d3.select(canvas).transition().duration(600).call(zoomBehavior.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    d3.select(canvas).transition().duration(750).ease(d3.easeCubicOut).call(zoomBehavior.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
   }
 
-  /* ---- picking ---- */
+  /* ---- picking (nodes take priority over links) ----
+     Node hit-testing uses THREE's raycaster against real sprites (accounts for
+     zoom automatically via matrixWorld). Link hit-testing is done manually in
+     screen space (project each endpoint, then point-to-segment distance) —
+     THREE's built-in Line raycast threshold turned out to need an unpredictably
+     large, hard-to-calibrate value in this orthographic/nested-transform setup,
+     so a direct screen-pixel distance test is used instead for a reliable,
+     tunable hit radius. */
   const raycaster = new THREE.Raycaster();
   raycaster.params.Sprite = { threshold: 0 };
   const pointerNDC = new THREE.Vector2();
   let pointerMoved = false;
   let downPos = null;
+  const _projVec = new THREE.Vector3();
+  const LINK_HIT_PX = 9;
+
+  function projectToScreen(entry, rect){
+    entry.holder.getWorldPosition(_projVec);
+    _projVec.project(camera);
+    return {
+      x: rect.left + (_projVec.x*0.5+0.5) * rect.width,
+      y: rect.top + (1 - (_projVec.y*0.5+0.5)) * rect.height
+    };
+  }
+
+  function distToSegment(px, py, ax, ay, bx, by){
+    const dx = bx-ax, dy = by-ay;
+    const lenSq = dx*dx + dy*dy;
+    let t = lenSq > 0 ? ((px-ax)*dx + (py-ay)*dy) / lenSq : 0;
+    t = Math.max(0, Math.min(1, t));
+    const cx = ax + t*dx, cy = ay + t*dy;
+    return Math.hypot(px-cx, py-cy);
+  }
+
+  function pickLinkAt(clientX, clientY, rect){
+    let bestIdx = -1, bestDist = LINK_HIT_PX;
+    linkData.forEach((l, i)=>{
+      const ea = nodeEntries.get(l.a.id), eb = nodeEntries.get(l.b.id);
+      if(!ea || !eb || !ea.holder.visible || !eb.holder.visible) return;
+      const pa = projectToScreen(ea, rect), pb = projectToScreen(eb, rect);
+      const d = distToSegment(clientX, clientY, pa.x, pa.y, pb.x, pb.y);
+      if(d < bestDist){ bestDist = d; bestIdx = i; }
+    });
+    return bestIdx;
+  }
 
   function pickAt(clientX, clientY){
     const rect = canvas.getBoundingClientRect();
     pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
     pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointerNDC, camera);
-    const targets = [...nodeEntries.values()].filter(e=>e.holder.visible).map(e=>e.hitArea);
-    const hits = raycaster.intersectObjects(targets, false);
-    if(!hits.length) return null;
-    const hitSprite = hits[0].object;
-    for(const [id, entry] of nodeEntries){ if(entry.hitArea === hitSprite) return id; }
+
+    const nodeTargets = [...nodeEntries.values()].filter(e=>e.holder.visible).map(e=>e.hitArea);
+    const nodeHits = raycaster.intersectObjects(nodeTargets, false);
+    if(nodeHits.length){
+      const hitSprite = nodeHits[0].object;
+      for(const [id, entry] of nodeEntries){ if(entry.hitArea === hitSprite) return { type:'node', id }; }
+    }
+    const linkIdx = pickLinkAt(clientX, clientY, rect);
+    if(linkIdx >= 0) return { type:'link', index: linkIdx };
     return null;
   }
 
@@ -513,46 +690,122 @@ export function createStarMap({ canvas, width, height, categories }){
   canvas.addEventListener('pointermove', ev=>{
     if(downPos && Math.hypot(ev.clientX - downPos.x, ev.clientY - downPos.y) > 4) pointerMoved = true;
     if(!downPos){
-      const id = pickAt(ev.clientX, ev.clientY);
-      canvas.style.cursor = id ? 'pointer' : 'grab';
-      if(id !== hoveredId){
+      const hit = pickAt(ev.clientX, ev.clientY);
+      const nodeId = hit && hit.type==='node' ? hit.id : null;
+      const linkIdx = hit && hit.type==='link' ? hit.index : -1;
+      canvas.style.cursor = hit ? 'pointer' : 'grab';
+      if(nodeId !== hoveredId){
         if(hoveredId) setHoverLabel(hoveredId, false);
-        if(id) setHoverLabel(id, true);
-        hoveredId = id;
+        if(nodeId) setHoverLabel(nodeId, true);
+        hoveredId = nodeId;
+      }
+      if(linkIdx !== hoveredLinkIndex){
+        if(hoveredLinkIndex >= 0) setLinkHover(hoveredLinkIndex, false);
+        if(linkIdx >= 0) setLinkHover(linkIdx, true);
+        hoveredLinkIndex = linkIdx;
       }
     }
   });
   canvas.addEventListener('click', ev=>{
     if(pointerMoved) return;
-    const id = pickAt(ev.clientX, ev.clientY);
-    if(id && onNodeClickCb) onNodeClickCb(id);
-    else if(!id && onBackgroundClickCb) onBackgroundClickCb();
+    const hit = pickAt(ev.clientX, ev.clientY);
+    if(hit && hit.type === 'node'){
+      if(onNodeClickCb) onNodeClickCb(hit.id);
+    } else if(hit && hit.type === 'link'){
+      const l = linkData[hit.index];
+      let targetId = l.b.id;
+      if(currentSelected === l.b.id) targetId = l.a.id;
+      else if(currentSelected === l.a.id) targetId = l.b.id;
+      if(onNodeClickCb) onNodeClickCb(targetId);
+    } else if(onBackgroundClickCb) onBackgroundClickCb();
   });
 
-  /* ---- birth animation ---- */
+  /* ---- birth animation: elastic pop-in + an expanding, fading light-flash ring ---- */
   function triggerBirth(ids){
     const start = performance.now();
     const duration = 1400;
     const targets = ids.map(id=>nodeEntries.get(id)).filter(Boolean);
-    targets.forEach(t=>{ t.holder.scale.set(0.001, 0.001, 0.001); });
+    targets.forEach(t=>{
+      t.holder.scale.set(0.001, 0.001, 0.001);
+      const flashMat = new THREE.SpriteMaterial({ map: glowTex, color: t.baseColor, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 1 });
+      const flash = new THREE.Sprite(flashMat);
+      flash.scale.set(t.node.r*2, t.node.r*2, 1);
+      flash.position.set(0, 0, 0.5);
+      t.holder.add(flash);
+      t._flash = { sprite: flash, mat: flashMat };
+    });
     function step(now){
       const t = Math.min(1, (now-start)/duration);
       const ease = t<1 ? 1 - Math.pow(2, -10*t) * Math.cos(t*12) * 0.15 - Math.pow(1-t, 3) : 1;
       const s = Math.max(0.001, ease);
-      targets.forEach(tg=> tg.holder.scale.set(s, s, s));
+      targets.forEach(tg=>{
+        tg.holder.scale.set(s, s, s);
+        if(tg._flash){
+          const fScale = 1 + t*5;
+          tg._flash.sprite.scale.set(tg.node.r*2*fScale, tg.node.r*2*fScale, 1);
+          tg._flash.mat.opacity = Math.max(0, 1 - t*1.15);
+        }
+      });
       if(t < 1) requestAnimationFrame(step);
-      else targets.forEach(tg=> tg.holder.scale.set(1,1,1));
+      else targets.forEach(tg=>{
+        tg.holder.scale.set(1,1,1);
+        if(tg._flash){ tg.holder.remove(tg._flash.sprite); tg._flash.mat.dispose(); tg._flash = null; }
+      });
     }
     requestAnimationFrame(step);
   }
 
-  /* ---- postprocessing: two-layer bloom for an HDR, over-exposed space-photo feel ---- */
+  /* ---- postprocessing: dual bloom + color grade + cinematic focus blur + vignette ---- */
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   const bloomWide = new UnrealBloomPass(new THREE.Vector2(width, height), 0.28, 0.85, 0.38);
   const bloomTight = new UnrealBloomPass(new THREE.Vector2(width, height), 0.55, 0.18, 0.7);
   composer.addPass(bloomWide);
   composer.addPass(bloomTight);
+
+  const gradeShader = {
+    uniforms: { tDiffuse: { value: null }, uContrast: { value: 1.12 }, uSaturation: { value: 1.18 }, uLift: { value: 0.015 } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform float uContrast; uniform float uSaturation; uniform float uLift;
+      varying vec2 vUv;
+      void main(){
+        vec4 c = texture2D(tDiffuse, vUv);
+        vec3 col = c.rgb + uLift;
+        col = (col - 0.5) * uContrast + 0.5;
+        float lum = dot(col, vec3(0.299, 0.587, 0.114));
+        col = mix(vec3(lum), col, uSaturation);
+        gl_FragColor = vec4(max(col, 0.0), c.a);
+      }`
+  };
+  composer.addPass(new ShaderPass(gradeShader));
+
+  const dofShader = {
+    uniforms: { tDiffuse: { value: null }, uFocus: { value: new THREE.Vector2(0.5, 0.5) }, uAmount: { value: 0 }, uAspect: { value: width/height } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform vec2 uFocus; uniform float uAmount; uniform float uAspect;
+      varying vec2 vUv;
+      void main(){
+        vec2 d = vUv - uFocus;
+        d.x *= uAspect;
+        float dist = length(d);
+        float blurAmt = clamp(dist*1.8, 0.0, 1.0) * uAmount;
+        float radius = blurAmt * 0.012;
+        vec4 sum = texture2D(tDiffuse, vUv) * 0.2;
+        sum += texture2D(tDiffuse, vUv + vec2(radius,0.0)) * 0.1;
+        sum += texture2D(tDiffuse, vUv - vec2(radius,0.0)) * 0.1;
+        sum += texture2D(tDiffuse, vUv + vec2(0.0,radius)) * 0.1;
+        sum += texture2D(tDiffuse, vUv - vec2(0.0,radius)) * 0.1;
+        sum += texture2D(tDiffuse, vUv + vec2(radius,radius)) * 0.1;
+        sum += texture2D(tDiffuse, vUv - vec2(radius,radius)) * 0.1;
+        sum += texture2D(tDiffuse, vUv + vec2(radius,-radius)) * 0.1;
+        sum += texture2D(tDiffuse, vUv - vec2(radius,-radius)) * 0.1;
+        gl_FragColor = sum;
+      }`
+  };
+  const dofPass = new ShaderPass(dofShader);
+  composer.addPass(dofPass);
 
   const vignetteShader = {
     uniforms: { tDiffuse: { value: null }, uAmount: { value: 0.35 } },
@@ -577,17 +830,36 @@ export function createStarMap({ canvas, width, height, categories }){
     composer.setSize(w, h);
     bloomWide.setSize(w, h);
     bloomTight.setSize(w, h);
+    dofPass.uniforms.uAspect.value = w/h;
     rawGroup.position.set(-w/2, h/2, 0);
   }
 
   let running = true;
+  let dofAmount = 0;
+  const _focusWorldPos = new THREE.Vector3();
+  function updateFocus(){
+    const targetAmount = currentSelected ? 0.6 : 0;
+    dofAmount += (targetAmount - dofAmount) * 0.08;
+    dofPass.uniforms.uAmount.value = dofAmount;
+    if(currentSelected){
+      const entry = nodeEntries.get(currentSelected);
+      if(entry){
+        entry.holder.getWorldPosition(_focusWorldPos);
+        _focusWorldPos.project(camera);
+        dofPass.uniforms.uFocus.value.set(_focusWorldPos.x*0.5+0.5, _focusWorldPos.y*0.5+0.5);
+      }
+    }
+  }
+
   function animate(now){
     if(!running) return;
     const t = now/1000;
     for(const mat of farGroup.children.map(c=>c.material)){ if(mat.uniforms) mat.uniforms.uTime.value = t; }
+    if(dustPoints.material.uniforms) dustPoints.material.uniforms.uTime.value = t;
     if(linkMaterial && linkMaterial.uniforms) linkMaterial.uniforms.uTime.value = t;
     syncPositions(t);
     resolveLabelLayout();
+    updateFocus();
     composer.render();
     requestAnimationFrame(animate);
   }
@@ -600,6 +872,7 @@ export function createStarMap({ canvas, width, height, categories }){
     setConstellation,
     setCategoryVisible,
     setHoverLabel,
+    setVisited,
     zoomBy,
     zoomReset,
     centerOn,

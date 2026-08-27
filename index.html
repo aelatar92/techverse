@@ -31,6 +31,7 @@
     <input id="search" list="termsList" autocomplete="off">
     <datalist id="termsList"></datalist>
   </div>
+  <button id="journeyChip" title="رحلتي">⭐ <span id="journeyPointsInline">0</span></button>
   <button id="statsBtn">📊</button>
   <button id="langToggle"></button>
 </div>
@@ -58,9 +59,14 @@
 
 <div id="notFound"></div>
 
+<div id="badgeToastWrap"></div>
+
 <div id="statsPanel">
   <button id="closeStats">✕</button>
   <div id="statsInner">
+    <div id="statsTitleJourney" class="statsSectionTitle"></div>
+    <div id="journeyOverview"></div>
+    <div id="journeyBadges"></div>
     <div id="statsTitleRecent" class="statsSectionTitle"></div>
     <div id="recentList"></div>
     <div id="statsTitleGalaxies" class="statsSectionTitle"></div>

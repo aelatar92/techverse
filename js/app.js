@@ -20,7 +20,13 @@ const i18n = {
     galaxiesTitle: '🌌 اكتمال المجرات',
     constellationsTitle: '🌠 كوكبات (مسارات تعلّم)',
     daysAgo: n => n===0 ? 'اليوم' : n===1 ? 'من يوم' : `من ${n} أيام`,
-    density: d => `كثافة الروابط: ${d}%`
+    density: d => `كثافة الروابط: ${d}%`,
+    journeyTitle: '🚀 رحلتي',
+    pointsLabel: 'نقطة',
+    visitedLabel: 'مصطلح مُستكشف',
+    newBadgeTitle: 'شارة جديدة! ★',
+    nextSuggestedLabel: '▶ التالي المقترح',
+    visitedTag: '✓ تمت زيارته'
   },
   en: {
     dir: 'ltr',
@@ -40,7 +46,13 @@ const i18n = {
     galaxiesTitle: '🌌 Galaxy Completeness',
     constellationsTitle: '🌠 Constellations (Learning Paths)',
     daysAgo: n => n===0 ? 'Today' : n===1 ? '1 day ago' : `${n} days ago`,
-    density: d => `Link density: ${d}%`
+    density: d => `Link density: ${d}%`,
+    journeyTitle: '🚀 My Journey',
+    pointsLabel: 'Points',
+    visitedLabel: 'Terms Explored',
+    newBadgeTitle: 'New Badge! ★',
+    nextSuggestedLabel: '▶ Suggested Next',
+    visitedTag: '✓ Visited'
   }
 };
 let lang = 'ar';
@@ -135,6 +147,26 @@ function subOffset(node, subAngleData, width, height){
   return { ox: Math.cos(angle) * R, oy: Math.sin(angle) * R };
 }
 
+/* ============================ Progress / gamification ============================
+   Real, self-referential progress only: what the visitor has actually explored,
+   stored locally in their own browser. No fabricated counters, no randomized
+   rewards — points and badges are deterministic functions of genuine visits. */
+const STORAGE_VISITED = 'techverse_visited';
+const STORAGE_POINTS = 'techverse_points';
+const STORAGE_BADGES = 'techverse_badges';
+
+function loadSet(key){ try{ return new Set(JSON.parse(localStorage.getItem(key) || '[]')); }catch(e){ return new Set(); } }
+function saveSet(key, set){ try{ localStorage.setItem(key, JSON.stringify([...set])); }catch(e){ /* unavailable */ } }
+function loadNum(key){ try{ return parseInt(localStorage.getItem(key) || '0', 10) || 0; }catch(e){ return 0; } }
+function saveNum(key, n){ try{ localStorage.setItem(key, String(n)); }catch(e){ /* unavailable */ } }
+
+const STATIC_BADGES = [
+  { id:'explorer_10', threshold:10, icon:'🔭', name_ar:'مستكشف مبتدئ', name_en:'Novice Explorer' },
+  { id:'explorer_50', threshold:50, icon:'🌟', name_ar:'كسرت حاجز الـ50 مصطلح', name_en:'Broke the 50-Term Barrier' },
+  { id:'explorer_100', threshold:100, icon:'✨', name_ar:'كسرت حاجز الـ100 مصطلح', name_en:'Broke the 100-Term Barrier' },
+  { id:'explorer_200', threshold:200, icon:'🌌', name_ar:'خبير الكون', name_en:'Universe Expert' }
+];
+
 /* ============================ Galaxy stats ============================ */
 function computeCategoryStats(categories, terms){
   const stats = {};
@@ -194,6 +226,99 @@ function computeCategoryStats(categories, terms){
 
   starMap.buildGraph(nodes, links);
 
+  /* ---- progress / gamification state ---- */
+  let visitedIds = loadSet(STORAGE_VISITED);
+  let points = loadNum(STORAGE_POINTS);
+  let earnedBadges = loadSet(STORAGE_BADGES);
+  starMap.setVisited([...visitedIds]);
+  const categoryStats = computeCategoryStats(categories, terms);
+
+  function categoryVisitedCount(catId){
+    let n = 0;
+    terms.forEach(t=>{ if(t.category===catId && visitedIds.has(t.id)) n++; });
+    return n;
+  }
+
+  function computeCurrentBadges(){
+    const list = [];
+    STATIC_BADGES.forEach(b=> list.push({ ...b, earned: visitedIds.size >= b.threshold }));
+    Object.entries(categories).forEach(([catId, cat])=>{
+      const total = categoryStats[catId].count;
+      if(total === 0) return;
+      list.push({
+        id:'galaxy_'+catId, icon:'🪐',
+        name_ar:`مستكشف مجرة ${cat.label_ar}`, name_en:`${cat.label_en} Galaxy Master`,
+        earned: categoryVisitedCount(catId) >= total
+      });
+    });
+    constellations.forEach(c=>{
+      list.push({
+        id:'path_'+c.id, icon:'🛰️',
+        name_ar:`أكملت مسار ${c.name_ar}`, name_en:`Completed ${c.name_en} Path`,
+        earned: c.term_ids.every(id=>visitedIds.has(id))
+      });
+    });
+    return list;
+  }
+
+  function showBadgeToast(badge){
+    const wrap = document.getElementById('badgeToastWrap');
+    if(!wrap) return;
+    const el = document.createElement('div');
+    el.className = 'badgeToast';
+    el.innerHTML = `<span class="tIcon">${badge.icon}</span><span><span class="tTitle">${i18n[lang].newBadgeTitle}</span>${lang==='ar' ? badge.name_ar : badge.name_en}</span>`;
+    wrap.appendChild(el);
+    setTimeout(()=> el.remove(), 3100);
+  }
+
+  function checkBadges(){
+    computeCurrentBadges().filter(b=>b.earned).forEach(b=>{
+      if(!earnedBadges.has(b.id)){
+        earnedBadges.add(b.id);
+        showBadgeToast(b);
+      }
+    });
+    saveSet(STORAGE_BADGES, earnedBadges);
+  }
+
+  function updateJourneyChip(){
+    d3.select('#journeyPointsInline').text(points);
+  }
+  function bumpJourneyChip(){
+    const chip = document.getElementById('journeyChip');
+    if(!chip) return;
+    chip.classList.remove('bump');
+    void chip.offsetWidth;
+    chip.classList.add('bump');
+  }
+
+  function markVisited(id){
+    const already = visitedIds.has(id);
+    visitedIds.add(id);
+    saveSet(STORAGE_VISITED, visitedIds);
+    starMap.setVisited([...visitedIds]);
+    if(!already){
+      points += 10;
+      saveNum(STORAGE_POINTS, points);
+      bumpJourneyChip();
+    }
+    checkBadges();
+    updateJourneyChip();
+    updateLegendProgress();
+  }
+
+  function getNextSuggested(term){
+    const related = (term.related||[]).map(rid=>idIndex.get(rid)).filter(Boolean).filter(r=>!visitedIds.has(r.id));
+    if(related.length) return related[0];
+    const sameSub = terms.filter(t=> t.category===term.category && t.subcategory===term.subcategory && t.id!==term.id && !visitedIds.has(t.id));
+    if(sameSub.length) return sameSub[0];
+    const sameCat = terms.filter(t=> t.category===term.category && t.id!==term.id && !visitedIds.has(t.id));
+    if(sameCat.length) return sameCat[0];
+    const anyLeft = terms.filter(t=> t.id!==term.id && !visitedIds.has(t.id));
+    if(anyLeft.length) return anyLeft[Math.floor(Math.random()*anyLeft.length)];
+    return null;
+  }
+
   const subAngleData = computeSubAngles(terms);
 
   const sim = d3.forceSimulation(nodes)
@@ -236,13 +361,34 @@ function computeCategoryStats(categories, terms){
     activeConstellationId = null;
     starMap.setConstellation(null);
     starMap.setSelection(id, neighborMap[id]);
+    markVisited(id);
     openPanel(idIndex.get(id));
     starMap.centerOn(id);
     hideNotFound();
   }
 
+  function applyHoloStagger(){
+    const items = [
+      document.querySelector('#panelBadge'),
+      document.querySelector('.subBadge'),
+      document.querySelector('.newBadge'),
+      document.querySelector('#panelName'),
+      ...document.querySelectorAll('#panelDefs .defBlock'),
+      document.querySelector('#relTitle'),
+      document.querySelector('#relList'),
+      document.querySelector('.nextSuggested')
+    ].filter(Boolean);
+    items.forEach((el, i)=>{
+      el.classList.remove('holoStep');
+      void el.offsetWidth;
+      el.classList.add('holoStep');
+      el.style.animationDelay = (i*0.06)+'s';
+    });
+  }
+
   function openPanel(term){
     const cat = categories[term.category];
+    document.getElementById('panel').style.setProperty('--accent', cat.color);
     const badge = d3.select('#panelBadge');
     badge.selectAll('*').remove();
     badge.style('background', cat.color+'22').style('color', cat.color).style('border','1px solid '+cat.color+'55')
@@ -273,12 +419,24 @@ function computeCategoryStats(categories, terms){
     (term.related||[]).forEach(rid=>{
       const r = idIndex.get(rid);
       if(!r) return;
-      relList.append('div').attr('class','relChip')
+      const chip = relList.append('div').attr('class','relChip')
         .style('border-color', categories[r.category].color+'55')
-        .text(r.name)
         .on('click', ()=> selectNode(rid));
+      chip.append('span').text(r.name);
+      if(visitedIds.has(rid)) chip.append('span').attr('class','visitedTag').text(i18n[lang].visitedTag);
     });
+
+    const existingNext = document.querySelector('.nextSuggested');
+    if(existingNext) existingNext.remove();
+    const next = getNextSuggested(term);
+    if(next){
+      const nextSel = d3.select('#panelInner').append('div').attr('class','nextSuggested');
+      nextSel.append('div').attr('class','nsLabel').text(i18n[lang].nextSuggestedLabel);
+      nextSel.append('div').attr('class','nsChip').text(next.name).on('click', ()=> selectNode(next.id));
+    }
+
     d3.select('#panel').classed('open', true);
+    applyHoloStagger();
   }
 
   function closePanel(){
@@ -303,6 +461,8 @@ function computeCategoryStats(categories, terms){
       const chip = legendSel.append('div').attr('class','chip').attr('data-cat',key);
       chip.append('div').attr('class','dot').style('background', c.color);
       chip.append('span').text(lang==='ar' ? c.label_ar : c.label_en);
+      const total = categoryStats[key] ? categoryStats[key].count : 0;
+      if(total) chip.append('span').attr('class','chipProgress').text(`${categoryVisitedCount(key)}/${total}`);
       chip.on('click', function(){
         const off = chip.classed('off');
         chip.classed('off', !off);
@@ -312,9 +472,16 @@ function computeCategoryStats(categories, terms){
   }
   renderLegend();
 
-  /* ---- stats / recent discoveries / constellations panel ---- */
-  const categoryStats = computeCategoryStats(categories, terms);
+  function updateLegendProgress(){
+    legendSel.selectAll('.chip').each(function(){
+      const key = this.getAttribute('data-cat');
+      const total = categoryStats[key] ? categoryStats[key].count : 0;
+      const span = this.querySelector('.chipProgress');
+      if(span && total) span.textContent = `${categoryVisitedCount(key)}/${total}`;
+    });
+  }
 
+  /* ---- stats / recent discoveries / constellations panel ---- */
   function renderConstellationSteps(constellation){
     const stepsSel = d3.select('#constellationSteps').html('');
     if(!constellation) return;
@@ -330,7 +497,26 @@ function computeCategoryStats(categories, terms){
     });
   }
 
+  function renderJourney(){
+    d3.select('#statsTitleJourney').text(i18n[lang].journeyTitle);
+    const overview = d3.select('#journeyOverview').html('');
+    function addStat(num, lbl){
+      const box = overview.append('div').attr('class','journeyStat');
+      box.append('div').attr('class','jNum').text(num);
+      box.append('div').attr('class','jLbl').text(lbl);
+    }
+    addStat(points, i18n[lang].pointsLabel);
+    addStat(`${visitedIds.size}/${terms.length}`, i18n[lang].visitedLabel);
+
+    const badgesSel = d3.select('#journeyBadges').html('');
+    computeCurrentBadges().forEach(b=>{
+      badgesSel.append('div').attr('class','badgeChip'+(b.earned ? '' : ' locked'))
+        .html(`<span class="bIcon">${b.icon}</span><span>${lang==='ar' ? b.name_ar : b.name_en}</span>`);
+    });
+  }
+
   function renderStats(){
+    renderJourney();
     d3.select('#statsTitleRecent').text(i18n[lang].recentTitle);
     d3.select('#statsTitleGalaxies').text(i18n[lang].galaxiesTitle);
     d3.select('#statsTitleConstellations').text(i18n[lang].constellationsTitle);
@@ -376,6 +562,7 @@ function computeCategoryStats(categories, terms){
       head.append('div').attr('class','gDot').style('background', cat.color);
       head.append('span').text(lang==='ar' ? cat.label_ar : cat.label_en);
       head.append('span').attr('class','gCount').text(s.count);
+      head.append('span').attr('class','gVisited').text(`(${categoryVisitedCount(key)} ✓)`);
       row.append('div').attr('class','gBarTrack').append('div').attr('class','gBarFill')
         .style('width', Math.round((s.count / s.maxCount) * 100) + '%')
         .style('background', cat.color);
@@ -386,7 +573,12 @@ function computeCategoryStats(categories, terms){
     renderStats();
     d3.select('#statsPanel').classed('open', true);
   });
+  d3.select('#journeyChip').on('click', ()=>{
+    renderStats();
+    d3.select('#statsPanel').classed('open', true);
+  });
   d3.select('#closeStats').on('click', ()=> d3.select('#statsPanel').classed('open', false));
+  updateJourneyChip();
 
   /* ---- not found panel ---- */
   function showNotFound(query, suggestions){
@@ -437,6 +629,7 @@ function computeCategoryStats(categories, terms){
     d3.select('#search').attr('placeholder', t.searchPlaceholder);
     d3.select('#hint').text(t.hint);
     d3.select('#langToggle').text(t.langToggle);
+    d3.select('#journeyChip').attr('title', t.journeyTitle);
     d3.select('#coffeeLink').text('☕ ' + t.coffee);
     renderLegend();
     if(selectedId) openPanel(idIndex.get(selectedId));
