@@ -3,12 +3,13 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /* ---------------------------------------------------------------------
    Procedural textures (no external image assets — keeps the site static
    and lightweight, and lets us tint everything per category at runtime).
 --------------------------------------------------------------------- */
-function makeGlowTexture(size = 128){
+function makeGlowTexture(size = 192){
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const ctx = c.getContext('2d');
@@ -24,7 +25,7 @@ function makeGlowTexture(size = 128){
   return tex;
 }
 
-function makeDotTexture(size = 32){
+function makeDotTexture(size = 48){
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const ctx = c.getContext('2d');
@@ -38,7 +39,7 @@ function makeDotTexture(size = 32){
   return tex;
 }
 
-function makeRingTexture(size = 64){
+function makeRingTexture(size = 96){
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const ctx = c.getContext('2d');
@@ -71,15 +72,15 @@ function makeNebulaTexture(hex, size = 512){
   return tex;
 }
 
-function makeLabelTexture(text){
-  // Rendered at 3x resolution (supersampled) so the texture still has enough
+function makeLabelTexture(text, maxAnisotropy){
+  // Rendered at 4x resolution (supersampled) so the texture still has enough
   // detail to look crisp when the sprite is magnified at high zoom — a label
   // sprite scales up with the same camera zoom as everything else, and a
   // texture drawn at 1:1 display size just gets blurrier the more you zoom in.
-  const SS = 3;
+  const SS = 4;
   const paddingX = 16;
-  const fontSize = 30;
-  const font = `600 ${fontSize}px 'IBM Plex Sans Arabic', Arial, sans-serif`;
+  const fontSize = 34;
+  const font = `700 ${fontSize}px 'Tajawal', Arial, sans-serif`;
   const measure = document.createElement('canvas').getContext('2d');
   measure.font = font;
   const w = Math.ceil(measure.measureText(text).width) + paddingX*2;
@@ -91,13 +92,13 @@ function makeLabelTexture(text){
   ctx.font = font;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 5.7;
   ctx.strokeStyle = 'rgba(5,6,13,0.95)';
   ctx.strokeText(text, w/2, h/2);
   ctx.fillStyle = '#e8ecf7';
   ctx.fillText(text, w/2, h/2);
   const tex = new THREE.CanvasTexture(c);
-  tex.anisotropy = 8;
+  tex.anisotropy = maxAnisotropy || 8;
   tex.needsUpdate = true;
   return { texture: tex, aspect: w/h };
 }
@@ -131,15 +132,20 @@ const starFragmentShader = `
   }
 `;
 
-function makeStarfield(count, spread, dotTexture){
+function makeStarfield(count, radius, dotTexture){
   const positions = new Float32Array(count*3);
   const sizes = new Float32Array(count);
   const phases = new Float32Array(count);
   const speeds = new Float32Array(count);
   for(let i=0;i<count;i++){
-    positions[i*3+0] = (Math.random()-0.5) * spread.w;
-    positions[i*3+1] = (Math.random()-0.5) * spread.h;
-    positions[i*3+2] = 0;
+    // Distribute on a spherical shell (not a flat plane) so the backdrop
+    // reads correctly from every orbit angle instead of going edge-on.
+    const theta = Math.random()*Math.PI*2;
+    const phi = Math.acos(2*Math.random()-1);
+    const r = radius * (0.85 + Math.random()*0.15);
+    positions[i*3+0] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i*3+2] = r * Math.cos(phi);
     sizes[i] = Math.random()*2.2 + 0.6;
     phases[i] = Math.random()*Math.PI*2;
     speeds[i] = Math.random()*1.2 + 0.4;
@@ -191,10 +197,10 @@ const dustFragmentShader = `
   }
 `;
 
-function makeDust(categories, width, height, dotTexture){
+function makeDust(categories, width, height, dotTexture, zForCat){
   const perCat = 22;
-  const cats = Object.values(categories);
-  const count = cats.length * perCat;
+  const catEntries = Object.entries(categories);
+  const count = catEntries.length * perCat;
   const positions = new Float32Array(count*3);
   const colors = new Float32Array(count*3);
   const sizes = new Float32Array(count);
@@ -202,15 +208,16 @@ function makeDust(categories, width, height, dotTexture){
   const speeds = new Float32Array(count);
   const amps = new Float32Array(count*2);
   let i = 0;
-  cats.forEach(cat=>{
+  catEntries.forEach(([catId, cat])=>{
     const col = new THREE.Color(cat.color);
     const cx = cat.cx*width - width/2;
     const cy = height/2 - cat.cy*height;
+    const cz = zForCat ? zForCat(catId) : 0;
     const spread = Math.max(width, height) * 0.16;
     for(let k=0;k<perCat;k++){
       positions[i*3+0] = cx + (Math.random()-0.5)*spread*2;
       positions[i*3+1] = cy + (Math.random()-0.5)*spread*2;
-      positions[i*3+2] = 0;
+      positions[i*3+2] = cz + (Math.random()-0.5)*160;
       colors[i*3+0] = col.r; colors[i*3+1] = col.g; colors[i*3+2] = col.b;
       sizes[i] = Math.random()*10 + 4;
       phases[i] = Math.random()*Math.PI*2;
@@ -275,52 +282,72 @@ const linkFragmentShader = `
 /* ---------------------------------------------------------------------
    StarMap — the public API consumed by app.js
 --------------------------------------------------------------------- */
+// Stable, deterministic per-string hash → [0,1). Used to assign each node
+// (and its category's nebula haze) a fixed depth so the galaxy looks the
+// same on every reload instead of re-randomizing every visit.
+function hashUnit(str){
+  let h = 2166136261 >>> 0;
+  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0) / 4294967296;
+}
+
 export function createStarMap({ canvas, width, height, categories }){
+  const catKeys = Object.keys(categories);
+  // Each category gets its own depth band so galaxies stay coherent in z too,
+  // not just x/y — spread across a wide range so orbiting reveals real depth.
+  function categoryBandCenter(catId){
+    const idx = catKeys.indexOf(catId);
+    const denom = Math.max(1, catKeys.length - 1);
+    return -180 + (idx/denom) * 360;
+  }
+
   const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, -height/2, 1, 3000);
-  camera.position.z = 1000;
+  const fov = 50;
+  const camera = new THREE.PerspectiveCamera(fov, width/height, 1, 4000);
+  const D0 = height / (2 * Math.tan(THREE.MathUtils.degToRad(fov/2)));
+  camera.position.set(0, 0, D0);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
   renderer.setSize(width, height, false);
   renderer.setClearColor(0x05060d, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.72;
+  const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
-  // Parallax layers, farthest first
-  const farGroup = new THREE.Group();   // distant starfield
+  // Depth-ordered layers — real depth now comes from actual camera movement,
+  // so these are added straight to the scene (no more manual parallax-factor
+  // group scaling keyed to a fake 2D zoom transform).
+  const farGroup = new THREE.Group();   // distant starfield (spherical shell)
   const nebulaGroup = new THREE.Group(); // category nebula clouds + dust
   const rawGroup = new THREE.Group();    // nodes + links + labels (screen-space coords, flipped)
   rawGroup.scale.set(1, -1, 1);
   rawGroup.position.set(-width/2, height/2, 0);
 
-  const fgRoot = new THREE.Group(); fgRoot.add(rawGroup);
-  const midRoot = new THREE.Group(); midRoot.add(nebulaGroup);
-  const bgRoot = new THREE.Group(); bgRoot.add(farGroup);
-
-  scene.add(bgRoot, midRoot, fgRoot);
+  scene.add(farGroup, nebulaGroup, rawGroup);
 
   const dotTex = makeDotTexture();
   const glowTex = makeGlowTexture();
   const ringTex = makeRingTexture();
 
-  farGroup.position.z = -400;
-  farGroup.add(makeStarfield(500, { w: width*2.4, h: height*2.4 }, dotTex));
+  farGroup.add(makeStarfield(500, 2400, dotTex));
 
-  // nebula clouds behind each category cluster
-  nebulaGroup.position.z = -180;
-  Object.values(categories).forEach(cat=>{
+  // nebula clouds behind each category cluster — z-jittered around that
+  // category's own node depth band so the haze stays visually coherent with
+  // its cluster as the camera orbits, instead of collapsing to a line edge-on.
+  Object.entries(categories).forEach(([catId, cat])=>{
     const tex = makeNebulaTexture(cat.color);
     const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.NormalBlending, opacity: 0.9 });
     const sprite = new THREE.Sprite(mat);
     const nx = cat.cx*width - width/2;
     const ny = height/2 - cat.cy*height;
-    sprite.position.set(nx, ny, 0);
+    const nz = categoryBandCenter(catId) - 60 + (hashUnit(catId)-0.5)*160;
+    sprite.position.set(nx, ny, nz);
     const s = Math.max(width, height) * 0.34;
     sprite.scale.set(s, s, 1);
     nebulaGroup.add(sprite);
   });
-  const dustPoints = makeDust(categories, width, height, dotTex);
+  const dustPoints = makeDust(categories, width, height, dotTex, catId=>categoryBandCenter(catId) - 60);
   nebulaGroup.add(dustPoints);
 
   /* ---- links (single LineSegments, per-vertex color for active/dim states) ---- */
@@ -349,33 +376,43 @@ export function createStarMap({ canvas, width, height, categories }){
     nodes.forEach(node=>{
       const color = new THREE.Color(categories[node.category].color);
       const glowSize = node.r * 4.2;
-      const glowMat = new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9 });
+      const glowMat = new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9, sizeAttenuation: true });
       const glow = new THREE.Sprite(glowMat);
       glow.scale.set(glowSize, glowSize, 1);
 
       const coreSize = node.r*1.15;
-      const coreMat = new THREE.SpriteMaterial({ map: dotTex, color: 0xffffff, transparent: true, depthWrite: false });
+      const coreMat = new THREE.SpriteMaterial({ map: dotTex, color: 0xffffff, transparent: true, depthWrite: false, sizeAttenuation: true });
       const core = new THREE.Sprite(coreMat);
       core.scale.set(coreSize, coreSize, 1);
 
-      const ringMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, depthWrite: false, opacity: 0 });
+      const ringMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, depthWrite: false, opacity: 0, sizeAttenuation: true });
       const ring = new THREE.Sprite(ringMat);
       ring.scale.set(node.r*2.4, node.r*2.4, 1);
 
-      const visitedMat = new THREE.SpriteMaterial({ map: ringTex, color: 0xffd76a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 });
+      const visitedMat = new THREE.SpriteMaterial({ map: ringTex, color: 0xffd76a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, sizeAttenuation: true });
       const visitedRing = new THREE.Sprite(visitedMat);
       visitedRing.scale.set(node.r*2.05, node.r*2.05, 1);
 
-      const hitMat = new THREE.SpriteMaterial({ transparent: true, opacity: 0 });
+      const hitMat = new THREE.SpriteMaterial({ transparent: true, opacity: 0, sizeAttenuation: true });
       const hitArea = new THREE.Sprite(hitMat);
       const hitSize = Math.max(node.r*4.2, 26);
       hitArea.scale.set(hitSize, hitSize, 1);
 
-      const { texture, aspect } = makeLabelTexture(node.name);
-      const labelMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0 });
+      // Labels keep a constant screen-space size regardless of camera distance.
+      // sizeAttenuation stays true (same real-perspective-shrink path as every
+      // other sprite here — its "false" branch multiplies scale by raw view-
+      // space distance, which needs a scale value calibrated for that specific
+      // formula, not a world-unit size like ours); instead syncPositions scales
+      // each label's world size by (distanceToCamera / D0) every frame, which
+      // exactly cancels the natural perspective shrink and nets a constant
+      // apparent size, with legibility at extreme distance still governed by
+      // the existing opacity dimming.
+      const { texture, aspect } = makeLabelTexture(node.name, maxAnisotropy);
+      const labelMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0, sizeAttenuation: true });
       const label = new THREE.Sprite(labelMat);
       const labelH = 15;
-      label.scale.set(labelH*aspect, labelH, 1);
+      const labelScaleX = labelH*aspect, labelScaleY = labelH;
+      label.scale.set(labelScaleX, labelScaleY, 1);
       const labelBaseY = node.r + 13;
       label.position.set(0, labelBaseY, 0.3);
 
@@ -383,8 +420,11 @@ export function createStarMap({ canvas, width, height, categories }){
       holder.userData.id = node.id;
       holder.add(glow, core, ring, visitedRing, label, hitArea);
       nodeGroup.add(holder);
+      // Stable per-node depth, banded by category so each galaxy stays
+      // coherent in z too — computed once here, never re-randomized per frame.
+      const z = categoryBandCenter(node.category) + (hashUnit(node.id)-0.5)*90;
       nodeEntries.set(node.id, {
-        node, holder, glow, core, ring, visitedRing, label, hitArea,
+        node, holder, glow, core, ring, visitedRing, label, hitArea, z,
         glowMat, coreMat, ringMat, visitedMat, labelMat, baseColor: color,
         glowSize, coreSize,
         driftPhaseX: Math.random()*Math.PI*2,
@@ -396,6 +436,7 @@ export function createStarMap({ canvas, width, height, categories }){
         breathePhase: Math.random()*Math.PI*2,
         breatheSpeed: 0.35 + Math.random()*0.25,
         labelBaseY,
+        labelScaleX, labelScaleY,
         labelHalfW: (labelH*aspect)/2 + 3,
         labelHalfH: labelH/2 + 2,
         labelOffX: 0,
@@ -456,33 +497,56 @@ export function createStarMap({ canvas, width, height, categories }){
   }
 
   const LINK_HALF_WIDTH = 1.3;
+  const _camWorld = new THREE.Vector3();
+  const _camLocal = new THREE.Vector3();
+  const _linkA = new THREE.Vector3();
+  const _linkB = new THREE.Vector3();
+  const _linkDir = new THREE.Vector3();
+  const _linkMid = new THREE.Vector3();
+  const _linkView = new THREE.Vector3();
+  const _linkPerp = new THREE.Vector3();
 
   function syncPositions(t){
     const time = t || 0;
+    // Camera position expressed in rawGroup-local space (same space node/link
+    // positions live in) — computed once per frame, reused below both for
+    // label distance-compensation and for link camera-facing ribbons.
+    camera.getWorldPosition(_camWorld);
+    rawGroup.worldToLocal(_camLocal.copy(_camWorld));
     nodeEntries.forEach(entry=>{
       const dx = Math.sin(time*entry.driftSpeedX + entry.driftPhaseX) * entry.driftAmpX;
       const dy = Math.cos(time*entry.driftSpeedY + entry.driftPhaseY) * entry.driftAmpY;
-      entry.holder.position.set((entry.node.x||0)+dx, (entry.node.y||0)+dy, 0);
+      entry.holder.position.set((entry.node.x||0)+dx, (entry.node.y||0)+dy, entry.z);
       const breathe = 1 + 0.035 * Math.sin(time*entry.breatheSpeed + entry.breathePhase);
       entry.glow.scale.set(entry.glowSize*breathe, entry.glowSize*breathe, 1);
       entry.core.scale.set(entry.coreSize*breathe, entry.coreSize*breathe, 1);
+      // Counteract real perspective shrink so the label reads at a constant
+      // apparent size regardless of dolly distance (see comment at creation).
+      const distToCam = entry.holder.position.distanceTo(_camLocal);
+      const labelScale = distToCam / D0;
+      entry.label.scale.set(entry.labelScaleX*labelScale, entry.labelScaleY*labelScale, 1);
     });
     if(linkGeometry){
       const pos = linkGeometry.attributes.position.array;
       linkData.forEach((l, i)=>{
         const ea = nodeEntries.get(l.a.id), eb = nodeEntries.get(l.b.id);
-        const ax = ea ? ea.holder.position.x : (l.a.x||0), ay = ea ? ea.holder.position.y : (l.a.y||0);
-        const bx = eb ? eb.holder.position.x : (l.b.x||0), by = eb ? eb.holder.position.y : (l.b.y||0);
-        let dx = bx-ax, dy = by-ay;
-        const len = Math.hypot(dx, dy) || 1;
-        const px = -dy/len*LINK_HALF_WIDTH, py = dx/len*LINK_HALF_WIDTH;
+        _linkA.set(ea ? ea.holder.position.x : (l.a.x||0), ea ? ea.holder.position.y : (l.a.y||0), ea ? ea.holder.position.z : 0);
+        _linkB.set(eb ? eb.holder.position.x : (l.b.x||0), eb ? eb.holder.position.y : (l.b.y||0), eb ? eb.holder.position.z : 0);
+        _linkDir.subVectors(_linkB, _linkA);
+        if(_linkDir.lengthSq() < 1e-6) _linkDir.set(1,0,0); else _linkDir.normalize();
+        _linkMid.addVectors(_linkA, _linkB).multiplyScalar(0.5);
+        _linkView.subVectors(_camLocal, _linkMid);
+        if(_linkView.lengthSq() < 1e-6) _linkView.copy(_linkDir); else _linkView.normalize();
+        _linkPerp.crossVectors(_linkDir, _linkView);
+        if(_linkPerp.lengthSq() < 1e-6) _linkPerp.crossVectors(_linkDir, new THREE.Vector3(0,1,0));
+        _linkPerp.normalize().multiplyScalar(LINK_HALF_WIDTH);
         const o = i*18;
-        pos[o+0]=ax+px; pos[o+1]=ay+py; pos[o+2]=0;
-        pos[o+3]=ax-px; pos[o+4]=ay-py; pos[o+5]=0;
-        pos[o+6]=bx+px; pos[o+7]=by+py; pos[o+8]=0;
-        pos[o+9]=ax-px; pos[o+10]=ay-py; pos[o+11]=0;
-        pos[o+12]=bx-px; pos[o+13]=by-py; pos[o+14]=0;
-        pos[o+15]=bx+px; pos[o+16]=by+py; pos[o+17]=0;
+        pos[o+0]=_linkA.x+_linkPerp.x; pos[o+1]=_linkA.y+_linkPerp.y; pos[o+2]=_linkA.z+_linkPerp.z;
+        pos[o+3]=_linkA.x-_linkPerp.x; pos[o+4]=_linkA.y-_linkPerp.y; pos[o+5]=_linkA.z-_linkPerp.z;
+        pos[o+6]=_linkB.x+_linkPerp.x; pos[o+7]=_linkB.y+_linkPerp.y; pos[o+8]=_linkB.z+_linkPerp.z;
+        pos[o+9]=_linkA.x-_linkPerp.x; pos[o+10]=_linkA.y-_linkPerp.y; pos[o+11]=_linkA.z-_linkPerp.z;
+        pos[o+12]=_linkB.x-_linkPerp.x; pos[o+13]=_linkB.y-_linkPerp.y; pos[o+14]=_linkB.z-_linkPerp.z;
+        pos[o+15]=_linkB.x+_linkPerp.x; pos[o+16]=_linkB.y+_linkPerp.y; pos[o+17]=_linkB.z+_linkPerp.z;
       });
       linkGeometry.attributes.position.needsUpdate = true;
     }
@@ -495,11 +559,24 @@ export function createStarMap({ canvas, width, height, categories }){
      from one frame to the next as stars drift — applied directly, that reads
      as jittering/ghosted text, worse at high zoom. So the raw target is only
      used to steer a slower-moving displayed offset (lerp), which damps the
-     flicker into smooth, stable motion. */
+     flicker into smooth, stable motion.
+     Runs in screen-space pixels (not world x/y): under an orbiting camera,
+     world-space proximity no longer implies screen proximity, so overlap has
+     to be measured the way it actually looks on screen. */
+  const _labelAnchor = new THREE.Vector3();
+  const _labelTarget = new THREE.Vector3();
   function resolveLabelLayout(){
+    const rect = canvas.getBoundingClientRect();
+    if(!rect.width || !rect.height) return;
     const active = [];
     nodeEntries.forEach(entry=>{
       if(!entry.holder.visible || entry.labelMat.opacity <= 0.02) return;
+      entry.holder.updateWorldMatrix(true, false);
+      entry.holder.localToWorld(_labelAnchor.set(0, entry.labelBaseY, 0.3));
+      _labelAnchor.project(camera);
+      entry._ndcX = _labelAnchor.x; entry._ndcY = _labelAnchor.y; entry._ndcZ = _labelAnchor.z;
+      entry.screenX = rect.left + (_labelAnchor.x*0.5+0.5) * rect.width;
+      entry.screenY = rect.top + (1 - (_labelAnchor.y*0.5+0.5)) * rect.height;
       entry.labelOffX = 0;
       entry.labelOffY = 0;
       active.push(entry);
@@ -509,12 +586,12 @@ export function createStarMap({ canvas, width, height, categories }){
     for(let iter=0; iter<ITER; iter++){
       for(let i=0; i<active.length; i++){
         const A = active[i];
-        const ax = A.holder.position.x + A.labelOffX;
-        const ay = A.holder.position.y + A.labelBaseY + A.labelOffY;
+        const ax = A.screenX + A.labelOffX;
+        const ay = A.screenY + A.labelOffY;
         for(let j=i+1; j<active.length; j++){
           const B = active[j];
-          const bx = B.holder.position.x + B.labelOffX;
-          const by = B.holder.position.y + B.labelBaseY + B.labelOffY;
+          const bx = B.screenX + B.labelOffX;
+          const by = B.screenY + B.labelOffY;
           const dx = bx - ax, dy = by - ay;
           const overlapX = (A.labelHalfW + B.labelHalfW) - Math.abs(dx);
           const overlapY = (A.labelHalfH + B.labelHalfH) - Math.abs(dy);
@@ -534,7 +611,12 @@ export function createStarMap({ canvas, width, height, categories }){
     active.forEach(entry=>{
       entry.labelDispX += (entry.labelOffX - entry.labelDispX) * 0.18;
       entry.labelDispY += (entry.labelOffY - entry.labelDispY) * 0.18;
-      entry.label.position.set(entry.labelDispX, entry.labelBaseY + entry.labelDispY, 0.3);
+      const ndcDX = (entry.labelDispX / rect.width) * 2;
+      const ndcDY = -(entry.labelDispY / rect.height) * 2;
+      _labelTarget.set(entry._ndcX + ndcDX, entry._ndcY + ndcDY, entry._ndcZ);
+      _labelTarget.unproject(camera);
+      entry.holder.worldToLocal(_labelTarget);
+      entry.label.position.copy(_labelTarget);
     });
   }
 
@@ -629,38 +711,59 @@ export function createStarMap({ canvas, width, height, categories }){
     });
   }
 
-  /* ---- pan & zoom (screen-pixel semantics, matches the previous D3/SVG feel) ---- */
-  let curW = width, curH = height;
-  function applyTransform(x, y, k){
-    fgRoot.scale.set(k, k, 1);
-    fgRoot.position.set(x + (k-1)*curW/2, -y - (k-1)*curH/2, 0);
-    const pf = 0.35; // mid parallax factor
-    midRoot.scale.set(1 + (k-1)*pf, 1 + (k-1)*pf, 1);
-    midRoot.position.set((x + (k-1)*curW/2)*pf, (-y - (k-1)*curH/2)*pf, 0);
-    const bf = 0.12; // far parallax factor
-    bgRoot.position.set((x + (k-1)*curW/2)*bf, (-y - (k-1)*curH/2)*bf, 0);
-  }
+  /* ---- camera controls: real 3D orbit (rotate/dolly/pan via OrbitControls) ---- */
+  const controls = new OrbitControls(camera, canvas);
+  controls.target.set(0, 0, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.rotateSpeed = 0.55;
+  controls.zoomSpeed = 0.8;
+  controls.screenSpacePanning = true;
+  controls.minPolarAngle = Math.PI * 0.15; // keep the galaxy from flipping upside-down
+  controls.maxPolarAngle = Math.PI * 0.85;
+  controls.minDistance = D0 / 3.5; // mirrors the old d3-zoom scaleExtent([0.25,3.5])
+  controls.maxDistance = D0 * 4;
+  controls.update();
 
-  const zoomBehavior = d3.zoom().scaleExtent([0.25, 3.5]).on('zoom', ev=>{
-    const { x, y, k } = ev.transform;
-    applyTransform(x, y, k);
-  });
-  d3.select(canvas).call(zoomBehavior);
+  // Small manual RAF tween for programmatic camera moves (zoomBy/zoomReset/
+  // centerOn) — disables user input for the duration so a drag can't fight
+  // it, and reuses the already-loaded d3.easeCubicOut to match the feel of
+  // the old d3-zoom transitions.
+  let cameraTween = null;
+  function tweenCamera(toPos, toTarget, duration){
+    controls.enabled = false;
+    cameraTween = {
+      fromPos: camera.position.clone(), toPos,
+      fromTarget: controls.target.clone(), toTarget,
+      start: performance.now(), duration
+    };
+  }
+  function stepCameraTween(now){
+    if(!cameraTween) return;
+    const { fromPos, toPos, fromTarget, toTarget, start, duration } = cameraTween;
+    const raw = Math.min(1, (now-start)/duration);
+    const e = d3.easeCubicOut(raw);
+    camera.position.lerpVectors(fromPos, toPos, e);
+    controls.target.lerpVectors(fromTarget, toTarget, e);
+    if(raw >= 1){ cameraTween = null; controls.enabled = true; }
+  }
 
   function zoomBy(factor){
-    d3.select(canvas).transition().duration(300).call(zoomBehavior.scaleBy, factor);
+    const dist = camera.position.distanceTo(controls.target);
+    const newDist = THREE.MathUtils.clamp(dist/factor, controls.minDistance, controls.maxDistance);
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    tweenCamera(controls.target.clone().addScaledVector(dir, newDist), controls.target.clone(), 300);
   }
   function zoomReset(){
-    d3.select(canvas).transition().duration(500).call(zoomBehavior.transform, d3.zoomIdentity);
+    tweenCamera(new THREE.Vector3(0, 0, D0), new THREE.Vector3(0, 0, 0), 500);
   }
   function centerOn(id){
     const entry = nodeEntries.get(id);
     if(!entry) return;
-    const scale = 1.25;
-    const nx = entry.node.x, ny = entry.node.y;
-    const tx = curW/2 - nx*scale;
-    const ty = curH/2 - ny*scale;
-    d3.select(canvas).transition().duration(750).ease(d3.easeCubicOut).call(zoomBehavior.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    const targetPos = entry.holder.getWorldPosition(new THREE.Vector3());
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    const standoff = D0 / 1.25;
+    tweenCamera(targetPos.clone().addScaledVector(dir, standoff), targetPos, 750);
   }
 
   /* ---- picking (nodes take priority over links) ----
@@ -872,8 +975,10 @@ export function createStarMap({ canvas, width, height, categories }){
   composer.addPass(new ShaderPass(vignetteShader));
 
   function resize(w, h){
-    curW = w; curH = h;
-    camera.left = -w/2; camera.right = w/2; camera.top = h/2; camera.bottom = -h/2;
+    // Current orbit/zoom state (camera.position/controls.target) is left
+    // untouched here on purpose — matches the old behavior of preserving the
+    // user's current zoom/pan transform across a window resize.
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
     composer.setSize(w, h);
@@ -906,6 +1011,9 @@ export function createStarMap({ canvas, width, height, categories }){
     for(const mat of farGroup.children.map(c=>c.material)){ if(mat.uniforms) mat.uniforms.uTime.value = t; }
     if(dustPoints.material.uniforms) dustPoints.material.uniforms.uTime.value = t;
     if(linkMaterial && linkMaterial.uniforms) linkMaterial.uniforms.uTime.value = t;
+    stepCameraTween(now);
+    controls.update();
+    camera.updateMatrixWorld();
     syncPositions(t);
     resolveLabelLayout();
     updateFocus();
@@ -930,6 +1038,6 @@ export function createStarMap({ canvas, width, height, categories }){
     onNodeClick(cb){ onNodeClickCb = cb; },
     onBackgroundClick(cb){ onBackgroundClickCb = cb; },
     onNodeHover(cb){ onNodeHoverCb = cb; },
-    dispose(){ running = false; }
+    dispose(){ running = false; controls.dispose(); }
   };
 }
