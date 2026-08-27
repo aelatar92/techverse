@@ -104,5 +104,18 @@
       "apis": { "label_ar": "واجهات برمجية", "label_en": "APIs" },
       "practices": { "label_ar": "ممارسات وأدوات", "label_en": "Practices & Tools" }
     }
+  },
+  "databases": {
+    "id": "databases",
+    "label_ar": "قواعد البيانات",
+    "label_en": "Databases",
+    "color": "#f87171",
+    "cx": 0.90,
+    "cy": 0.50,
+    "subcategories": {
+      "relational": { "label_ar": "علائقية (SQL)", "label_en": "Relational (SQL)" },
+      "nosql": { "label_ar": "غير علائقية (NoSQL)", "label_en": "NoSQL" },
+      "operations": { "label_ar": "عمليات وأداء", "label_en": "Operations & Performance" }
+    }
   }
 }

@@ -799,7 +799,7 @@
     "aliases": ["DB"],
     "definition_ar": "نظام منظّم لتخزين البيانات واسترجاعها بكفاءة، وقد تكون علائقية مثل MySQL أو غير علائقية مثل MongoDB.",
     "definition_en": "An organized system for storing and retrieving data efficiently; it may be relational, like MySQL, or non-relational, like MongoDB.",
-    "related": ["server", "api", "backup", "iops"],
+    "related": ["server", "api", "backup", "iops", "sql", "nosql", "mysql", "postgresql", "mongodb", "transaction", "query"],
     "date_added": "2026-08-27"
   },
   {
@@ -1294,7 +1294,7 @@
     "aliases": ["HA"],
     "definition_ar": "تصميم أنظمة بحيث تبقى الخدمة متاحة لأطول وقت ممكن بأقل قدر من الانقطاع، غالبًا عبر التكرار (Redundancy) وتوزيع الأحمال.",
     "definition_en": "Designing systems so a service stays available with minimal downtime, typically through redundancy and load distribution.",
-    "related": ["loadbalancer", "raid", "backup"],
+    "related": ["loadbalancer", "raid", "backup", "replication"],
     "date_added": "2026-08-27"
   },
   {
@@ -1492,7 +1492,7 @@
     "aliases": ["L1 Cache", "L2 Cache", "L3 Cache"],
     "definition_ar": "ذاكرة صغيرة فائقة السرعة داخل المعالج أو قريبة منه، تخزّن البيانات الأكثر استخدامًا لتقليل زمن الوصول مقارنة بالذاكرة العشوائية، وتُقسّم عادة لمستويات L1/L2/L3.",
     "definition_en": "A very fast, small memory built into or close to the CPU that stores frequently used data to reduce access time compared to RAM; typically split into L1/L2/L3 levels.",
-    "related": ["cpu", "ram"],
+    "related": ["cpu", "ram", "redis"],
     "date_added": "2026-08-27"
   },
   {
@@ -2130,7 +2130,7 @@
     "aliases": ["JavaScript Object Notation"],
     "definition_ar": "صيغة تبادل بيانات خفيفة ومقروءة للبشر، تعتمد على أزواج مفتاح-قيمة، وأصبحت الصيغة الافتراضية لتبادل البيانات بين معظم الـ APIs الحديثة.",
     "definition_en": "A lightweight, human-readable data-interchange format based on key-value pairs; it has become the default format most modern APIs use to exchange data.",
-    "related": ["api", "rest_api"],
+    "related": ["api", "rest_api", "mongodb"],
     "date_added": "2026-08-27"
   },
   {
@@ -2208,6 +2208,193 @@
     "definition_ar": "برنامج متكامل يجمع محرر أكواد وأدوات تصحيح أخطاء (Debugging) وبناء المشروع (Build) في واجهة واحدة، لتسهيل عملية الكتابة والتطوير.",
     "definition_en": "An integrated program combining a code editor, debugging tools, and build tools in one interface, streamlining the coding and development process.",
     "related": ["git"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sql",
+    "name": "SQL",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": ["Structured Query Language"],
+    "definition_ar": "لغة استعلام قياسية للتعامل مع قواعد البيانات العلائقية، تُستخدم لإنشاء الجداول واسترجاع البيانات وتعديلها وحذفها.",
+    "definition_en": "A standardized query language for working with relational databases, used to create tables and retrieve, modify, and delete data.",
+    "related": ["database", "table", "primary_key", "query"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "nosql",
+    "name": "NoSQL",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": ["Not Only SQL"],
+    "definition_ar": "فئة من قواعد البيانات لا تعتمد النموذج الجدولي التقليدي، وتخزّن البيانات كمستندات أو أزواج مفتاح-قيمة أو رسوم بيانية، لمرونة وتوسّع أفضل مع بيانات غير منتظمة الشكل.",
+    "definition_en": "A category of databases that skip the traditional table model, storing data as documents, key-value pairs, or graphs for more flexibility and scale with unstructured data.",
+    "related": ["database", "mongodb", "redis"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "table",
+    "name": "Table",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": ["Relation"],
+    "definition_ar": "البنية الأساسية لتخزين البيانات في قاعدة بيانات علائقية، تنظّم المعلومات في صفوف وأعمدة، تمامًا كجدول بيانات.",
+    "definition_en": "The core structure for storing data in a relational database, organizing information into rows and columns, much like a spreadsheet.",
+    "related": ["sql", "primary_key", "foreign_key"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "primary_key",
+    "name": "Primary Key",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "عمود (أو مجموعة أعمدة) في جدول قاعدة بيانات يحدد كل صف بشكل فريد لا يتكرر، ويُستخدم للإشارة إليه من جداول أخرى.",
+    "definition_en": "A column (or set of columns) in a database table that uniquely identifies each row, used to reference it from other tables.",
+    "related": ["table", "foreign_key"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "foreign_key",
+    "name": "Foreign Key",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "عمود في جدول يشير إلى المفتاح الأساسي (Primary Key) لجدول آخر، لربط البيانات بين الجداول والحفاظ على تناسقها.",
+    "definition_en": "A column in one table that references the primary key of another table, linking data across tables and preserving consistency.",
+    "related": ["primary_key", "table", "normalization"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "index_db",
+    "name": "Database Index",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": ["Index"],
+    "definition_ar": "بنية بيانات إضافية تُسرّع عمليات البحث داخل جدول كبير، على حساب مساحة تخزين إضافية وبطء بسيط في الكتابة.",
+    "definition_en": "An extra data structure that speeds up search queries on a large table, at the cost of additional storage and slightly slower writes.",
+    "related": ["table", "sql"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "normalization",
+    "name": "Normalization",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "عملية تنظيم بيانات قاعدة بيانات علائقية لتقليل التكرار وتحسين تناسقها، عبر تقسيم البيانات على عدة جداول مترابطة بمفاتيح.",
+    "definition_en": "The process of organizing a relational database's structure to reduce redundancy and improve consistency, by splitting data across multiple related tables.",
+    "related": ["table", "foreign_key"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "acid",
+    "name": "ACID",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": ["Atomicity Consistency Isolation Durability"],
+    "definition_ar": "مجموعة أربع خصائص (الذرية، التناسق، العزل، الديمومة) تضمن أن عمليات قاعدة البيانات تُنفَّذ بشكل موثوق حتى عند حدوث أعطال أو وصول متزامن.",
+    "definition_en": "A set of four properties — atomicity, consistency, isolation, durability — that guarantee database operations execute reliably even amid failures or concurrent access.",
+    "related": ["transaction", "database"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "transaction",
+    "name": "Transaction",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "مجموعة عمليات على قاعدة البيانات تُعامَل ككتلة واحدة: إما تُنفَّذ كل العمليات بنجاح أو يتم التراجع عنها بالكامل، لضمان اتساق البيانات.",
+    "definition_en": "A group of database operations treated as a single unit: either all of them succeed, or all are rolled back, ensuring data stays consistent.",
+    "related": ["acid", "database"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": [],
+    "definition_ar": "قاعدة بيانات NoSQL شهيرة تخزّن البيانات على شكل مستندات JSON مرنة بدلًا من جداول ثابتة، وتُستخدم كثيرًا في التطبيقات ذات البيانات متغيرة الشكل.",
+    "definition_en": "A popular NoSQL database that stores data as flexible JSON-like documents instead of rigid tables, widely used for applications with varying data shapes.",
+    "related": ["nosql", "json"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "redis",
+    "name": "Redis",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": [],
+    "definition_ar": "قاعدة بيانات NoSQL من نوع مفتاح-قيمة تعمل بالكامل في الذاكرة (In-Memory)، فائقة السرعة، وتُستخدم غالبًا للتخزين المؤقت (Caching) والجلسات.",
+    "definition_en": "An in-memory key-value NoSQL database known for extreme speed, commonly used for caching and session storage.",
+    "related": ["nosql", "cache_memory"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "mysql",
+    "name": "MySQL",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "أحد أشهر أنظمة قواعد البيانات العلائقية مفتوحة المصدر، يُستخدم على نطاق واسع في تطبيقات الويب مثل WordPress.",
+    "definition_en": "One of the most popular open-source relational database systems, widely used in web applications such as WordPress.",
+    "related": ["sql", "database"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "postgresql",
+    "name": "PostgreSQL",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": ["Postgres"],
+    "definition_ar": "نظام قواعد بيانات علائقية مفتوح المصدر يُعرف بالتزامه الصارم بمعايير SQL ودعمه لأنواع بيانات وميزات متقدمة تفوق أغلب المنافسين.",
+    "definition_en": "An open-source relational database system known for strict SQL standards compliance and advanced data types and features beyond most competitors.",
+    "related": ["sql", "database"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "orm",
+    "name": "ORM",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": ["Object-Relational Mapping"],
+    "definition_ar": "تقنية تتيح للمطورين التعامل مع قاعدة البيانات باستخدام كائنات في لغة البرمجة بدلًا من كتابة استعلامات SQL مباشرة يدويًا.",
+    "definition_en": "A technique letting developers interact with a database using objects in their programming language, instead of writing raw SQL queries by hand.",
+    "related": ["sql", "database", "framework"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "replication",
+    "name": "Database Replication",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": ["Replication"],
+    "definition_ar": "عملية نسخ بيانات قاعدة البيانات تلقائيًا من خادم رئيسي إلى خادم أو أكثر آخر، لتحسين التوافر وتوزيع أحمال القراءة.",
+    "definition_en": "The process of automatically copying a database's data from a primary server to one or more others, improving availability and distributing read load.",
+    "related": ["database", "highavailability", "sharding"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "sharding",
+    "name": "Sharding",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [],
+    "definition_ar": "تقنية تقسّم قاعدة بيانات كبيرة أفقيًا إلى أجزاء أصغر (Shards) موزعة على خوادم مختلفة، للتوسع عند وصول حجم البيانات لحد يصعب إدارته على خادم واحد.",
+    "definition_en": "A technique that horizontally splits a large database into smaller pieces (shards) distributed across different servers, enabling it to scale beyond what a single server can handle.",
+    "related": ["database", "replication"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "query",
+    "name": "Query",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [],
+    "definition_ar": "طلب مُصاغ بلغة قاعدة البيانات (كـ SQL) لاسترجاع أو تعديل بيانات محددة، وهو الوسيلة الأساسية للتفاعل مع أي قاعدة بيانات.",
+    "definition_en": "A request written in a database's language (such as SQL) to retrieve or modify specific data; the primary way applications interact with any database.",
+    "related": ["sql", "database"],
     "date_added": "2026-08-27"
   }
 ]
