@@ -854,7 +854,7 @@
     "aliases": [],
     "definition_ar": "تحويل البيانات إلى صيغة غير مفهومة إلا لمن يملك المفتاح الصحيح لفك تشفيرها، لحماية سريتها أثناء النقل أو التخزين.",
     "definition_en": "The transformation of data into a form unreadable without the correct key, protecting its confidentiality in transit or at rest.",
-    "related": ["ssl_tls", "vpn", "ssh"],
+    "related": ["ssl_tls", "vpn", "ssh", "hash", "private_key"],
     "date_added": "2026-08-27"
   },
   {
@@ -2582,6 +2582,193 @@
     "definition_ar": "رمز رقمي يرسله الخادم مع كل استجابة HTTP ليخبر المتصفح بنتيجة الطلب، مثل 200 (نجاح)، 404 (غير موجود)، أو 500 (خطأ في الخادم).",
     "definition_en": "A numeric code the server sends with every HTTP response to tell the browser the outcome of the request, such as 200 (OK), 404 (Not Found), or 500 (Server Error).",
     "related": ["http", "browser"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "blockchain",
+    "name": "Blockchain",
+    "category": "blockchain",
+    "subcategory": "fundamentals",
+    "aliases": [],
+    "definition_ar": "سجل رقمي موزّع يخزّن البيانات في سلسلة من الكتل المترابطة تشفيريًا، بحيث يصعب تعديل أي كتلة سابقة دون كشف ذلك من كل المشاركين في الشبكة.",
+    "definition_en": "A distributed digital ledger that stores data in a chain of cryptographically linked blocks, making it extremely hard to alter a past block without every network participant noticing.",
+    "related": ["block", "hash", "distributed_ledger"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "block",
+    "name": "Block",
+    "category": "blockchain",
+    "subcategory": "fundamentals",
+    "aliases": [],
+    "definition_ar": "وحدة تخزين أساسية في البلوك تشين، تحتوي على مجموعة من المعاملات المؤكدة بالإضافة إلى بصمة (Hash) الكتلة السابقة لها لربطها بالسلسلة.",
+    "definition_en": "The basic storage unit in a blockchain, containing a batch of confirmed transactions plus the hash of the previous block, linking it into the chain.",
+    "related": ["blockchain", "hash"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "hash",
+    "name": "Hash Function",
+    "category": "blockchain",
+    "subcategory": "fundamentals",
+    "aliases": ["Hashing", "SHA-256"],
+    "definition_ar": "دالة رياضية تحوّل أي كمية من البيانات إلى بصمة رقمية ثابتة الطول، بحيث يؤدي أي تغيير بسيط في المدخل لبصمة مختلفة تمامًا، وهي أساسية في أمان البلوك تشين.",
+    "definition_en": "A mathematical function that converts any amount of data into a fixed-length digital fingerprint, where even a tiny input change produces a completely different output; fundamental to blockchain security.",
+    "related": ["block", "encryption"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "distributed_ledger",
+    "name": "Distributed Ledger",
+    "category": "blockchain",
+    "subcategory": "fundamentals",
+    "aliases": ["DLT"],
+    "definition_ar": "سجل بيانات منسوخ ومتزامن عبر عدة أجهزة (عُقد) في شبكة، بدلًا من الاعتماد على نسخة مركزية واحدة يتحكم بها طرف واحد.",
+    "definition_en": "A record of data replicated and synchronized across multiple nodes in a network, rather than relying on a single centralized copy controlled by one party.",
+    "related": ["blockchain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "cryptocurrency",
+    "name": "Cryptocurrency",
+    "category": "blockchain",
+    "subcategory": "crypto",
+    "aliases": ["Crypto"],
+    "definition_ar": "عملة رقمية لامركزية تعتمد على تقنية البلوك تشين والتشفير لتأمين المعاملات وإصدار وحدات جديدة، دون حاجة لبنك مركزي.",
+    "definition_en": "A decentralized digital currency that relies on blockchain technology and cryptography to secure transactions and issue new units, without needing a central bank.",
+    "related": ["blockchain", "bitcoin", "wallet"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "bitcoin",
+    "name": "Bitcoin",
+    "category": "blockchain",
+    "subcategory": "crypto",
+    "aliases": ["BTC"],
+    "definition_ar": "أول عملة رقمية لامركزية وأشهرها، أُطلقت عام 2009، وتعمل على شبكة بلوك تشين عامة تعتمد آلية إثبات العمل (Proof of Work).",
+    "definition_en": "The first and most well-known decentralized cryptocurrency, launched in 2009, running on a public blockchain secured by Proof of Work.",
+    "related": ["cryptocurrency", "proof_of_work", "blockchain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "ethereum",
+    "name": "Ethereum",
+    "category": "blockchain",
+    "subcategory": "crypto",
+    "aliases": ["ETH"],
+    "definition_ar": "منصة بلوك تشين تدعم العقود الذكية (Smart Contracts)، ما جعلها الأساس لمعظم تطبيقات DeFi وNFT، وعملتها الرقمية تُعرف بـ Ether.",
+    "definition_en": "A blockchain platform that supports smart contracts, making it the foundation for most DeFi and NFT applications; its native currency is called Ether.",
+    "related": ["smart_contract", "cryptocurrency", "defi"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "wallet",
+    "name": "Crypto Wallet",
+    "category": "blockchain",
+    "subcategory": "crypto",
+    "aliases": ["Digital Wallet"],
+    "definition_ar": "أداة برمجية أو مادية تخزّن المفاتيح الخاصة التي تثبت ملكية العملات الرقمية وتتيح إرسالها واستقبالها.",
+    "definition_en": "A software or hardware tool that stores the private keys proving ownership of cryptocurrency and enabling it to be sent and received.",
+    "related": ["cryptocurrency", "private_key"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "private_key",
+    "name": "Private Key",
+    "category": "blockchain",
+    "subcategory": "crypto",
+    "aliases": ["Public Key"],
+    "definition_ar": "مفتاح تشفيري سري يثبت ملكية عنوان محفظة رقمية ويُستخدم لتوقيع المعاملات؛ تسريبه يعني فقدان السيطرة الكاملة على الأموال المرتبطة به.",
+    "definition_en": "A secret cryptographic key that proves ownership of a wallet address and is used to sign transactions; if leaked, it means total loss of control over the funds tied to it.",
+    "related": ["wallet", "encryption"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "mining",
+    "name": "Mining",
+    "category": "blockchain",
+    "subcategory": "consensus",
+    "aliases": ["Crypto Mining"],
+    "definition_ar": "عملية تستخدم فيها أجهزة حوسبة قوة معالجة ضخمة لحل مسائل رياضية معقدة تؤكد المعاملات الجديدة وتضيف كتلة جديدة للبلوك تشين، مقابل مكافأة بالعملة.",
+    "definition_en": "A process where computing hardware expends heavy processing power to solve complex math problems that validate new transactions and add a new block to the chain, in exchange for a currency reward.",
+    "related": ["proof_of_work", "blockchain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "proof_of_work",
+    "name": "Proof of Work",
+    "category": "blockchain",
+    "subcategory": "consensus",
+    "aliases": ["PoW"],
+    "definition_ar": "آلية توافق (Consensus) تتطلب من المشاركين إثبات إنفاق قوة حوسبة حقيقية لإضافة كتلة جديدة، وهي الآلية التي يعمل بها Bitcoin.",
+    "definition_en": "A consensus mechanism requiring participants to prove real computational effort to add a new block; the mechanism Bitcoin runs on.",
+    "related": ["mining", "proof_of_stake", "blockchain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "proof_of_stake",
+    "name": "Proof of Stake",
+    "category": "blockchain",
+    "subcategory": "consensus",
+    "aliases": ["PoS"],
+    "definition_ar": "آلية توافق بديلة لا تعتمد على قوة الحوسبة، بل تختار من يضيف الكتلة التالية بناءً على كمية العملة التي وضعها كضمان (Stake)، وهي أقل استهلاكًا للطاقة من Proof of Work.",
+    "definition_en": "An alternative consensus mechanism that doesn't rely on computing power, instead selecting who adds the next block based on how much currency they've staked as collateral; far more energy-efficient than Proof of Work.",
+    "related": ["proof_of_work", "ethereum"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "smart_contract",
+    "name": "Smart Contract",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": [],
+    "definition_ar": "برنامج يعمل تلقائيًا على شبكة بلوك تشين وينفّذ شروطًا متفقًا عليها مسبقًا دون وسيط، مثل تحويل ملكية أصل رقمي عند استيفاء شرط معيّن.",
+    "definition_en": "A program that runs automatically on a blockchain, executing pre-agreed terms without an intermediary, such as transferring ownership of a digital asset once a condition is met.",
+    "related": ["ethereum", "dapp"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "gas_fee",
+    "name": "Gas Fee",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": ["Gas"],
+    "definition_ar": "رسم يدفعه المستخدم لتنفيذ معاملة أو عقد ذكي على شبكة بلوك تشين مثل Ethereum، يُستخدم لمكافأة من يعالج المعاملة ومنع إغراق الشبكة بمعاملات عشوائية.",
+    "definition_en": "A fee a user pays to execute a transaction or smart contract on a blockchain like Ethereum, rewarding whoever processes it and preventing the network from being flooded with spam transactions.",
+    "related": ["ethereum", "smart_contract"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "nft",
+    "name": "NFT",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": ["Non-Fungible Token"],
+    "definition_ar": "رمز رقمي فريد غير قابل للاستبدال مسجّل على بلوك تشين، يُستخدم لإثبات ملكية أصل رقمي (كصورة أو عمل فني) لا يمكن تكراره أو استبداله بوحدة مطابقة.",
+    "definition_en": "A unique, non-interchangeable digital token recorded on a blockchain, used to prove ownership of a digital asset (like art) that can't be duplicated or swapped for an identical unit.",
+    "related": ["ethereum", "blockchain"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "defi",
+    "name": "DeFi",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": ["Decentralized Finance"],
+    "definition_ar": "مجموعة تطبيقات مالية (كالإقراض والتداول) مبنية على البلوك تشين وتعمل دون وسيط مركزي كالبنوك، عبر عقود ذكية تُنفّذ الشروط تلقائيًا.",
+    "definition_en": "A set of financial applications — lending, trading, and more — built on blockchain and operating without a central intermediary like a bank, using smart contracts to enforce terms automatically.",
+    "related": ["smart_contract", "ethereum"],
+    "date_added": "2026-08-27"
+  },
+  {
+    "id": "dapp",
+    "name": "DApp",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": ["Decentralized Application"],
+    "definition_ar": "تطبيق يعمل على شبكة بلوك تشين لامركزية بدلًا من خادم مركزي واحد، غالبًا معتمدًا على عقود ذكية لتنفيذ منطقه.",
+    "definition_en": "An application that runs on a decentralized blockchain network instead of a single central server, typically relying on smart contracts for its logic.",
+    "related": ["smart_contract", "blockchain"],
     "date_added": "2026-08-27"
   }
 ]
