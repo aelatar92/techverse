@@ -190,11 +190,18 @@ function computeSubAngles(terms, categories){
 // close to any one of them, the same way you'd approach a real galaxy field.
 const GALAXY_SPREAD = 2.1;
 
-function galaxyCenter(catId, categories, width, height){
+// `shrink` (1 = full spread, less = anchors pulled toward the shared
+// center) lets the layout dynamically pull the currently-visible galaxies
+// closer together — and closer to screen center — when other categories are
+// hidden, instead of leaving them sitting at their full-map distance apart
+// with a huge empty gap between them. Applied only to the anchor position,
+// not the shape's own internal radius, so a galaxy's own structure never
+// deforms — it just relocates.
+function galaxyCenter(catId, categories, width, height, shrink = 1){
   const cat = categories[catId];
   return {
-    cx: (cat.cx - 0.5) * width * GALAXY_SPREAD + width * 0.5,
-    cy: (cat.cy - 0.5) * height * GALAXY_SPREAD + height * 0.5
+    cx: (cat.cx - 0.5) * width * GALAXY_SPREAD * shrink + width * 0.5,
+    cy: (cat.cy - 0.5) * height * GALAXY_SPREAD * shrink + height * 0.5
   };
 }
 
@@ -237,8 +244,8 @@ function crossGalaxyAngle(node, crossCatTargets, categories, width, height){
   return Math.atan2(vy, vx);
 }
 
-function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height){
-  const { cx, cy } = galaxyCenter(node.category, categories, width, height);
+function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, shrink = 1){
+  const { cx, cy } = galaxyCenter(node.category, categories, width, height, shrink);
   const catData = subAngleData[node.category];
   const shape = GALAXY_SHAPES[node.category] || { type: 'spiral', arms: 2, turns: 0.85 };
   const rotation = catData ? (catData.rotation || 0) : 0;
@@ -587,8 +594,27 @@ function computeCategoryStats(categories, terms){
   }
 
   const subAngleData = computeSubAngles(terms, categories);
-  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height).x;
-  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height).y;
+  // Tracks which categories are currently toggled off in the legend, purely
+  // to drive how tightly the visible galaxies' anchors pull together (see
+  // galaxyCenter's `shrink`) — starMap.setCategoryVisible (called alongside
+  // this) is what actually hides their stars/links/haze.
+  const hiddenCategories = new Set();
+  const totalCatCount = Object.keys(categories).length;
+  function currentShrink(){
+    const visibleCount = totalCatCount - hiddenCategories.size;
+    if(visibleCount <= 0) return 1;
+    return Math.max(0.22, Math.min(1, visibleCount / totalCatCount));
+  }
+  // The x/y anchor pull (below) competes against charge repulsion and
+  // collision every tick, so shrinking the anchors alone only pulls the
+  // settled cluster distance in partway — ramping the pull stronger as the
+  // anchors shrink is what makes a couple of visible galaxies actually end
+  // up close together rather than just less far apart.
+  function currentXYStrength(){
+    return 0.14 + (1 - currentShrink()) * 0.3;
+  }
+  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, currentShrink()).x;
+  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, currentShrink()).y;
 
   // Cross-galaxy links (a term related to one in a different category) stay
   // gentle — enough to bend a line across the gap and show the connection —
@@ -599,28 +625,38 @@ function computeCategoryStats(categories, terms){
   // every term landing close to a specific radius.
   const linkStrength = l => l.source.category === l.target.category ? 0.4 : 0.05;
 
+  const collideRadius = d=>{
+    if(hiddenCategories.has(d.category)) return 0; // see chargeStrength below
+    const nodeR = d.r*1.25 + 11;
+    const labelUp = d.r + 28; // ~labelBaseY + half label height, in starmap.js
+    const labelR = Math.sqrt((d.labelW/2)**2 + labelUp*labelUp) + 4;
+    return Math.max(nodeR, labelR);
+  };
+  // Hidden categories' stars are invisible but stay in the simulation (so
+  // they're already near the right spot if the category is shown again) —
+  // without this, up to ~230 of them still physically repelled/collided
+  // against the handful of genuinely visible stars, which fought the
+  // shrink-together pull above and could leave the visible galaxies further
+  // apart than before instead of closer.
+  const chargeStrength = d=> hiddenCategories.has(d.category) ? 0 : -95;
+
   const sim = d3.forceSimulation(nodes)
     // Distance scales with both endpoints' radii so heavily-connected hub
     // terms (bigger glow halos) don't get pulled in closer than their own
     // glow radius allows — otherwise the busiest nodes stay visually fused
     // together no matter how much collision spacing is added elsewhere.
     .force('link', d3.forceLink(links).id(d=>d.id).distance(d=> 50 + (d.source.r||8)*0.8 + (d.target.r||8)*0.8).strength(linkStrength))
-    .force('charge', d3.forceManyBody().strength(-95))
+    .force('charge', d3.forceManyBody().strength(chargeStrength))
     // Sized to cover the star's own fixed label too (see estimateLabelWorldWidth
     // above and starmap.js buildGraph), not just its glow — since the label no
     // longer dodges overlaps on its own, keeping stars (and their attached
     // labels) apart is the only thing preventing text from overlapping.
-    .force('collide', d3.forceCollide(d=>{
-      const nodeR = d.r*1.25 + 11;
-      const labelUp = d.r + 28; // ~labelBaseY + half label height, in starmap.js
-      const labelR = Math.sqrt((d.labelW/2)**2 + labelUp*labelUp) + 4;
-      return Math.max(nodeR, labelR);
-    }))
+    .force('collide', d3.forceCollide(collideRadius))
     // Pulls each term toward its core-to-periphery position within its own
     // circular galaxy (see radialTarget) — stronger than before so that
     // clear per-galaxy structure wins out over the general link/charge pull.
-    .force('x', d3.forceX(targetX).strength(0.14))
-    .force('y', d3.forceY(targetY).strength(0.14));
+    .force('x', d3.forceX(targetX).strength(currentXYStrength()))
+    .force('y', d3.forceY(targetY).strength(currentXYStrength()));
   // Node/link screen positions are now refreshed every animation frame inside
   // starmap.js (so the gentle drift keeps running even once the simulation
   // settles), so no d3 'tick' handler is needed here.
@@ -628,8 +664,8 @@ function computeCategoryStats(categories, terms){
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
     starMap.resize(width, height);
-    sim.force('x', d3.forceX(targetX).strength(0.14));
-    sim.force('y', d3.forceY(targetY).strength(0.14));
+    sim.force('x', d3.forceX(targetX).strength(currentXYStrength()));
+    sim.force('y', d3.forceY(targetY).strength(currentXYStrength()));
     sim.alpha(0.3).restart();
   });
 
@@ -846,7 +882,27 @@ function computeCategoryStats(categories, terms){
       chip.on('click', function(){
         const off = chip.classed('off');
         chip.classed('off', !off);
+        if(off) hiddenCategories.delete(key); else hiddenCategories.add(key);
         starMap.setCategoryVisible(key, off);
+        // d3's forces only evaluate their accessor once, when (re-)attached —
+        // not every tick — so hiddenCategories/currentShrink having changed
+        // does nothing until every affected force is reassigned here.
+        // Reheating afterward is what makes the still-visible galaxies
+        // actually drift toward their new, tighter anchor positions instead
+        // of staying frozen wherever they'd already settled — and zeroing
+        // out hidden stars' charge/collision is what stops them from
+        // crowding the visible ones apart as everything pulls inward.
+        sim.force('x', d3.forceX(targetX).strength(currentXYStrength()));
+        sim.force('y', d3.forceY(targetY).strength(currentXYStrength()));
+        sim.force('charge', d3.forceManyBody().strength(chargeStrength));
+        sim.force('collide', d3.forceCollide(collideRadius));
+        sim.alpha(0.5).restart();
+        // The camera fit inside setCategoryVisible already framed the stars'
+        // CURRENT positions, but those positions keep drifting toward their
+        // new compact layout for a couple seconds after the reheat above —
+        // re-fit a few more times so the camera keeps catching up with them
+        // instead of settling on a frame sized for the old, spread-out shot.
+        [350, 800, 1500].forEach(delay=> setTimeout(()=> starMap.fitToVisibleCategories(), delay));
       });
     });
   }

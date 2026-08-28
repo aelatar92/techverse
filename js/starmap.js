@@ -1221,6 +1221,7 @@ export function createStarMap({ canvas, width, height, categories }){
     setSelection,
     setConstellation,
     setCategoryVisible,
+    fitToVisibleCategories,
     setHoverLabel,
     setVisited,
     zoomBy,
