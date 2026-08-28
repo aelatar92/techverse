@@ -176,10 +176,13 @@ const dustVertexShader = `
   attribute float aPhase;
   attribute float aSpeed;
   attribute vec2 aAmp;
+  attribute float aHidden;
   uniform float uTime;
   varying vec3 vColor;
+  varying float vHidden;
   void main(){
     vColor = color;
+    vHidden = aHidden;
     vec3 p = position;
     p.x += sin(uTime*aSpeed + aPhase) * aAmp.x;
     p.y += cos(uTime*aSpeed*0.8 + aPhase*1.3) * aAmp.y;
@@ -191,14 +194,21 @@ const dustVertexShader = `
 const dustFragmentShader = `
   uniform sampler2D uTex;
   varying vec3 vColor;
+  varying float vHidden;
   void main(){
     vec4 tex = texture2D(uTex, gl_PointCoord);
-    gl_FragColor = vec4(vColor, tex.a * 0.5);
+    gl_FragColor = vec4(vColor, tex.a * 0.5 * (1.0 - vHidden));
   }
 `;
 
+// Dust particles per category — shared across makeDust (which lays them out
+// in this fixed per-category block size) and the per-category visibility
+// update in createStarMap (which needs to know each category's vertex range
+// to fade its block out via the aHidden attribute above).
+const DUST_PER_CATEGORY = 22;
+
 function makeDust(categories, width, height, dotTexture, zForCat){
-  const perCat = 22;
+  const perCat = DUST_PER_CATEGORY;
   const catEntries = Object.entries(categories);
   const count = catEntries.length * perCat;
   const positions = new Float32Array(count*3);
@@ -207,6 +217,7 @@ function makeDust(categories, width, height, dotTexture, zForCat){
   const phases = new Float32Array(count);
   const speeds = new Float32Array(count);
   const amps = new Float32Array(count*2);
+  const hidden = new Float32Array(count);
   let i = 0;
   catEntries.forEach(([catId, cat])=>{
     const col = new THREE.Color(cat.color);
@@ -234,6 +245,7 @@ function makeDust(categories, width, height, dotTexture, zForCat){
   geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
   geo.setAttribute('aSpeed', new THREE.BufferAttribute(speeds, 1));
   geo.setAttribute('aAmp', new THREE.BufferAttribute(amps, 2));
+  geo.setAttribute('aHidden', new THREE.BufferAttribute(hidden, 1));
   const mat = new THREE.ShaderMaterial({
     uniforms: { uTex: { value: dotTexture }, uTime: { value: 0 } },
     vertexShader: dustVertexShader,
@@ -342,9 +354,13 @@ export function createStarMap({ canvas, width, height, categories }){
   // nebula clouds behind each category cluster — z-jittered around that
   // category's own node depth band so the haze stays visually coherent with
   // its cluster as the camera orbits, instead of collapsing to a line edge-on.
+  const NEBULA_BASE_OPACITY = 0.9;
+  const nebulaSprites = new Map(); // catId -> SpriteMaterial, so hiding a
+  // category can fade its haze out too instead of leaving it lingering with
+  // no stars left inside it.
   Object.entries(categories).forEach(([catId, cat])=>{
     const tex = makeNebulaTexture(cat.color);
-    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.NormalBlending, opacity: 0.9 });
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.NormalBlending, opacity: NEBULA_BASE_OPACITY });
     const sprite = new THREE.Sprite(mat);
     const nx = cat.cx*width - width/2;
     const ny = height/2 - cat.cy*height;
@@ -353,6 +369,7 @@ export function createStarMap({ canvas, width, height, categories }){
     const s = Math.max(width, height) * 0.34;
     sprite.scale.set(s, s, 1);
     nebulaGroup.add(sprite);
+    nebulaSprites.set(catId, mat);
   });
   const dustPoints = makeDust(categories, width, height, dotTex, catId=>categoryBandCenter(catId) - 60);
   nebulaGroup.add(dustPoints);
@@ -762,9 +779,28 @@ export function createStarMap({ canvas, width, height, categories }){
     setSelection(null, new Set());
   }
 
+  // Fades each category's nebula haze and dust to match its stars — without
+  // this, hiding a galaxy's stars left its colored haze/dust lingering with
+  // nothing inside it, which read as visually broken rather than a clean cut.
+  function updateNebulaAndDustVisibility(){
+    nebulaSprites.forEach((mat, catId)=>{
+      mat.opacity = hiddenCategories.has(catId) ? 0 : NEBULA_BASE_OPACITY;
+    });
+    const attr = dustPoints.geometry.getAttribute('aHidden');
+    const arr = attr.array;
+    catKeys.forEach((catId, ci)=>{
+      const h = hiddenCategories.has(catId) ? 1 : 0;
+      const start = ci * DUST_PER_CATEGORY;
+      for(let k=0;k<DUST_PER_CATEGORY;k++) arr[start+k] = h;
+    });
+    attr.needsUpdate = true;
+  }
+
   function setCategoryVisible(catId, visible){
     if(visible) hiddenCategories.delete(catId); else hiddenCategories.add(catId);
     setSelection(currentSelected, currentNeighbors);
+    updateNebulaAndDustVisibility();
+    fitToVisibleCategories();
   }
 
   function setHoverLabel(id, show){
@@ -864,6 +900,44 @@ export function createStarMap({ canvas, width, height, categories }){
     const dir = camera.position.clone().sub(controls.target).normalize();
     const standoff = D0 / 1.25;
     tweenCamera(targetPos.clone().addScaledVector(dir, standoff), targetPos, 750);
+  }
+
+  // World-space centroid + bounding radius of every currently-visible (not
+  // hidden-by-category) star, used by fitToVisibleCategories below to keep
+  // whatever is on screen centered and fully framed as galaxies are toggled.
+  function computeVisibleBounds(){
+    const pts = [];
+    let sx=0, sy=0, sz=0;
+    nodeEntries.forEach(entry=>{
+      if(hiddenCategories.has(entry.node.category)) return;
+      const p = entry.holder.getWorldPosition(new THREE.Vector3());
+      pts.push(p);
+      sx += p.x; sy += p.y; sz += p.z;
+    });
+    if(!pts.length) return null;
+    const center = new THREE.Vector3(sx/pts.length, sy/pts.length, sz/pts.length);
+    let radius = 0;
+    pts.forEach(p=>{ radius = Math.max(radius, center.distanceTo(p)); });
+    return { center, radius: Math.max(radius, 60) };
+  }
+
+  // Recenters and redistances the camera so whichever galaxies are currently
+  // visible stay centered and fully in frame, while preserving the user's
+  // current orbit angle (same "keep looking the same way" feel as centerOn).
+  // A tighter set of visible galaxies naturally pulls the camera closer,
+  // which is also what keeps their apparent clarity/detail looking real
+  // instead of leaving them small and hazy at the old wide-shot distance.
+  function fitToVisibleCategories(){
+    const bounds = computeVisibleBounds();
+    if(!bounds) return;
+    const vFov = THREE.MathUtils.degToRad(fov/2);
+    const hFov = Math.atan(Math.tan(vFov) * camera.aspect);
+    const limitingFov = Math.min(vFov, hFov);
+    const margin = 1.35; // headroom so galaxies don't touch the frame edge
+    let dist = (bounds.radius * margin) / Math.sin(limitingFov);
+    dist = THREE.MathUtils.clamp(dist, controls.minDistance, controls.maxDistance);
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    tweenCamera(bounds.center.clone().addScaledVector(dir, dist), bounds.center, 700);
   }
 
   /* ---- picking (nodes take priority over links) ----
