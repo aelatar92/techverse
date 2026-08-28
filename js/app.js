@@ -190,19 +190,56 @@ function computeSubAngles(terms, categories){
 // close to any one of them, the same way you'd approach a real galaxy field.
 const GALAXY_SPREAD = 2.1;
 
-// `shrink` (1 = full spread, less = anchors pulled toward the shared
-// center) lets the layout dynamically pull the currently-visible galaxies
-// closer together — and closer to screen center — when other categories are
-// hidden, instead of leaving them sitting at their full-map distance apart
-// with a huge empty gap between them. Applied only to the anchor position,
-// not the shape's own internal radius, so a galaxy's own structure never
-// deforms — it just relocates.
-function galaxyCenter(catId, categories, width, height, shrink = 1){
+// `compactCenters` (a Map catId -> {cx,cy} in the same pixel space as the
+// plain formula below, or null/undefined for "use the full 12-galaxy map
+// unmodified") lets the layout override where a category's anchor sits when
+// some other categories are hidden — see buildCompactCenters, which is what
+// actually computes it.
+function galaxyCenter(catId, categories, width, height, compactCenters){
+  if(compactCenters){
+    const c = compactCenters.get(catId);
+    if(c) return c;
+  }
   const cat = categories[catId];
   return {
-    cx: (cat.cx - 0.5) * width * GALAXY_SPREAD * shrink + width * 0.5,
-    cy: (cat.cy - 0.5) * height * GALAXY_SPREAD * shrink + height * 0.5
+    cx: (cat.cx - 0.5) * width * GALAXY_SPREAD + width * 0.5,
+    cy: (cat.cy - 0.5) * height * GALAXY_SPREAD + height * 0.5
   };
+}
+
+// Recomputes where each *visible* category's anchor should sit when some
+// categories are hidden — pulling them together toward screen center, like
+// the plain shrink-in-place this replaced, but spaced evenly around a circle
+// (by their original relative angle from center, just evenly spaced) rather
+// than simply scaling each one's original x/y offset. Scaling in place kept
+// whatever x/y alignment two categories originally happened to have — e.g.
+// networking and security's hand-placed anchors are both on the left side
+// (similar x, very different y), so shrinking them straight toward center
+// left them almost directly above/below each other: a barely-3-pixels-wide
+// sliver that the orbiting camera would occasionally catch edge-on and read
+// as a collapsed line. Even angular spacing has no such degenerate case for
+// any subset size.
+function buildCompactCenters(categories, hiddenCategories, width, height){
+  const catKeys = Object.keys(categories);
+  const visible = catKeys.filter(k=> !hiddenCategories.has(k));
+  const n = visible.length;
+  if(n === 0 || n === catKeys.length) return null; // nothing hidden (or everything hidden) — use the plain map as-is
+  const map = new Map();
+  if(n === 1){
+    map.set(visible[0], { cx: width*0.5, cy: height*0.5 });
+    return map;
+  }
+  const minWH = Math.min(width, height);
+  const radiusFrac = Math.max(0.4, Math.min(1, n / catKeys.length));
+  const radius = minWH * 0.4 * radiusFrac;
+  const sorted = visible
+    .map(k=> ({ k, angle0: Math.atan2(categories[k].cy - 0.5, categories[k].cx - 0.5) }))
+    .sort((a, b)=> a.angle0 - b.angle0);
+  sorted.forEach((e, i)=>{
+    const angle = (i / n) * Math.PI * 2;
+    map.set(e.k, { cx: width*0.5 + Math.cos(angle)*radius, cy: height*0.5 + Math.sin(angle)*radius });
+  });
+  return map;
 }
 
 // One shape per category, picked to fit what the category is about rather
@@ -244,8 +281,8 @@ function crossGalaxyAngle(node, crossCatTargets, categories, width, height){
   return Math.atan2(vy, vx);
 }
 
-function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, shrink = 1){
-  const { cx, cy } = galaxyCenter(node.category, categories, width, height, shrink);
+function radialTarget(node, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, compactCenters){
+  const { cx, cy } = galaxyCenter(node.category, categories, width, height, compactCenters);
   const catData = subAngleData[node.category];
   const shape = GALAXY_SHAPES[node.category] || { type: 'spiral', arms: 2, turns: 0.85 };
   const rotation = catData ? (catData.rotation || 0) : 0;
@@ -594,27 +631,27 @@ function computeCategoryStats(categories, terms){
   }
 
   const subAngleData = computeSubAngles(terms, categories);
-  // Tracks which categories are currently toggled off in the legend, purely
-  // to drive how tightly the visible galaxies' anchors pull together (see
-  // galaxyCenter's `shrink`) — starMap.setCategoryVisible (called alongside
-  // this) is what actually hides their stars/links/haze.
+  // Tracks which categories are currently toggled off in the legend —
+  // starMap.setCategoryVisible (called alongside this) is what actually
+  // hides their stars/links/haze; here it drives compactCenters (see
+  // buildCompactCenters) and how hard the x/y anchor pull is (below).
   const hiddenCategories = new Set();
   const totalCatCount = Object.keys(categories).length;
-  function currentShrink(){
-    const visibleCount = totalCatCount - hiddenCategories.size;
-    if(visibleCount <= 0) return 1;
-    return Math.max(0.22, Math.min(1, visibleCount / totalCatCount));
-  }
+  // Rebuilt (see the legend click handler) whenever hiddenCategories
+  // changes; null means "nothing hidden, use the plain 12-galaxy map".
+  let compactCenters = null;
   // The x/y anchor pull (below) competes against charge repulsion and
-  // collision every tick, so shrinking the anchors alone only pulls the
-  // settled cluster distance in partway — ramping the pull stronger as the
-  // anchors shrink is what makes a couple of visible galaxies actually end
-  // up close together rather than just less far apart.
+  // collision every tick, so relocating the anchors alone only pulls the
+  // settled cluster distance in partway — ramping the pull stronger as
+  // fewer categories are visible is what makes them actually end up close
+  // together rather than just less far apart.
   function currentXYStrength(){
-    return 0.14 + (1 - currentShrink()) * 0.3;
+    const visibleCount = totalCatCount - hiddenCategories.size;
+    const visibleFrac = visibleCount <= 0 ? 1 : Math.max(0.22, Math.min(1, visibleCount / totalCatCount));
+    return 0.14 + (1 - visibleFrac) * 0.3;
   }
-  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, currentShrink()).x;
-  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, currentShrink()).y;
+  const targetX = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, compactCenters).x;
+  const targetY = d=> radialTarget(d, subAngleData, degreeMaxByCat, catTermCount, catOrderIndex, intraDegree, crossDegree, crossCatTargets, categories, width, height, compactCenters).y;
 
   // Cross-galaxy links (a term related to one in a different category) stay
   // gentle — enough to bend a line across the gap and show the connection —
@@ -664,6 +701,7 @@ function computeCategoryStats(categories, terms){
   window.addEventListener('resize', ()=>{
     width = window.innerWidth; height = window.innerHeight;
     starMap.resize(width, height);
+    compactCenters = buildCompactCenters(categories, hiddenCategories, width, height);
     sim.force('x', d3.forceX(targetX).strength(currentXYStrength()));
     sim.force('y', d3.forceY(targetY).strength(currentXYStrength()));
     sim.alpha(0.3).restart();
@@ -883,9 +921,10 @@ function computeCategoryStats(categories, terms){
         const off = chip.classed('off');
         chip.classed('off', !off);
         if(off) hiddenCategories.delete(key); else hiddenCategories.add(key);
+        compactCenters = buildCompactCenters(categories, hiddenCategories, width, height);
         starMap.setCategoryVisible(key, off);
         // d3's forces only evaluate their accessor once, when (re-)attached —
-        // not every tick — so hiddenCategories/currentShrink having changed
+        // not every tick — so hiddenCategories/compactCenters having changed
         // does nothing until every affected force is reassigned here.
         // Reheating afterward is what makes the still-visible galaxies
         // actually drift toward their new, tighter anchor positions instead
