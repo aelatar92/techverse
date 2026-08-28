@@ -936,12 +936,6 @@ function computeCategoryStats(categories, terms){
         sim.force('charge', d3.forceManyBody().strength(chargeStrength));
         sim.force('collide', d3.forceCollide(collideRadius));
         sim.alpha(0.5).restart();
-        // The camera fit inside setCategoryVisible already framed the stars'
-        // CURRENT positions, but those positions keep drifting toward their
-        // new compact layout for a couple seconds after the reheat above —
-        // re-fit a few more times so the camera keeps catching up with them
-        // instead of settling on a frame sized for the old, spread-out shot.
-        [350, 800, 1500].forEach(delay=> setTimeout(()=> starMap.fitToVisibleCategories(), delay));
       });
     });
   }

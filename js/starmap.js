@@ -413,18 +413,6 @@ export function createStarMap({ canvas, width, height, categories }){
     nodeGroup.clear();
     nodeEntries.clear();
 
-    // A category's own x/y spread (in app.js's force layout) scales with its
-    // term count, but z-jitter below was a flat ±45 regardless — fine for a
-    // small category, but a big one (radius ~150-180+) ended up a thin,
-    // pancake-flat disc in z. Barely visible normally since neighboring
-    // galaxies fill the view, but isolating just that one category (legend
-    // toggle + the camera auto-fit) and letting the ambient auto-rotate
-    // sweep around eventually views it edge-on, where it visibly collapses
-    // into a line. Scaling jitter with term count keeps each galaxy roughly
-    // as thick as it is wide, so there's no edge-on angle that flattens it.
-    const catNodeCount = {};
-    nodes.forEach(n=>{ catNodeCount[n.category] = (catNodeCount[n.category]||0) + 1; });
-
     nodes.forEach(node=>{
       const color = new THREE.Color(categories[node.category].color);
       const glowSize = node.r * 4.2;
@@ -472,12 +460,14 @@ export function createStarMap({ canvas, width, height, categories }){
       holder.userData.id = node.id;
       holder.add(glow, core, ring, visitedRing, label, hitArea);
       nodeGroup.add(holder);
-      // Stable per-node depth, banded by category so each galaxy stays
-      // coherent in z too — computed once here, never re-randomized per frame.
-      const zJitterRange = 70 + Math.min(170, (catNodeCount[node.category]||1) * 2.6);
-      const z = categoryBandCenter(node.category) + (hashUnit(node.id)-0.5)*zJitterRange;
+      // Stable per-node hash (not the depth itself — see syncPositions,
+      // where z is computed fresh every frame from the node's live distance
+      // from its galaxy's own center, since that distance isn't settled yet
+      // at graph-build time and z needs to track it for the galaxy to read
+      // as a ball rather than a plate from every angle, including mid-spin).
+      const zHash = hashUnit(node.id) - 0.5;
       nodeEntries.set(node.id, {
-        node, holder, glow, core, ring, visitedRing, label, hitArea, z,
+        node, holder, glow, core, ring, visitedRing, label, hitArea, zHash,
         glowMat, coreMat, ringMat, visitedMat, labelMat, baseColor: color,
         glowSize, coreSize, hitSize,
         // Wider, slightly slower drift than before so stars read as freely
@@ -575,6 +565,9 @@ export function createStarMap({ canvas, width, height, categories }){
   }
 
   const LINK_HALF_WIDTH = 1.3;
+  // Radians/sec — a full turn every ~2 minutes, matching the old ambient
+  // camera auto-rotate's slow, unhurried feel.
+  const GALAXY_SPIN_SPEED = 0.05;
   // Never let a star's glow/core/hit-area shrink below this fraction of its
   // apparent size at the default camera distance (D0), no matter how far
   // the camera dollies out.
@@ -608,10 +601,66 @@ export function createStarMap({ canvas, width, height, categories }){
     rawGroup.worldToLocal(_camTargetLocal.copy(controls.target));
     _camForward.subVectors(_camTargetLocal, _camLocal);
     if(_camForward.lengthSq() < 1e-6) _camForward.set(0, 0, -1); else _camForward.normalize();
+    // Pass 1a: each node's pre-spin x/y and its category's live 2D center —
+    // needed first (and separately from z) because a node's z below is
+    // derived from its live distance to that center, not a value frozen at
+    // graph-build time when the force layout hadn't settled yet.
+    const center2DSums = {};
     nodeEntries.forEach(entry=>{
       const dx = Math.sin(time*entry.driftSpeedX + entry.driftPhaseX) * entry.driftAmpX;
       const dy = Math.cos(time*entry.driftSpeedY + entry.driftPhaseY) * entry.driftAmpY;
-      entry.holder.position.set((entry.node.x||0)+dx, (entry.node.y||0)+dy, entry.z);
+      entry._baseX = (entry.node.x||0)+dx;
+      entry._baseY = (entry.node.y||0)+dy;
+      const cat = entry.node.category;
+      const s = center2DSums[cat] || (center2DSums[cat] = {x:0,y:0,n:0});
+      s.x += entry._baseX; s.y += entry._baseY; s.n++;
+    });
+    Object.values(center2DSums).forEach(s=>{ s.x/=s.n; s.y/=s.n; });
+
+    // Pass 1b: z from each node's own live distance to its galaxy's 2D
+    // center — periphery stars reach as far out in z as they do in x/y, so
+    // the outer envelope reads as a ball, not a plate, from every angle
+    // (including mid-spin, see pass 2 below) — then each category's full
+    // live 3D center (average of these base positions), used both by the
+    // spin rotation below (rotating a galaxy around its own mean leaves that
+    // mean exactly where it was) and by the galaxy bridge ribbons further
+    // down.
+    const centerSums = {};
+    nodeEntries.forEach(entry=>{
+      const cat = entry.node.category;
+      const c2d = center2DSums[cat];
+      const radial2D = Math.hypot(entry._baseX-c2d.x, entry._baseY-c2d.y);
+      const zJitterRange = Math.max(50, radial2D * 1.8);
+      entry._baseZ = categoryBandCenter(cat) + entry.zHash * zJitterRange;
+      const s = centerSums[cat] || (centerSums[cat] = {x:0,y:0,z:0,n:0});
+      s.x += entry._baseX; s.y += entry._baseY; s.z += entry._baseZ; s.n++;
+    });
+    Object.entries(centerSums).forEach(([cat, s])=>{
+      if(!categoryCenters.has(cat)) categoryCenters.set(cat, new THREE.Vector3());
+      categoryCenters.get(cat).set(s.x/s.n, s.y/s.n, s.z/s.n);
+    });
+
+    // Pass 2: spin each galaxy as a rigid body around its own live center —
+    // real per-node rotation, not a camera move, so the view stays put while
+    // each cluster tumbles on its own. A plain y-axis spin (only x/z rotate,
+    // y passes through) reads as a naturally spinning globe; every category
+    // gets its own phase (hashed from its id) so they don't all spin in
+    // lockstep. This only looks right because each galaxy is genuinely
+    // ball-shaped in x/y/z now (see the z-jitter in buildGraph) — spinning a
+    // flat disc would just relocate the old edge-on-collapse moment from a
+    // camera angle to a moment in time instead of fixing it.
+    nodeEntries.forEach(entry=>{
+      const cat = entry.node.category;
+      const center = categoryCenters.get(cat);
+      const spinAngle = time * GALAXY_SPIN_SPEED + hashUnit(cat + '_spin') * Math.PI * 2;
+      const ox = entry._baseX - center.x, oz = entry._baseZ - center.z;
+      const cosA = Math.cos(spinAngle), sinA = Math.sin(spinAngle);
+      entry.holder.position.set(
+        center.x + (ox*cosA - oz*sinA),
+        entry._baseY,
+        center.z + (ox*sinA + oz*cosA)
+      );
+
       const breathe = 1 + 0.035 * Math.sin(time*entry.breatheSpeed + entry.breathePhase);
       const distToCam = entry.holder.position.distanceTo(_camLocal);
       // Real perspective shrink (sizeAttenuation) is a good depth cue up
@@ -630,20 +679,6 @@ export function createStarMap({ canvas, width, height, categories }){
       // apparent size regardless of dolly distance (see comment at creation).
       const labelScale = distToCam / D0;
       entry.label.scale.set(entry.labelScaleX*labelScale, entry.labelScaleY*labelScale, 1);
-    });
-    // Live per-category center (average position of that category's member
-    // stars this frame) — the galaxy bridge ribbons connect these, so they
-    // drift gently along with their galaxy instead of sitting at a fixed
-    // point computed once at layout time.
-    const centerSums = {};
-    nodeEntries.forEach(entry=>{
-      const cat = entry.node.category;
-      const s = centerSums[cat] || (centerSums[cat] = {x:0,y:0,z:0,n:0});
-      s.x += entry.holder.position.x; s.y += entry.holder.position.y; s.z += entry.holder.position.z; s.n++;
-    });
-    Object.entries(centerSums).forEach(([cat, s])=>{
-      if(!categoryCenters.has(cat)) categoryCenters.set(cat, new THREE.Vector3());
-      categoryCenters.get(cat).set(s.x/s.n, s.y/s.n, s.z/s.n);
     });
     // Gentle pulsing halo on the selected node only — cheap since it's a
     // single O(1) lookup rather than a per-node check in the loop above.
@@ -813,7 +848,6 @@ export function createStarMap({ canvas, width, height, categories }){
     if(visible) hiddenCategories.delete(catId); else hiddenCategories.add(catId);
     setSelection(currentSelected, currentNeighbors);
     updateNebulaAndDustVisibility();
-    fitToVisibleCategories();
   }
 
   function setHoverLabel(id, show){
@@ -848,24 +882,11 @@ export function createStarMap({ canvas, width, height, categories }){
   // origin) so dollying all the way out fades into the fog instead of the
   // whole galaxy clipping through the far plane and vanishing.
   controls.maxDistance = Math.min(D0 * 4, camFar - 600);
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.6; // gentle ambient drift, not a spin
+  // No ambient auto-rotate any more — the view stays exactly where the user
+  // left it. Each galaxy spinning on its own axis (see syncPositions) is
+  // what keeps the scene feeling alive instead, without ever moving the
+  // camera on its own.
   controls.update();
-
-  // Auto-rotation pauses the instant the user takes the camera (drag, wheel,
-  // touch — OrbitControls' own 'start'/'end' events cover all input modes)
-  // and resumes on its own a couple of seconds after they let go, so the
-  // galaxy is always either responding to the visitor or drifting on its own.
-  let autoRotateResumeTimer = null;
-  const AUTO_ROTATE_RESUME_MS = 2500;
-  controls.addEventListener('start', ()=>{
-    controls.autoRotate = false;
-    if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
-  });
-  controls.addEventListener('end', ()=>{
-    if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
-    autoRotateResumeTimer = setTimeout(()=>{ controls.autoRotate = true; }, AUTO_ROTATE_RESUME_MS);
-  });
 
   // Small manual RAF tween for programmatic camera moves (zoomBy/zoomReset/
   // centerOn) — disables user input for the duration so a drag can't fight
@@ -874,8 +895,6 @@ export function createStarMap({ canvas, width, height, categories }){
   let cameraTween = null;
   function tweenCamera(toPos, toTarget, duration){
     controls.enabled = false;
-    controls.autoRotate = false;
-    if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
     cameraTween = {
       fromPos: camera.position.clone(), toPos,
       fromTarget: controls.target.clone(), toTarget,
@@ -892,8 +911,6 @@ export function createStarMap({ canvas, width, height, categories }){
     if(raw >= 1){
       cameraTween = null;
       controls.enabled = true;
-      if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer);
-      autoRotateResumeTimer = setTimeout(()=>{ controls.autoRotate = true; }, AUTO_ROTATE_RESUME_MS);
     }
   }
 
@@ -915,43 +932,6 @@ export function createStarMap({ canvas, width, height, categories }){
     tweenCamera(targetPos.clone().addScaledVector(dir, standoff), targetPos, 750);
   }
 
-  // World-space centroid + bounding radius of every currently-visible (not
-  // hidden-by-category) star, used by fitToVisibleCategories below to keep
-  // whatever is on screen centered and fully framed as galaxies are toggled.
-  function computeVisibleBounds(){
-    const pts = [];
-    let sx=0, sy=0, sz=0;
-    nodeEntries.forEach(entry=>{
-      if(hiddenCategories.has(entry.node.category)) return;
-      const p = entry.holder.getWorldPosition(new THREE.Vector3());
-      pts.push(p);
-      sx += p.x; sy += p.y; sz += p.z;
-    });
-    if(!pts.length) return null;
-    const center = new THREE.Vector3(sx/pts.length, sy/pts.length, sz/pts.length);
-    let radius = 0;
-    pts.forEach(p=>{ radius = Math.max(radius, center.distanceTo(p)); });
-    return { center, radius: Math.max(radius, 60) };
-  }
-
-  // Recenters and redistances the camera so whichever galaxies are currently
-  // visible stay centered and fully in frame, while preserving the user's
-  // current orbit angle (same "keep looking the same way" feel as centerOn).
-  // A tighter set of visible galaxies naturally pulls the camera closer,
-  // which is also what keeps their apparent clarity/detail looking real
-  // instead of leaving them small and hazy at the old wide-shot distance.
-  function fitToVisibleCategories(){
-    const bounds = computeVisibleBounds();
-    if(!bounds) return;
-    const vFov = THREE.MathUtils.degToRad(fov/2);
-    const hFov = Math.atan(Math.tan(vFov) * camera.aspect);
-    const limitingFov = Math.min(vFov, hFov);
-    const margin = 1.35; // headroom so galaxies don't touch the frame edge
-    let dist = (bounds.radius * margin) / Math.sin(limitingFov);
-    dist = THREE.MathUtils.clamp(dist, controls.minDistance, controls.maxDistance);
-    const dir = camera.position.clone().sub(controls.target).normalize();
-    tweenCamera(bounds.center.clone().addScaledVector(dir, dist), bounds.center, 700);
-  }
 
   /* ---- picking (nodes take priority over links) ----
      Node hit-testing uses THREE's raycaster against real sprites (accounts for
@@ -1234,7 +1214,6 @@ export function createStarMap({ canvas, width, height, categories }){
     setSelection,
     setConstellation,
     setCategoryVisible,
-    fitToVisibleCategories,
     setHoverLabel,
     setVisited,
     zoomBy,
@@ -1245,6 +1224,6 @@ export function createStarMap({ canvas, width, height, categories }){
     onNodeClick(cb){ onNodeClickCb = cb; },
     onBackgroundClick(cb){ onBackgroundClickCb = cb; },
     onNodeHover(cb){ onNodeHoverCb = cb; },
-    dispose(){ running = false; controls.dispose(); if(autoRotateResumeTimer) clearTimeout(autoRotateResumeTimer); }
+    dispose(){ running = false; controls.dispose(); }
   };
 }
