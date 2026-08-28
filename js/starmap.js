@@ -1175,7 +1175,12 @@ export function createStarMap({ canvas, width, height, categories }){
   let dofAmount = 0;
   const _focusWorldPos = new THREE.Vector3();
   function updateFocus(){
-    const targetAmount = currentSelected ? 0.4 : 0;
+    // Depth-of-field blur used to kick in on selection, but it's a full-
+    // screen postprocess pass — it blurred node labels (rendered as sprites
+    // in the same scene) right along with everything else out of focus,
+    // making surrounding term names hard to read. Always targeting 0 keeps
+    // every label crisp regardless of selection.
+    const targetAmount = 0;
     dofAmount += (targetAmount - dofAmount) * 0.08;
     dofPass.uniforms.uAmount.value = dofAmount;
     if(currentSelected){
