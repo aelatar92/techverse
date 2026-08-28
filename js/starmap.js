@@ -413,6 +413,18 @@ export function createStarMap({ canvas, width, height, categories }){
     nodeGroup.clear();
     nodeEntries.clear();
 
+    // A category's own x/y spread (in app.js's force layout) scales with its
+    // term count, but z-jitter below was a flat ±45 regardless — fine for a
+    // small category, but a big one (radius ~150-180+) ended up a thin,
+    // pancake-flat disc in z. Barely visible normally since neighboring
+    // galaxies fill the view, but isolating just that one category (legend
+    // toggle + the camera auto-fit) and letting the ambient auto-rotate
+    // sweep around eventually views it edge-on, where it visibly collapses
+    // into a line. Scaling jitter with term count keeps each galaxy roughly
+    // as thick as it is wide, so there's no edge-on angle that flattens it.
+    const catNodeCount = {};
+    nodes.forEach(n=>{ catNodeCount[n.category] = (catNodeCount[n.category]||0) + 1; });
+
     nodes.forEach(node=>{
       const color = new THREE.Color(categories[node.category].color);
       const glowSize = node.r * 4.2;
@@ -462,7 +474,8 @@ export function createStarMap({ canvas, width, height, categories }){
       nodeGroup.add(holder);
       // Stable per-node depth, banded by category so each galaxy stays
       // coherent in z too — computed once here, never re-randomized per frame.
-      const z = categoryBandCenter(node.category) + (hashUnit(node.id)-0.5)*90;
+      const zJitterRange = 70 + Math.min(170, (catNodeCount[node.category]||1) * 2.6);
+      const z = categoryBandCenter(node.category) + (hashUnit(node.id)-0.5)*zJitterRange;
       nodeEntries.set(node.id, {
         node, holder, glow, core, ring, visitedRing, label, hitArea, z,
         glowMat, coreMat, ringMat, visitedMat, labelMat, baseColor: color,
