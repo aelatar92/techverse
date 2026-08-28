@@ -4,10 +4,17 @@
     "name": "IPsec",
     "category": "networking",
     "subcategory": "security",
-    "aliases": ["IP Security"],
+    "aliases": [
+      "IP Security"
+    ],
     "definition_ar": "مجموعة بروتوكولات (RFC 4301) تؤمّن حركة بيانات IP عبر المصادقة والتشفير باستخدام بروتوكولي AH وESP، وتُستخدم غالبًا لبناء أنفاق VPN.",
     "definition_en": "IPsec (RFC 4301) is a suite of protocols — Authentication Header (AH) and Encapsulating Security Payload (ESP) — that secures IP traffic through authentication and encryption, most commonly used to build VPN tunnels.",
-    "related": ["vpn", "ssl_tls", "encryption", "ip"],
+    "related": [
+      "vpn",
+      "ssl_tls",
+      "encryption",
+      "ip"
+    ],
     "date_added": "2026-08-27"
   },
   {
@@ -15,10 +22,17 @@
     "name": "WebSocket",
     "category": "web",
     "subcategory": "infrastructure",
-    "aliases": ["WS"],
+    "aliases": [
+      "WS"
+    ],
     "definition_ar": "بروتوكول اتصال (RFC 6455) ينشئ قناة ثنائية الاتجاه ودائمة فوق اتصال TCP واحد بعد مصافحة HTTP، مما يتيح للخادم إرسال بيانات للعميل دون الحاجة لاستعلام متكرر.",
     "definition_en": "A communication protocol (RFC 6455) that establishes a persistent, full-duplex connection over a single TCP socket after an HTTP handshake, letting servers push data to clients without repeated polling.",
-    "related": ["http", "https", "rest_api", "browser"],
+    "related": [
+      "http",
+      "https",
+      "rest_api",
+      "browser"
+    ],
     "date_added": "2026-08-27"
   },
   {
@@ -26,10 +40,17 @@
     "name": "cgroups",
     "category": "linux",
     "subcategory": "process-management",
-    "aliases": ["Control Groups"],
+    "aliases": [
+      "Control Groups"
+    ],
     "definition_ar": "ميزة في نواة لينكس (cgroups(7)) تُنظّم العمليات في مجموعات هرمية وتُحدّد وتراقب وتعزل استهلاكها للموارد كالمعالج والذاكرة والإدخال/الإخراج، وهي حجر الأساس للحاويات مثل Docker.",
     "definition_en": "A Linux kernel feature (cgroups(7)) that organizes processes into hierarchical groups and limits, accounts for, and isolates their use of resources such as CPU, memory, and I/O — a core building block behind containers like Docker.",
-    "related": ["docker", "kubernetes", "process", "systemd"],
+    "related": [
+      "docker",
+      "kubernetes",
+      "process",
+      "systemd"
+    ],
     "date_added": "2026-08-27"
   },
   {
@@ -37,10 +58,17 @@
     "name": "CAP Theorem",
     "category": "databases",
     "subcategory": "nosql",
-    "aliases": ["Brewer's Theorem"],
+    "aliases": [
+      "Brewer's Theorem"
+    ],
     "definition_ar": "نظرية إريك بروير التي تنص على أن مخزن بيانات موزّعًا لا يمكنه ضمان أكثر من اثنتين من ثلاث خصائص هي الاتساق والتوافر وتحمّل التجزئة عند حدوث انقسام في الشبكة، وهي معادلة أساسية في تصميم أنظمة NoSQL.",
     "definition_en": "Eric Brewer's theorem stating that a distributed data store can guarantee at most two of three properties — Consistency, Availability, and Partition tolerance — during a network partition, a core trade-off in NoSQL system design.",
-    "related": ["nosql", "mongodb", "sharding", "replication"],
+    "related": [
+      "nosql",
+      "mongodb",
+      "sharding",
+      "replication"
+    ],
     "date_added": "2026-08-27"
   },
   {
@@ -48,10 +76,17 @@
     "name": "Infrastructure as Code",
     "category": "systems",
     "subcategory": "cloud",
-    "aliases": ["IaC"],
+    "aliases": [
+      "IaC"
+    ],
     "definition_ar": "ممارسة تُدار وتُهيَّأ بها البنية التحتية كالخوادم والشبكات وموازنات الحمل عبر ملفات إعداد وصفية قابلة للقراءة الآلية بدل الإجراءات اليدوية، باستخدام أدوات مثل Terraform وAnsible وCloudFormation.",
     "definition_en": "The practice of managing and provisioning infrastructure — servers, networks, load balancers — through machine-readable declarative configuration files rather than manual processes, using tools like Terraform, Ansible, or CloudFormation.",
-    "related": ["cloud", "devops", "cicd", "kubernetes"],
+    "related": [
+      "cloud",
+      "devops",
+      "cicd",
+      "kubernetes"
+    ],
     "date_added": "2026-08-27"
   },
   {
@@ -59,10 +94,96 @@
     "name": "Retrieval-Augmented Generation",
     "category": "ai",
     "subcategory": "genai",
-    "aliases": ["RAG"],
+    "aliases": [
+      "RAG"
+    ],
     "definition_ar": "تقنية تُحسّن مخرجات نموذج اللغة الكبير باسترجاع مستندات ذات صلة من مصدر معرفي خارجي أولًا ثم إدراجها ضمن الطلب، مما يقلّل الهلوسة ويتيح إجابات محدّثة ومدعومة بمصادر.",
     "definition_en": "A technique that grounds a large language model's output by first retrieving relevant documents from an external knowledge source and feeding them into the prompt, reducing hallucination and enabling up-to-date, source-backed answers.",
-    "related": ["large_language_model", "prompt_engineering", "nlp", "chatbot"],
+    "related": [
+      "large_language_model",
+      "prompt_engineering",
+      "nlp",
+      "chatbot"
+    ],
     "date_added": "2026-08-27"
+  },
+  {
+    "id": "quic",
+    "name": "QUIC",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Quick UDP Internet Connections"
+    ],
+    "definition_ar": "بروتوكول نقل (RFC 9000) يعمل فوق UDP ويدمج مصافحة TLS 1.3 ضمنه لتأمين الاتصال، ويوفر تدفقات متعددة دون حجب أول-بأول (Head-of-Line Blocking)، مع تأسيس اتصال سريع وإمكانية ترحيل مسار الشبكة؛ وهو الأساس الذي يقوم عليه HTTP/3.",
+    "definition_en": "A transport-layer protocol (RFC 9000) built on UDP that integrates the TLS 1.3 handshake for security, provides multiplexed streams without head-of-line blocking, and supports fast connection establishment and network path migration; it forms the basis of HTTP/3.",
+    "related": [
+      "udp",
+      "tcp",
+      "ssl_tls",
+      "http"
+    ],
+    "date_added": "2026-08-28"
+  },
+  {
+    "id": "reverse_proxy",
+    "name": "Reverse Proxy",
+    "category": "networking",
+    "subcategory": "devices",
+    "aliases": [],
+    "definition_ar": "خادم وسيط يقف أمام خادم أو أكثر من الخوادم الخلفية، يستقبل طلبات العملاء ويمررها إليها ثم يعيد الاستجابة كأنه هو من ولّدها؛ يُستخدم لموازنة الحمل وإنهاء اتصالات SSL والتخزين المؤقت، على عكس الوكيل الأمامي الذي يمثّل العملاء لا الخوادم.",
+    "definition_en": "A proxy server that sits in front of one or more backend servers, forwarding client requests to them and returning the response as if it had generated it itself — commonly used for load balancing, SSL termination, and caching, unlike a forward proxy, which represents clients rather than servers.",
+    "related": [
+      "proxy",
+      "loadbalancer",
+      "ssl_tls",
+      "web_server"
+    ],
+    "date_added": "2026-08-28"
+  },
+  {
+    "id": "fine_tuning",
+    "name": "Fine-Tuning",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [],
+    "definition_ar": "عملية إخضاع نموذج مُدرَّب مسبقًا لتدريب إضافي على مجموعة بيانات أصغر ومصنَّفة خاصة بمهمة معينة، لتكييف سلوكه مع مجال أو استخدام محدد بدلاً من تدريب نموذج جديد من الصفر.",
+    "definition_en": "The process of further training a pre-trained model on a smaller, task-specific labeled dataset to adapt its behavior to a particular domain or use case, rather than training a new model from scratch.",
+    "related": [
+      "large_language_model",
+      "training_data",
+      "transformer"
+    ],
+    "date_added": "2026-08-28"
+  },
+  {
+    "id": "unit_testing",
+    "name": "Unit Testing",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [],
+    "definition_ar": "أسلوب اختبار برمجي تُفحص فيه مكونات فردية، كالدوال أو الأصناف، بمعزل عن بقية النظام للتأكد من عملها بشكل صحيح، وعادة ما يكون آليًا ويُشغَّل ضمن خط أنابيب CI/CD.",
+    "definition_en": "A software testing method where individual components, such as functions or classes, are tested in isolation to verify they behave correctly — typically automated and run as part of a CI/CD pipeline.",
+    "related": [
+      "cicd",
+      "code_review",
+      "technical_debt"
+    ],
+    "date_added": "2026-08-28"
+  },
+  {
+    "id": "stored_procedure",
+    "name": "Stored Procedure",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "مجموعة مُجمَّعة مسبقًا ومُسمّاة من عبارات SQL تُخزَّن داخل قاعدة البيانات ويمكن استدعاؤها بمعطيات (parameters) بشكل متكرر، تُستخدم لتغليف العمليات الشائعة وتحسين الأداء وضمان اتساق المنطق.",
+    "definition_en": "A precompiled, named set of SQL statements stored within a database that can accept parameters and be invoked repeatedly, used to encapsulate common operations, improve performance, and enforce consistent logic.",
+    "related": [
+      "sql",
+      "table",
+      "query"
+    ],
+    "date_added": "2026-08-28"
   }
 ]
