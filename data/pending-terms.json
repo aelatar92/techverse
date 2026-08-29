@@ -185,5 +185,97 @@
       "query"
     ],
     "date_added": "2026-08-28"
+  },
+  {
+    "id": "ransomware",
+    "name": "Ransomware",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "Crypto-Ransomware"
+    ],
+    "definition_ar": "نوع متطور من البرمجيات الخبيثة يُشفّر ملفات الجهاز أو النظام ويجعلها وما يعتمد عليها غير قابل للاستخدام، إذ يطالب المهاجمون بفدية مالية مقابل مفتاح فك التشفير، وغالبًا ما يهدّدون أيضًا ببيع أو تسريب البيانات المسروقة إذا لم تُدفع الفدية.",
+    "definition_en": "An evolving form of malware that encrypts files on a device or system, rendering them and anything that depends on them unusable, after which attackers demand a ransom in exchange for the decryption key — often paired with threats to sell or leak exfiltrated data if the ransom isn't paid.",
+    "related": [
+      "malware",
+      "phishing",
+      "encryption",
+      "backup"
+    ],
+    "date_added": "2026-08-29"
+  },
+  {
+    "id": "anycast",
+    "name": "Anycast",
+    "category": "networking",
+    "subcategory": "addressing",
+    "aliases": [
+      "Anycast Routing"
+    ],
+    "definition_ar": "أسلوب عنونة وتوجيه (RFC 4786) يُخصَّص فيه عنوان خدمة واحد لعدّة مواقع مستقلة ومتفرقة جغرافيًا، بحيث يُوجَّه كل طلب وارد إلى أقرب أو أفضل موقع متاح وفق نظام التوجيه؛ يُستخدم على نطاق واسع لتوزيع خوادم DNS الجذرية وعُقد شبكات CDN.",
+    "definition_en": "An addressing and routing technique (RFC 4786) in which a single service address is advertised from multiple, discrete, geographically distributed locations, so each incoming request is routed to the nearest or best-available instance by the routing system; widely used to distribute root DNS servers and CDN edge nodes.",
+    "related": [
+      "dns",
+      "ip",
+      "bgp",
+      "cdn"
+    ],
+    "date_added": "2026-08-29"
+  },
+  {
+    "id": "linux_namespaces",
+    "name": "Linux Namespaces",
+    "category": "linux",
+    "subcategory": "core",
+    "aliases": [
+      "namespaces(7)"
+    ],
+    "definition_ar": "ميزة في نواة لينكس (namespaces(7)) تُغلّف موردًا عامًا في النظام بحيث يبدو لعمليات مجموعة معيّنة أن لديها نسخة معزولة خاصة بها منه، كمساحات أسماء الشبكة أو المعرّفات (PID) أو نظام الملفات (mount)؛ وهي، جنبًا إلى جنب مع cgroups، الأساس الذي تُبنى عليه الحاويات مثل Docker.",
+    "definition_en": "A Linux kernel feature (namespaces(7)) that wraps a global system resource so that processes within a given namespace see their own isolated instance of it — such as network, PID, or mount namespaces; together with cgroups, it forms the kernel foundation containers like Docker are built on.",
+    "related": [
+      "docker",
+      "kubernetes",
+      "process",
+      "kernel"
+    ],
+    "date_added": "2026-08-29"
+  },
+  {
+    "id": "serverless",
+    "name": "Serverless Computing",
+    "category": "systems",
+    "subcategory": "cloud",
+    "aliases": [
+      "FaaS",
+      "Function as a Service"
+    ],
+    "definition_ar": "نموذج حوسبة سحابية يُخفي عن المطوّر إدارة الخوادم والبنية التحتية، إذ يتولى مزوّد السحابة تخصيص الموارد وتوسيعها تلقائيًا حسب الطلب؛ يشمل نموذج \"الدالة كخدمة\" (FaaS) الذي يُنفَّذ فيه الكود عند وقوع حدث معيّن دون الحاجة لتشغيل خادم دائم.",
+    "definition_en": "A cloud computing model that abstracts server and infrastructure management away from the developer, with the cloud provider automatically allocating and scaling resources on demand; it includes the Function-as-a-Service (FaaS) model, where code runs in response to an event without a continuously running server.",
+    "related": [
+      "cloud",
+      "iaas",
+      "paas",
+      "saas"
+    ],
+    "date_added": "2026-08-29"
+  },
+  {
+    "id": "vector_database",
+    "name": "Vector Database",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": [
+      "Vector DB",
+      "Vector Store"
+    ],
+    "definition_ar": "قاعدة بيانات متخصّصة في تخزين واسترجاع المتجهات العددية (embeddings) التي تمثّل المعنى الدلالي لنصوص أو صور أو بيانات أخرى، وتُتيح البحث عن أقرب الجيران (nearest neighbor) بدل المطابقة الحرفية؛ ركيزة أساسية لأنظمة الاسترجاع المعزَّز بالتوليد (RAG).",
+    "definition_en": "A database specialized in storing and retrieving numerical vectors (embeddings) that represent the semantic meaning of text, images, or other data, enabling approximate nearest-neighbor similarity search rather than exact matching — a core building block behind Retrieval-Augmented Generation (RAG) systems.",
+    "related": [
+      "nosql",
+      "large_language_model",
+      "nlp",
+      "index_db"
+    ],
+    "date_added": "2026-08-29"
   }
 ]
