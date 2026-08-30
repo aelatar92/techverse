@@ -277,5 +277,112 @@
       "index_db"
     ],
     "date_added": "2026-08-29"
+  },
+  {
+    "id": "pki",
+    "name": "Public Key Infrastructure",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "PKI",
+      "X.509 PKI"
+    ],
+    "definition_ar": "مجموعة من الأدوار والسياسات والأجهزة والبرمجيات والإجراءات (يحدّدها معيار الشهادات X.509 في RFC 5280) تُستخدم لإصدار الشهادات الرقمية وتوزيعها وإدارتها وإلغائها؛ تربط هذه الشهادات المفاتيح العامة بهويات أصحابها وتشكّل أساس الثقة الذي تقوم عليه HTTPS والتوقيع الرقمي وتشفير البريد الإلكتروني.",
+    "definition_en": "A set of roles, policies, hardware, software, and procedures — profiled for X.509 certificates in RFC 5280 — used to issue, distribute, manage, and revoke digital certificates that bind public keys to identities, forming the trust foundation behind HTTPS, code signing, and encrypted email.",
+    "related": [
+      "certificate",
+      "ssl_tls",
+      "encryption",
+      "mfa"
+    ],
+    "date_added": "2026-08-30"
+  },
+  {
+    "id": "tpm",
+    "name": "Trusted Platform Module",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": [
+      "TPM",
+      "TPM 2.0"
+    ],
+    "definition_ar": "شريحة معالج تشفير مخصّصة، موحّدة ضمن معيار ISO/IEC 11889، تُولّد وتُخزّن المفاتيح التشفيرية وقياسات حالة الجهاز داخل عتاد مقاوم للعبث؛ تشكّل الأساس لميزات مثل تشفير الأقراص (BitLocker) والإقلاع الآمن (Secure Boot) والتحقق عن بُعد من سلامة النظام.",
+    "definition_en": "A dedicated cryptoprocessor chip, standardized as ISO/IEC 11889, that securely generates and stores cryptographic keys and platform integrity measurements in tamper-resistant hardware, underpinning features such as disk encryption (BitLocker), Secure Boot, and remote attestation.",
+    "related": [
+      "encryption",
+      "bios",
+      "cpu"
+    ],
+    "date_added": "2026-08-30"
+  },
+  {
+    "id": "merkle_tree",
+    "name": "Merkle Tree",
+    "category": "blockchain",
+    "subcategory": "fundamentals",
+    "aliases": [
+      "Hash Tree",
+      "Merkle Root"
+    ],
+    "definition_ar": "شجرة ثنائية من قيم التجزئة (hash) تكون فيها كل ورقة تجزئة لكتلة بيانات، وكل عقدة غير طرفية تجزئة لعقدتيها الفرعيتين، لتنتهي بقيمة واحدة تُسمّى جذر ميركل (Merkle Root)؛ تتيح هذه البنية التحقق من وجود عنصر بيانات معيّن، كمعاملة داخل كتلة بيتكوين، دون تنزيل مجموعة البيانات كاملة.",
+    "definition_en": "A binary tree of hashes in which each leaf node is the hash of a data block and each non-leaf node is the hash of its two children, collapsing into a single Merkle root that lets a verifier confirm a piece of data's inclusion in a large set — such as a transaction in a Bitcoin block — without downloading the entire dataset.",
+    "related": [
+      "hash",
+      "block",
+      "blockchain",
+      "bitcoin"
+    ],
+    "date_added": "2026-08-30"
+  },
+  {
+    "id": "oauth2",
+    "name": "OAuth 2.0",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "OAuth"
+    ],
+    "definition_ar": "إطار عمل للتفويض (RFC 6749) يتيح لتطبيق طرف ثالث الحصول على وصول محدود إلى موارد المستخدم في خدمة أخرى، عبر رموز وصول (access tokens) تُصدَر بعد موافقة المستخدم، دون أن يطّلع التطبيق على كلمة مرور المستخدم إطلاقًا.",
+    "definition_en": "An authorization framework (RFC 6749) that lets a third-party application obtain limited access to a user's resources on another service, using access tokens issued after the user approves the request, without the application ever seeing the user's password.",
+    "related": [
+      "mfa",
+      "rest_api",
+      "webhook"
+    ],
+    "date_added": "2026-08-30"
+  },
+  {
+    "id": "lvm",
+    "name": "LVM",
+    "category": "linux",
+    "subcategory": "filesystem",
+    "aliases": [
+      "Logical Volume Manager"
+    ],
+    "definition_ar": "إطار عمل ضمن نواة لينكس يعتمد على device-mapper (lvm(8))، يجمع أجهزة التخزين الفعلية في مجموعات تخزين (Volume Groups) ثم يقسّمها إلى مجلدات منطقية (Logical Volumes) يمكن تغيير حجمها أو تقسيمها أو تكرارها أو أخذ لقطات منها بمعزل عن تخطيط القرص الفعلي.",
+    "definition_en": "A device-mapper framework in the Linux kernel (lvm(8)) that pools physical storage devices into volume groups and carves them into logical volumes that can be resized, striped, mirrored, or snapshotted independently of the underlying disk layout.",
+    "related": [
+      "partition",
+      "filesystem",
+      "raid"
+    ],
+    "date_added": "2026-08-30"
+  },
+  {
+    "id": "vxlan",
+    "name": "VXLAN",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Virtual Extensible LAN"
+    ],
+    "definition_ar": "بروتوكول تغليف من نوع Overlay موصوف في RFC 7348، ينقل إطارات إيثرنت من الطبقة الثانية داخل حزم UDP عبر شبكة من الطبقة الثالثة، معتمدًا على معرّف شبكة VXLAN مكوّن من 24 بت (VNI) يدعم حتى 16 مليون شريحة افتراضية معزولة — أكثر بكثير من حد 4094 شريحة في VLAN — لتلبية احتياجات مراكز البيانات متعددة المستأجرين.",
+    "definition_en": "An overlay encapsulation protocol (RFC 7348) that tunnels Layer 2 Ethernet frames inside UDP packets across a Layer 3 network, using a 24-bit VXLAN Network Identifier (VNI) to support up to 16 million isolated virtual segments — far more than VLAN's 4094 — for multi-tenant data centers.",
+    "related": [
+      "vlan",
+      "ip",
+      "mpls"
+    ],
+    "date_added": "2026-08-30"
   }
 ]
