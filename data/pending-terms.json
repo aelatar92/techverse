@@ -384,5 +384,92 @@
       "mpls"
     ],
     "date_added": "2026-08-30"
+  },
+  {
+    "id": "wireguard",
+    "name": "WireGuard",
+    "category": "networking",
+    "subcategory": "security",
+    "aliases": [
+      "WG"
+    ],
+    "definition_ar": "بروتوكول VPN حديث ومفتوح المصدر ينشئ أنفاقًا مشفّرة فوق UDP باستخدام مجموعة تشفير ثابتة وبسيطة تشمل Curve25519 لتبادل المفاتيح وChaCha20-Poly1305 للتشفير الموثّق، ويعتمد على إطار عمل بروتوكول Noise للمصافحة؛ ينتج عن ذلك قاعدة كود لا تتجاوز نحو 4000 سطر، أصغر بكثير من IPsec أو OpenVPN، مما يسهّل تدقيقها ويحسّن أداءها.",
+    "definition_en": "A modern VPN protocol and open-source implementation that establishes encrypted tunnels over UDP using a fixed, minimal cryptographic suite — Curve25519 for key exchange, ChaCha20-Poly1305 for authenticated encryption, and the Noise protocol framework for its handshake — resulting in a codebase roughly 4,000 lines long, far smaller than IPsec or OpenVPN, which simplifies auditing and improves performance.",
+    "related": [
+      "vpn",
+      "encryption",
+      "udp"
+    ],
+    "date_added": "2026-08-31"
+  },
+  {
+    "id": "dnssec",
+    "name": "DNSSEC",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "DNS Security Extensions"
+    ],
+    "definition_ar": "مجموعة امتدادات لبروتوكول DNS (موصوفة في RFC 4033 حتى 4035) تضيف مصادقة المصدر وسلامة البيانات لاستجابات DNS عبر سلاسل من التوقيعات الرقمية ترتكز على المنطقة الجذرية، مما يتيح لمحلّلات DNS التحقق تشفيريًا من أن السجل صادر عن مصدره الموثوق ولم يُعبث به أثناء النقل، دون أن تُشفّر حركة بيانات DNS نفسها.",
+    "definition_en": "A suite of IETF extensions (RFC 4033-4035) that adds origin authentication and data integrity to DNS responses through chains of digital signatures anchored at the root zone, letting resolvers cryptographically verify that a record came from its authoritative source and was not tampered with in transit — though it does not encrypt DNS traffic itself.",
+    "related": [
+      "dns",
+      "hash",
+      "encryption"
+    ],
+    "date_added": "2026-08-31"
+  },
+  {
+    "id": "ebpf",
+    "name": "eBPF",
+    "category": "linux",
+    "subcategory": "core",
+    "aliases": [
+      "Extended Berkeley Packet Filter"
+    ],
+    "definition_ar": "تقنية في نواة لينكس تُشغّل برامج بايت كود معزولة (sandboxed) ومُتحقَّق منها مباشرة داخل مساحة النواة، مرتبطة بنقاط ربط (hooks) كأحداث الشبكة أو استدعاءات النظام أو نقاط التتبع، دون تعديل كود النواة أو تحميل وحدات خارجية؛ توسّع مرشّح الحزم الأصلي BPF ليصبح آلة افتراضية عامة الغرض داخل النواة، وتقوم عليها أدوات حديثة للشبكات (مثل Cilium) والمراقبة والأمن.",
+    "definition_en": "A Linux kernel technology that runs sandboxed, verified bytecode programs directly in kernel space — attached to hooks such as network events, system calls, or tracepoints — without modifying kernel source or loading external modules, powering modern networking (Cilium), observability, and security tooling by extending the original BSD packet filter (BPF) into a general-purpose in-kernel virtual machine.",
+    "related": [
+      "kernel",
+      "iptables",
+      "process"
+    ],
+    "date_added": "2026-08-31"
+  },
+  {
+    "id": "jwt",
+    "name": "JSON Web Token",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "JWT"
+    ],
+    "definition_ar": "معيار مفتوح (RFC 7519) لتمثيل الادّعاءات (claims) ضمن بنية JSON مضغوطة وآمنة للاستخدام في الروابط، يمكن توقيعها رقميًا (بصيغة JWS) أو تشفيرها (بصيغة JWE)؛ يتيح للخادم إصدار رمز مكتفٍ ذاتيًا يحمل عادة ادّعاءات الهوية ووقت انتهاء الصلاحية، بحيث تتحقق منه الأطراف الأخرى دون الحاجة لاستعلام قاعدة بيانات، ويُستخدم غالبًا لحمل حالة المصادقة في واجهات API وبعد تسجيل الدخول عبر OAuth 2.0.",
+    "definition_en": "An open standard (RFC 7519) for representing claims as a compact, URL-safe JSON structure that can be digitally signed (as a JWS) or encrypted (as a JWE), letting a server issue a self-contained token — typically carrying identity claims and an expiry — that other parties can verify without a database lookup, commonly used to carry authentication state in APIs and after an OAuth 2.0 login.",
+    "related": [
+      "mfa",
+      "rest_api",
+      "https"
+    ],
+    "date_added": "2026-08-31"
+  },
+  {
+    "id": "csrf",
+    "name": "Cross-Site Request Forgery",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "CSRF",
+      "XSRF",
+      "Session Riding"
+    ],
+    "definition_ar": "هجوم يخدع متصفح مستخدم مسجَّل الدخول لإرسال طلب غير مرغوب يُغيّر حالة تطبيق ويب هو مسجَّل الدخول إليه حاليًا، كتحويل أموال أو تغيير بريد إلكتروني، وذلك باستغلال إرفاق المتصفح التلقائي لملفات تعريف الارتباط الخاصة بالجلسة؛ يُخفَّف عادة عبر رموز مقاومة CSRF أو ملفات تعريف ارتباط SameSite أو التحقق من مصدر الطلب.",
+    "definition_en": "An attack that tricks an authenticated user's browser into submitting an unwanted, state-changing request to a web application the victim is currently logged into — such as a fund transfer or email change — by exploiting the browser's automatic inclusion of session cookies, typically mitigated with anti-CSRF tokens, SameSite cookies, or origin checks.",
+    "related": [
+      "cookie",
+      "cors",
+      "http"
+    ],
+    "date_added": "2026-08-31"
   }
 ]
