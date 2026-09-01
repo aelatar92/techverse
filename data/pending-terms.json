@@ -471,5 +471,101 @@
       "http"
     ],
     "date_added": "2026-08-31"
+  },
+  {
+    "id": "smtp",
+    "name": "SMTP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Simple Mail Transfer Protocol"
+    ],
+    "definition_ar": "بروتوكول قياسي على الإنترنت (RFC 5321) لنقل رسائل البريد الإلكتروني الصادرة بين خوادم البريد ومن العملاء إلى الخوادم عبر TCP، ويُستخدم غالبًا المنفذ 25 للتناقل بين الخوادم والمنفذ 587 لإرسال العميل الموثّق.",
+    "definition_en": "An Internet standard protocol (RFC 5321) for relaying and delivering outgoing email between mail servers and from clients to servers over TCP, typically using port 25 for server-to-server relay and port 587 for authenticated client submission.",
+    "related": [
+      "dns",
+      "tcp",
+      "port",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-01"
+  },
+  {
+    "id": "saml",
+    "name": "SAML",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "Security Assertion Markup Language",
+      "SAML 2.0"
+    ],
+    "definition_ar": "معيار قائم على XML صادر عن منظمة OASIS (SAML 2.0) لتبادل تأكيدات مصادقة وتفويض موقّعة رقميًا بين مزوّد الهوية ومزوّد الخدمة، يُستخدم غالبًا لتسجيل الدخول الموحّد (SSO) في بيئات الشركات، ويختلف عن OAuth 2.0 الذي يُعنى بتفويض الوصول للواجهات البرمجية لا بمصادقة المستخدم.",
+    "definition_en": "An XML-based OASIS standard (SAML 2.0) for exchanging digitally-signed authentication and authorization assertions between an Identity Provider and a Service Provider, commonly used for enterprise single sign-on — unlike OAuth 2.0, which governs delegated API authorization rather than user authentication.",
+    "related": [
+      "oauth2",
+      "jwt",
+      "mfa",
+      "pki"
+    ],
+    "date_added": "2026-09-01"
+  },
+  {
+    "id": "dmz",
+    "name": "DMZ",
+    "category": "networking",
+    "subcategory": "security",
+    "aliases": [
+      "Demilitarized Zone",
+      "Perimeter Network",
+      "Screened Subnet"
+    ],
+    "definition_ar": "شبكة فرعية فعلية أو منطقية تعرض الخدمات المواجهة للجمهور (كخوادم الويب والبريد و DNS) لشبكة غير موثوقة مع عزلها عن الشبكة الداخلية المحلية، وتُنفَّذ إما بجدار حماية واحد بثلاث واجهات أو بجدارَي حماية متتاليين.",
+    "definition_en": "A physical or logical subnetwork that exposes an organization's public-facing services (web, mail, DNS servers) to an untrusted network while isolating them from the internal LAN, implemented with either a single three-interface firewall or two firewalls in series.",
+    "related": [
+      "firewall",
+      "reverse_proxy",
+      "nat",
+      "vpn"
+    ],
+    "date_added": "2026-09-01"
+  },
+  {
+    "id": "lacp",
+    "name": "LACP",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Link Aggregation Control Protocol",
+      "802.3ad",
+      "EtherChannel"
+    ],
+    "definition_ar": "بروتوكول قياسي (IEEE 802.1AX، وسابقًا 802.3ad) يتيح للمحوّلات التفاوض التلقائي وتجميع عدة وصلات إيثرنت فعلية في وصلة منطقية واحدة، مما يزيد سعة النقل ويوفّر تعافيًا تلقائيًا عند تعطّل إحدى الوصلات.",
+    "definition_en": "An IEEE 802.1AX (formerly 802.3ad) protocol that lets switches automatically negotiate and bundle multiple physical Ethernet links into one logical link aggregation group, increasing throughput and providing failover if a member link fails.",
+    "related": [
+      "ethernet",
+      "switch",
+      "vlan",
+      "stp"
+    ],
+    "date_added": "2026-09-01"
+  },
+  {
+    "id": "iscsi",
+    "name": "iSCSI",
+    "category": "systems",
+    "subcategory": "storage",
+    "aliases": [
+      "Internet Small Computer Systems Interface",
+      "Internet SCSI"
+    ],
+    "definition_ar": "بروتوكول لشبكات التخزين (RFC 3720 / RFC 7143) يُحزّم أوامر وبيانات SCSI ضمن TCP/IP، مما يتيح للعميل الوصول إلى جهاز تخزين كتلي بعيد عبر شبكة IP عادية (غالبًا عبر المنفذ 3260) وكأنه قرص متصل محليًا.",
+    "definition_en": "A storage networking protocol (RFC 3720, consolidated by RFC 7143) that encapsulates SCSI commands and data within TCP/IP, allowing a client to access a remote block storage device over a standard IP network (typically port 3260) as though it were a locally attached disk.",
+    "related": [
+      "tcp",
+      "ip",
+      "raid",
+      "backup"
+    ],
+    "date_added": "2026-09-01"
   }
 ]
