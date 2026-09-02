@@ -567,5 +567,118 @@
       "backup"
     ],
     "date_added": "2026-09-01"
+  },
+  {
+    "id": "xss",
+    "name": "Cross-Site Scripting",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "XSS",
+      "Reflected XSS",
+      "Stored XSS"
+    ],
+    "definition_ar": "ثغرة في تطبيقات الويب (CWE-79) تنتج عن عرض مدخلات غير موثوقة في صفحة دون تعقيمها بشكل صحيح، مما يسمح للمهاجم بحقن سكربتات تُنفَّذ داخل متصفح الضحية؛ وتشمل أنواعها XSS المنعكس والمخزَّن والمعتمد على DOM.",
+    "definition_en": "A web application vulnerability (CWE-79) where untrusted input is rendered in a page without proper sanitization, letting an attacker inject client-side scripts that execute in a victim's browser session — common types include reflected, stored, and DOM-based XSS.",
+    "related": [
+      "html",
+      "javascript",
+      "cors",
+      "cookie",
+      "pentest"
+    ],
+    "date_added": "2026-09-02"
+  },
+  {
+    "id": "sql_injection",
+    "name": "SQL Injection",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "SQLi"
+    ],
+    "definition_ar": "ثغرة حقن (CWE-89) تُدرَج فيها مدخلات المستخدم غير المعالجة مباشرة ضمن استعلام SQL، مما يتيح للمهاجم تغيير منطق الاستعلام لقراءة بيانات قاعدة البيانات أو تعديلها أو حذفها، أو حتى تجاوز المصادقة بالكامل.",
+    "definition_en": "An injection vulnerability (CWE-89) in which unsanitized user input is concatenated into an SQL query, allowing an attacker to alter the query's logic to read, modify, or delete database data, or bypass authentication entirely.",
+    "related": [
+      "sql",
+      "database",
+      "query",
+      "pentest",
+      "malware"
+    ],
+    "date_added": "2026-09-02"
+  },
+  {
+    "id": "webassembly",
+    "name": "WebAssembly",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": [
+      "Wasm"
+    ],
+    "definition_ar": "تنسيق تعليمات ثنائي لآلة افتراضية قائمة على المكدس، اعتمده W3C كتوصية رسمية في ديسمبر 2019، يتيح تشغيل شيفرات مكتوبة بلغات مثل C وC++ وRust داخل متصفحات الويب بسرعة قريبة من الأداء الأصلي جنبًا إلى جنب مع JavaScript.",
+    "definition_en": "A binary instruction format for a stack-based virtual machine, standardized as a W3C Recommendation in December 2019, that lets code written in languages like C, C++, and Rust run in web browsers at near-native speed alongside JavaScript.",
+    "related": [
+      "javascript",
+      "browser",
+      "html",
+      "css"
+    ],
+    "date_added": "2026-09-02"
+  },
+  {
+    "id": "matter_protocol",
+    "name": "Matter",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [
+      "Matter Protocol",
+      "CHIP",
+      "Connected Home over IP"
+    ],
+    "definition_ar": "معيار اتصال مفتوح ومجاني لأجهزة المنزل الذكي طورته Connectivity Standards Alliance وأُطلق عام 2022، يتيح تشغيل أجهزة من شركات مختلفة معًا بشكل متكامل عبر طبقة تطبيق مشتركة قائمة على IP تعمل فوق Wi-Fi أو Ethernet أو Thread.",
+    "definition_en": "An open, royalty-free smart home connectivity standard developed by the Connectivity Standards Alliance and launched in 2022, enabling devices from different vendors to interoperate over a shared IP-based application layer running on Wi-Fi, Ethernet, or Thread.",
+    "related": [
+      "zigbee",
+      "ble",
+      "lorawan",
+      "smart_home",
+      "iot"
+    ],
+    "date_added": "2026-09-02"
+  },
+  {
+    "id": "grpc",
+    "name": "gRPC",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": [
+      "gRPC Remote Procedure Calls"
+    ],
+    "definition_ar": "إطار عمل مفتوح المصدر عالي الأداء لاستدعاء الإجراءات عن بُعد (RPC) طوّرته Google في الأصل، يستخدم HTTP/2 للنقل وProtocol Buffers لتعريف الواجهات والتسلسل الثنائي، ويدعم الاستدعاءات الأحادية والبثية عبر لغات برمجة متعددة.",
+    "definition_en": "An open-source, high-performance RPC framework originally developed by Google that uses HTTP/2 for transport and Protocol Buffers for interface definition and binary serialization, supporting unary and streaming calls across multiple languages.",
+    "related": [
+      "rest_api",
+      "graphql",
+      "json",
+      "api"
+    ],
+    "date_added": "2026-09-02"
+  },
+  {
+    "id": "tacacs_plus",
+    "name": "TACACS+",
+    "category": "networking",
+    "subcategory": "security",
+    "aliases": [
+      "Terminal Access Controller Access-Control System Plus"
+    ],
+    "definition_ar": "بروتوكول AAA نشأ في Cisco وموثَّق في RFC 8907، يفصل بين المصادقة والتفويض والمحاسبة كخدمات مستقلة عبر منفذ TCP رقم 49، ويُستخدم غالبًا للتحكم المركزي بالوصول الإداري إلى أجهزة الشبكة، على عكس RADIUS الذي يدمج المصادقة والتفويض معًا.",
+    "definition_en": "A Cisco-originated AAA protocol, documented in RFC 8907, that separates authentication, authorization, and accounting into distinct services over TCP port 49 — used mainly for centralized administrative access control on network devices, unlike RADIUS which combines authentication and authorization.",
+    "related": [
+      "radius",
+      "firewall"
+    ],
+    "date_added": "2026-09-02"
   }
 ]
