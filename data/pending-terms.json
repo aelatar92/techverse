@@ -680,5 +680,111 @@
       "firewall"
     ],
     "date_added": "2026-09-02"
+  },
+  {
+    "id": "webrtc",
+    "name": "WebRTC",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": [
+      "Web Real-Time Communication"
+    ],
+    "definition_ar": "إطار عمل (RFC 8825) من البروتوكولات وواجهات برمجة المتصفح يتيح اتصالاً مباشرًا بين المتصفحات لنقل الصوت والفيديو والبيانات من نظير إلى نظير دون إضافات خارجية، معتمدًا على ICE/STUN/TURN لاجتياز NAT وتشفير DTLS-SRTP لحماية الوسائط.",
+    "definition_en": "A framework (RFC 8825) of protocols and browser APIs enabling direct peer-to-peer audio, video, and data communication between browsers without plugins, using ICE/STUN/TURN for NAT traversal and DTLS-SRTP to encrypt media.",
+    "related": [
+      "browser",
+      "udp",
+      "encryption"
+    ],
+    "date_added": "2026-09-03"
+  },
+  {
+    "id": "ecmp",
+    "name": "ECMP",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Equal-Cost Multi-Path Routing",
+      "Equal-Cost Multipath"
+    ],
+    "definition_ar": "استراتيجية توجيه (RFC 2991/2992) توزّع حزم البيانات المتجهة إلى وجهة واحدة عبر عدة مسارات متساوية التكلفة، باستخدام تقنيات التجزئة (hashing) لتوزيع الحمل وزيادة النطاق الترددي الكلي وتحسين المرونة.",
+    "definition_en": "A routing strategy (RFC 2991/2992) that forwards packets to a single destination across multiple paths of equal routing cost, using hashing techniques to distribute load and increase aggregate bandwidth and resilience.",
+    "related": [
+      "bgp",
+      "ospf",
+      "router",
+      "loadbalancer"
+    ],
+    "date_added": "2026-09-03"
+  },
+  {
+    "id": "semver",
+    "name": "Semantic Versioning",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [
+      "SemVer"
+    ],
+    "definition_ar": "مخطط ترقيم إصدارات (مواصفة semver.org 2.0.0) بصيغة MAJOR.MINOR.PATCH، حيث تشير زيادة MAJOR إلى تغييرات جذرية غير متوافقة في الواجهة البرمجية، وزيادة MINOR إلى إضافات متوافقة مع الإصدارات السابقة، وزيادة PATCH إلى إصلاحات أخطاء متوافقة.",
+    "definition_en": "A versioning scheme (semver.org spec 2.0.0) using MAJOR.MINOR.PATCH numbers, where MAJOR increments signal breaking API changes, MINOR increments signal backward-compatible additions, and PATCH increments signal backward-compatible bug fixes.",
+    "related": [
+      "api",
+      "git",
+      "github"
+    ],
+    "date_added": "2026-09-03"
+  },
+  {
+    "id": "olap",
+    "name": "OLAP",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [
+      "Online Analytical Processing"
+    ],
+    "definition_ar": "فئة من أنظمة قواعد البيانات مُحسَّنة لتنفيذ استعلامات تحليلية معقدة على مجموعات بيانات كبيرة وغالبًا غير مُطبَّعة، على عكس أنظمة OLTP التي تتعامل مع عمليات قراءة وكتابة معاملاتية عالية الحجم.",
+    "definition_en": "A category of database systems optimized for complex analytical queries over large, often denormalized datasets, contrasted with OLTP systems that handle high-volume transactional read/write operations.",
+    "related": [
+      "database",
+      "sql",
+      "normalization",
+      "query"
+    ],
+    "date_added": "2026-09-03"
+  },
+  {
+    "id": "service_mesh",
+    "name": "Service Mesh",
+    "category": "systems",
+    "subcategory": "servers-services",
+    "aliases": [
+      "Sidecar Proxy Mesh"
+    ],
+    "definition_ar": "طبقة بنية تحتية تدير الاتصال بين الخدمات في معمارية الخدمات المصغّرة، عادةً عبر وكلاء جانبيين (sidecar proxies) لكل خدمة مثل Envoy تنسّقها طبقة تحكم مركزية، وتتولى توجيه حركة المرور وتشفير mTLS وتوزيع الحمل والمراقبة.",
+    "definition_en": "An infrastructure layer that manages service-to-service communication in a microservices architecture — typically via per-service sidecar proxies (e.g., Envoy) coordinated by a control plane — handling traffic routing, mutual TLS, load balancing, and observability.",
+    "related": [
+      "microservices",
+      "loadbalancer",
+      "kubernetes",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-03"
+  },
+  {
+    "id": "context_window",
+    "name": "Context Window",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [
+      "Context Length"
+    ],
+    "definition_ar": "أقصى كمية من النص، مقاسة بالرموز (tokens)، يمكن لنموذج اللغة الكبير معالجتها كمدخل وتوليدها كمخرج ضمن تفاعل واحد؛ ويُقتطع أو يُفقَد أي نص يتجاوز هذا الحد ما لم يُلخَّص أو يُسترجَع مجددًا في المحادثة.",
+    "definition_en": "The maximum amount of text, measured in tokens, that a large language model can process as input and generate as output within a single interaction; content beyond this limit is truncated or must be summarized or re-retrieved into the conversation.",
+    "related": [
+      "large_language_model",
+      "transformer",
+      "prompt_engineering"
+    ],
+    "date_added": "2026-09-03"
   }
 ]
