@@ -786,5 +786,97 @@
       "prompt_engineering"
     ],
     "date_added": "2026-09-03"
+  },
+  {
+    "id": "mitm_attack",
+    "name": "Man-in-the-Middle Attack",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "MITM",
+      "On-Path Attack"
+    ],
+    "definition_ar": "هجوم (مصنّف ضمن CWE-300) يعترض فيه المهاجم سرًا الاتصال بين طرفين يظنّان أنهما يتواصلان مباشرة، وقد يعيد توجيه الرسائل أو يعدّلها، غالبًا باستغلال ضعف التحقق من هوية الطرفين كانتحال ARP أو تزوير شهادة TLS؛ ويُعد التحقق الصارم من الشهادات وبروتوكولات مثل PKI وSSL/TLS خط الدفاع الأساسي ضده.",
+    "definition_en": "An attack (classified as CWE-300) in which an adversary secretly intercepts and can relay or alter communication between two parties who believe they are talking directly to each other, often by exploiting inadequate endpoint verification such as ARP spoofing or a forged TLS certificate; strong certificate validation and protocols like PKI and SSL/TLS are the primary defenses.",
+    "related": [
+      "ssl_tls",
+      "arp",
+      "certificate",
+      "encryption"
+    ],
+    "date_added": "2026-09-04"
+  },
+  {
+    "id": "passkey",
+    "name": "Passkey",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "WebAuthn",
+      "FIDO2"
+    ],
+    "definition_ar": "بيانات اعتماد لتسجيل دخول دون كلمة مرور تستند إلى معيار WebAuthn الصادر عن W3C ومواصفة FIDO2 من تحالف FIDO (التي تجمع WebAuthn مع CTAP)، وتعتمد على التشفير بالمفتاح العام حيث يبقى المفتاح الخاص على جهاز المستخدم ويُسجَّل المفتاح العام فقط لدى الخدمة؛ وهي مقاومة للتصيّد لأن بيانات الاعتماد مرتبطة تشفيريًا بمصدر الموقع الطالب.",
+    "definition_en": "A passwordless sign-in credential based on the W3C WebAuthn standard and the FIDO Alliance's FIDO2 specification (combining WebAuthn with CTAP), using public-key cryptography where a private key stays on the user's device and only a public key is registered with the service — resisting phishing because the credential is cryptographically bound to the requesting site's origin.",
+    "related": [
+      "mfa",
+      "pki",
+      "encryption",
+      "oauth2"
+    ],
+    "date_added": "2026-09-04"
+  },
+  {
+    "id": "api_gateway",
+    "name": "API Gateway",
+    "category": "systems",
+    "subcategory": "servers-services",
+    "aliases": [],
+    "definition_ar": "خادم يعمل كنقطة دخول وحيدة لطلبات العملاء إلى نظام مبني على الخدمات المصغّرة، يوجّه كل طلب إلى الخدمة الخلفية المناسبة مع مركزة الاهتمامات المشتركة كالمصادقة وتحديد معدل الطلبات وترجمة البروتوكولات، مما يجنّب العملاء الحاجة لمعرفة كل خدمة أو استدعائها مباشرة.",
+    "definition_en": "A server that acts as the single entry point for client requests into a microservices-based system, routing each request to the appropriate backend service while centralizing cross-cutting concerns such as authentication, rate limiting, and protocol translation — sparing clients from having to know about or call each service directly.",
+    "related": [
+      "microservices",
+      "loadbalancer",
+      "reverse_proxy",
+      "rest_api"
+    ],
+    "date_added": "2026-09-04"
+  },
+  {
+    "id": "object_storage",
+    "name": "Object Storage",
+    "category": "systems",
+    "subcategory": "storage",
+    "aliases": [
+      "Blob Storage",
+      "Object-Based Storage"
+    ],
+    "definition_ar": "بنية تخزين تُدار فيها البيانات ككائنات منفصلة (objects) — يجمع كل منها البيانات نفسها مع بيانات وصفية (metadata) ومعرّف فريد — ضمن مساحة أسماء مسطّحة غير هرمية يُصار إليها عبر واجهات HTTP، بخلاف تخزين الملفات القائم على الدلائل أو تخزين الكتل (block storage) ذي الكتل الثابتة الحجم؛ وتجعل قابليته للتوسّع وغنى بياناته الوصفية مناسبًا للبيانات غير المهيكلة كالنسخ الاحتياطية والوسائط وبيانات إنترنت الأشياء.",
+    "definition_en": "A storage architecture that manages data as discrete objects — each bundling the data itself with metadata and a unique identifier — in a flat, non-hierarchical namespace accessed over HTTP APIs, rather than as file-system directories (file storage) or fixed-size addressable blocks (block storage); its scalability and rich metadata make it well suited to unstructured data such as backups, media, and IoT data.",
+    "related": [
+      "raid",
+      "backup",
+      "iscsi",
+      "cloud"
+    ],
+    "date_added": "2026-09-04"
+  },
+  {
+    "id": "rate_limiting",
+    "name": "Rate Limiting",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": [
+      "API Throttling",
+      "Throttling"
+    ],
+    "definition_ar": "تقنية تحدّ من عدد الطلبات التي يمكن لعميل ما إرسالها إلى واجهة برمجية خلال فترة زمنية معيّنة، لحماية البنية التحتية المشتركة من الإرهاق وضمان عدالة الاستخدام؛ وعند تجاوز الحد، يستجيب الخادم عادة برمز الحالة HTTP 429 (طلبات كثيرة جدًا)، مرفقًا غالبًا برأس Retry-After يخبر العميل بموعد إعادة المحاولة.",
+    "definition_en": "A technique that caps the number of requests a client may send to an API within a given time window to protect shared infrastructure from being overwhelmed and ensure fair usage; when the limit is exceeded, the server typically responds with HTTP 429 Too Many Requests, often including a Retry-After header telling the client when to try again.",
+    "related": [
+      "rest_api",
+      "api",
+      "ddos",
+      "webhook"
+    ],
+    "date_added": "2026-09-04"
   }
 ]
