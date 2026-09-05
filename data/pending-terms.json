@@ -878,5 +878,94 @@
       "webhook"
     ],
     "date_added": "2026-09-04"
+  },
+  {
+    "id": "vrrp",
+    "name": "VRRP",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Virtual Router Redundancy Protocol"
+    ],
+    "definition_ar": "بروتوكول شبكي (RFC 5798) يتيح لمجموعة من الموجّهات مشاركة عنوان IP افتراضي واحد كبوابة افتراضية، حيث يُنتخب موجّه رئيسي (Master) لتمرير الحركة المرورية وينتقل الدور تلقائيًا إلى موجّه احتياطي خلال ثوانٍ عند تعطّل الرئيسي، مما يزيل البوابة الافتراضية كنقطة فشل وحيدة.",
+    "definition_en": "A network protocol (RFC 5798) that lets a group of routers share a single virtual IP address as a default gateway, electing a Master router to forward traffic and automatically failing over to a Backup router within seconds if the Master goes down — removing the default gateway as a single point of failure.",
+    "related": [
+      "router",
+      "gateway",
+      "highavailability",
+      "ospf"
+    ],
+    "date_added": "2026-09-05"
+  },
+  {
+    "id": "oidc",
+    "name": "OpenID Connect",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "OIDC"
+    ],
+    "definition_ar": "طبقة هوية مبنية فوق OAuth 2.0، حدّدتها مؤسسة OpenID (مواصفة OpenID Connect Core 1.0)، تتيح لتطبيق العميل التحقق من هوية المستخدم والحصول على معلومات ملفه الشخصي الأساسية عبر رمز هوية موقّع (ID Token بصيغة JWT) — لتضيف مصادقة موحّدة فوق OAuth 2.0 الذي يقتصر على التفويض المفوَّض دون تحديد هوية المستخدم.",
+    "definition_en": "An identity layer built on top of OAuth 2.0, specified by the OpenID Foundation (OpenID Connect Core 1.0), that lets a client verify a user's identity and obtain basic profile information via a signed ID Token (a JWT) — extending OAuth 2.0, which only handles delegated authorization, with standardized authentication.",
+    "related": [
+      "oauth2",
+      "jwt",
+      "saml",
+      "mfa"
+    ],
+    "date_added": "2026-09-05"
+  },
+  {
+    "id": "zero_day",
+    "name": "Zero-Day Vulnerability",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "Zero-Day Exploit",
+      "0-day"
+    ],
+    "definition_ar": "ثغرة في برمجية أو برنامج ثابت أو عتاد تكون مجهولة لدى المورّد ولا يتوفر لها تصحيح، وسُمّيت كذلك لأن المدافعين لم يحصلوا على أي وقت (صفر يوم) لإصلاحها قبل أن يبدأ المهاجمون استغلالها فعليًا؛ وتخرج الثغرة من هذا التصنيف بمجرد إصدار معرّف CVE وتصحيح لها.",
+    "definition_en": "A software, firmware, or hardware flaw that is unknown to the vendor and has no available patch, so-named because defenders have had zero days to fix it before attackers begin exploiting it in the wild; once a CVE identifier and patch are issued, the flaw is no longer classified as zero-day.",
+    "related": [
+      "malware",
+      "patch_management",
+      "pentest",
+      "cia_triad"
+    ],
+    "date_added": "2026-09-05"
+  },
+  {
+    "id": "prompt_injection",
+    "name": "Prompt Injection",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [],
+    "definition_ar": "ثغرة أمنية في تطبيقات نماذج اللغة الكبيرة (مصنّفة LLM01 في قائمة أواسب العشرة الأولى لتطبيقات LLM) تُصاغ فيها مدخلات — سواء أدخلها المستخدم مباشرة أو أُخفيت في مستند أو صفحة ويب يعالجها النموذج — لتلاعب النموذج بحيث يتجاهل تعليماته الأصلية ويتّبع تعليمات المهاجم بدلاً منها، إذ لا تملك النماذج وسيلة موثوقة للتمييز بين التعليمات الموثوقة والبيانات غير الموثوقة ضمن نفس مجرى المدخلات.",
+    "definition_en": "A security vulnerability in LLM applications (ranked LLM01 in the OWASP Top 10 for LLM Applications) where crafted input — entered directly by a user or hidden in a document or webpage the model processes — manipulates the model into ignoring its original instructions and following the attacker's instead, since the model has no reliable way to distinguish trusted instructions from untrusted data in the same input stream.",
+    "related": [
+      "large_language_model",
+      "prompt_engineering",
+      "ai_hallucination",
+      "rag"
+    ],
+    "date_added": "2026-09-05"
+  },
+  {
+    "id": "model_context_protocol",
+    "name": "Model Context Protocol",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [
+      "MCP"
+    ],
+    "definition_ar": "معيار مفتوح قدّمته Anthropic في نوفمبر 2024 يحدّد بروتوكولًا موحّدًا لربط مساعدي الذكاء الاصطناعي بمصادر بيانات وأدوات خارجية — كأنظمة الملفات وقواعد البيانات وتطبيقات الأعمال — ليحل محل عمليات التكامل المخصّصة الفردية بواجهة عميل-خادم واحدة قابلة لإعادة الاستخدام بين النماذج والأنظمة التي تعيش فيها البيانات.",
+    "definition_en": "An open standard introduced by Anthropic in November 2024 that defines a common protocol for connecting AI assistants to external data sources and tools — such as file systems, databases, and business applications — replacing custom, one-off integrations with a single, reusable client-server interface between models and the systems where data lives.",
+    "related": [
+      "large_language_model",
+      "api",
+      "rest_api",
+      "rag"
+    ],
+    "date_added": "2026-09-05"
   }
 ]
