@@ -967,5 +967,97 @@
       "rag"
     ],
     "date_added": "2026-09-05"
+  },
+  {
+    "id": "waf",
+    "name": "WAF",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": [
+      "Web Application Firewall"
+    ],
+    "definition_ar": "جدار حماية متخصص يعمل كوسيط عكسي (Reverse Proxy) أمام تطبيق ويب، يفحص طلبات HTTP/HTTPS الواردة (الترويسات والمعاملات وجسم الطلب) مقابل مجموعة قواعد — توقيعية أو قائمة على السلوك الشاذ — لاكتشاف هجمات مثل حقن SQL والبرمجة النصية عبر المواقع (XSS) وتزوير الطلبات (CSRF) وحجبها، بخلاف جدار الحماية الشبكي التقليدي الذي يعمل على مستوى الحزم والمنافذ لا على مستوى منطق التطبيق.",
+    "definition_en": "A specialized firewall that sits as a reverse proxy in front of a web application, inspecting inbound HTTP/HTTPS traffic (headers, parameters, and body) against a signature-based or anomaly-based ruleset to detect and block attacks such as SQL injection, cross-site scripting (XSS), and cross-site request forgery (CSRF) — unlike a traditional network firewall, which filters at the packet and port level rather than understanding application logic.",
+    "related": [
+      "firewall",
+      "sql_injection",
+      "xss",
+      "csrf",
+      "reverse_proxy"
+    ],
+    "date_added": "2026-09-06"
+  },
+  {
+    "id": "edr",
+    "name": "EDR",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": [
+      "Endpoint Detection and Response"
+    ],
+    "definition_ar": "فئة من حلول أمن نقاط النهاية عرّفها محلل Gartner أنطون تشوفاكين عام 2013، تراقب أجهزة المستخدمين والخوادم باستمرار وتسجّل سلوكياتها على مستوى النظام، وتستخدم تحليلات البيانات لاكتشاف الأنشطة المشبوهة — كسلوك برمجيات الفدية أو الحركة الجانبية بعد الاختراق — وتوفّر معلومات سياقية وإمكانية حجر الجهاز أو إيقاف العملية عن بُعد للاستجابة السريعة، متجاوزة بذلك برامج مكافحة الفيروسات التقليدية القائمة على التوقيعات فقط.",
+    "definition_en": "A category of endpoint security tools, defined by Gartner analyst Anton Chuvakin in 2013, that continuously monitors user devices and servers, recording system-level behavior and using data analytics to detect suspicious activity — such as ransomware behavior or post-breach lateral movement — while giving analysts contextual information and the ability to remotely isolate a device or kill a process for rapid response, going beyond traditional signature-only antivirus.",
+    "related": [
+      "malware",
+      "ransomware",
+      "siem",
+      "pentest"
+    ],
+    "date_added": "2026-09-06"
+  },
+  {
+    "id": "embedding",
+    "name": "Embedding",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [
+      "Vector Embedding",
+      "Word Embedding"
+    ],
+    "definition_ar": "تمثيل رقمي يحوّل بيانات معقدة عالية الأبعاد — كالكلمات أو الجمل أو الصور — إلى متجه كثيف من الأعداد ضمن فضاء أقل أبعادًا، بحيث يعكس التقارب بين المتجهات مدى التشابه الدلالي بين البيانات الأصلية؛ وهو الأساس الذي تُبنى عليه قواعد البيانات المتجهية وأنظمة البحث الدلالي والاسترجاع المعزَّز بالتوليد (RAG).",
+    "definition_en": "A learned numerical representation that maps complex, high-dimensional data — such as words, sentences, or images — into a dense vector in a lower-dimensional space, so that vectors close together reflect semantic similarity between the original items; embeddings are the foundation behind vector databases, semantic search, and Retrieval-Augmented Generation (RAG).",
+    "related": [
+      "vector_database",
+      "large_language_model",
+      "nlp",
+      "rag"
+    ],
+    "date_added": "2026-09-06"
+  },
+  {
+    "id": "thread_protocol",
+    "name": "Thread",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [
+      "Thread Protocol"
+    ],
+    "definition_ar": "بروتوكول شبكي شبكي (Mesh) منخفض الطاقة قائم على IPv6 لأجهزة إنترنت الأشياء، طوّرته Thread Group ونشرت مواصفته الأولى عام 2015، ويعمل فوق راديو المعيار IEEE 802.15.4 مستخدمًا 6LoWPAN لنقل حزم IPv6 مباشرة دون الحاجة لبوابة ترجمة بروتوكول؛ ويُستخدم كطبقة نقل شائعة تحت معيار Matter لتوصيل أجهزة المنزل الذكي مع دعم ذاتي الإصلاح للشبكة واستهلاك طاقة منخفض يتيح عمل الأجهزة بالبطارية لسنوات.",
+    "definition_en": "A low-power, IPv6-based mesh networking protocol for IoT devices, developed by the Thread Group and first published in 2015; it runs over IEEE 802.15.4 radios using 6LoWPAN to carry native IPv6 packets without a protocol-translating gateway, and is commonly used as a transport layer under the Matter standard for smart-home devices, offering self-healing mesh reliability and low enough power draw for battery-powered nodes to run for years.",
+    "related": [
+      "matter_protocol",
+      "zigbee",
+      "ble",
+      "lorawan"
+    ],
+    "date_added": "2026-09-06"
+  },
+  {
+    "id": "vps",
+    "name": "VPS",
+    "category": "systems",
+    "subcategory": "cloud",
+    "aliases": [
+      "Virtual Private Server"
+    ],
+    "definition_ar": "خادم افتراضي معزول ينتج عن تقسيم خادم مادي واحد إلى عدة بيئات مستقلة عبر برنامج المحاكاة الافتراضية (Hypervisor)، بحيث يحصل كل VPS على نظام تشغيل خاص به وحصة مضمونة من المعالج والذاكرة والتخزين، فيمنح مستخدميه تحكمًا وعزلًا أقرب للخادم المخصص بتكلفة أقل، رغم مشاركة عدة مستأجرين للعتاد الفعلي نفسه.",
+    "definition_en": "An isolated virtual server created by partitioning a single physical machine into multiple independent environments via a hypervisor, so each VPS gets its own operating system and a guaranteed share of CPU, memory, and storage — giving users control and isolation closer to a dedicated server at a lower cost, even though several tenants share the same underlying hardware.",
+    "related": [
+      "hypervisor",
+      "virtualization",
+      "cloud",
+      "hosting"
+    ],
+    "date_added": "2026-09-06"
   }
 ]
