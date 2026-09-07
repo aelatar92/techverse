@@ -1059,5 +1059,89 @@
       "hosting"
     ],
     "date_added": "2026-09-06"
+  },
+  {
+    "id": "selinux",
+    "name": "SELinux",
+    "category": "linux",
+    "subcategory": "permissions",
+    "aliases": [
+      "Security-Enhanced Linux"
+    ],
+    "definition_ar": "وحدة أمان في نواة لينكس طوّرتها وكالة الأمن القومي الأمريكية (NSA) في الأصل، تفرض سياسات التحكم الإلزامي بالوصول (MAC) فوق نموذج أذونات يونكس التقديري القياسي، فتُقيّد العمليات بمجموعة محددة من الإجراءات المسموح بها استنادًا إلى تسميات سياق أمني بدلاً من هوية المستخدم المُنفِّذ وحدها.",
+    "definition_en": "A Linux kernel security module, originally developed by the NSA, that enforces Mandatory Access Control (MAC) policies on top of the standard discretionary Unix permission model, confining processes to a defined set of allowed actions based on security-context labels rather than the invoking user's identity alone.",
+    "related": [
+      "root",
+      "chmod",
+      "kernel",
+      "least_privilege"
+    ],
+    "date_added": "2026-09-07"
+  },
+  {
+    "id": "kerberos",
+    "name": "Kerberos",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [],
+    "definition_ar": "بروتوكول مصادقة شبكي (RFC 4120)، طُوِّر أصلاً في معهد MIT ضمن مشروع Athena، يستخدم تشفير المفتاح المتماثل ومركز توزيع مفاتيح (KDC) موثوقًا كطرف ثالث ليُثبت العملاء والخوادم هويتهم لبعضهم عبر شبكة غير آمنة دون إرسال كلمات المرور، وذلك بإصدار تذاكر محدودة الصلاحية الزمنية؛ وهو بروتوكول المصادقة الافتراضي في Active Directory بويندوز.",
+    "definition_en": "A network authentication protocol (RFC 4120), originally developed at MIT's Project Athena, that uses symmetric-key cryptography and a trusted third-party Key Distribution Center (KDC) to let clients and servers prove their identity to each other over an insecure network without transmitting passwords, issuing time-limited tickets — it is the default authentication protocol behind Windows Active Directory.",
+    "related": [
+      "activedirectory",
+      "encryption",
+      "mfa"
+    ],
+    "date_added": "2026-09-07"
+  },
+  {
+    "id": "gre",
+    "name": "GRE",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Generic Routing Encapsulation"
+    ],
+    "definition_ar": "بروتوكول نفق (RFC 2784، وأصله RFC 1701) يُغلّف مجموعة واسعة من بروتوكولات طبقة الشبكة داخل أنفاق IP نقطة إلى نقطة، مما يتيح مرور حركة بيانات غير متوافقة أو خاصة — بما فيها بروتوكولات غير IP والبث المتعدد (multicast) — عبر شبكة IP؛ ولا يوفر تشفيرًا بحد ذاته، لذا كثيرًا ما يُقرن مع IPsec لإنشاء أنفاق آمنة.",
+    "definition_en": "A tunneling protocol (RFC 2784, originally RFC 1701) that encapsulates a wide variety of network-layer protocols inside point-to-point IP tunnels, letting otherwise incompatible or private traffic — including non-IP protocols and multicast — traverse an IP network; it provides no encryption on its own and is often paired with IPsec for secure tunnels.",
+    "related": [
+      "ip",
+      "vpn",
+      "mpls"
+    ],
+    "date_added": "2026-09-07"
+  },
+  {
+    "id": "nfs",
+    "name": "NFS",
+    "category": "systems",
+    "subcategory": "storage",
+    "aliases": [
+      "Network File System"
+    ],
+    "definition_ar": "بروتوكول نظام ملفات موزّع طوّرته Sun Microsystems أصلاً، يتيح للعميل تحميل (mount) دليل بعيد عبر الشبكة والوصول إليه وكأنه محلي؛ يوحَّد الإصدار NFSv4.0 في RFC 7530، بينما يُعرَّف الإصدار الفرعي NFSv4.1 في RFC 8881، ويُستخدم على نطاق واسع لمشاركة التخزين بين مضيفي يونكس ولينكس.",
+    "definition_en": "A distributed file system protocol, originally developed by Sun Microsystems, that lets a client mount a remote directory over a network and access it as though it were local; NFSv4.0 is standardized in RFC 7530, with the NFSv4.1 minor version defined in RFC 8881, and it is widely used to share storage between Unix and Linux hosts.",
+    "related": [
+      "mount",
+      "filesystem",
+      "server"
+    ],
+    "date_added": "2026-09-07"
+  },
+  {
+    "id": "sbom",
+    "name": "SBOM",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [
+      "Software Bill of Materials"
+    ],
+    "definition_ar": "قائمة جرد رسمية وقابلة للقراءة آليًا للمكونات والمكتبات والتبعيات التي يتألف منها برنامج ما — بما فيها إصداراتها وتراخيصها — موحّدة بصيغ مثل SPDX وCycloneDX، وباتت مطلوبة بشكل متزايد (كما في الأمر التنفيذي الأمريكي رقم 14028) لمساعدة المؤسسات على تتبع الثغرات في سلسلة توريد برمجياتها والاستجابة لها.",
+    "definition_en": "A formal, machine-readable inventory of the components, libraries, and dependencies that make up a piece of software — including their versions and licenses — standardized in formats like SPDX and CycloneDX, and increasingly required (e.g., by US Executive Order 14028) to help organizations track and respond to vulnerabilities in their software supply chain.",
+    "related": [
+      "patch_management",
+      "cicd",
+      "malware"
+    ],
+    "date_added": "2026-09-07"
   }
 ]
