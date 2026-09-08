@@ -1143,5 +1143,98 @@
       "malware"
     ],
     "date_added": "2026-09-07"
+  },
+  {
+    "id": "igmp",
+    "name": "IGMP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Internet Group Management Protocol"
+    ],
+    "definition_ar": "بروتوكول تستخدمه المضيفات وأجهزة التوجيه المجاورة على شبكات IPv4 (RFC 1112، وتطويراته RFC 2236 وRFC 3376) لتسجيل عضوية مجموعات البث المتعدد، بحيث يُبلّغ كل مضيف الموجّه المحلي برغبته في استقبال حركة مرور مجموعة معيّنة، مما يمنع إرسال البيانات إلى أجهزة لم تطلبها.",
+    "definition_en": "A protocol used by hosts and adjacent routers on IPv4 networks (RFC 1112, later revised as IGMPv2 in RFC 2236 and IGMPv3 in RFC 3376) to establish and report multicast group membership, letting a host tell its local router which multicast traffic it wants to receive so that data isn't flooded to devices that never requested it.",
+    "related": [
+      "multicast",
+      "udp",
+      "ip",
+      "router"
+    ],
+    "date_added": "2026-09-08"
+  },
+  {
+    "id": "jitter",
+    "name": "Jitter",
+    "category": "networking",
+    "subcategory": "performance",
+    "aliases": [
+      "Packet Delay Variation",
+      "PDV"
+    ],
+    "definition_ar": "تفاوت زمن وصول الحزم المتتالية عبر الشبكة عن قيمة التأخير المرجعية، ويُعرَّف رسميًا في RFC 3393 كمقياس لتغيّر تأخير حزم IP (IPDV)؛ يؤثر بشدة على جودة تطبيقات الوقت الحقيقي كالمكالمات الصوتية والفيديو عبر IP، إذ يتطلب ارتفاعه استخدام مخازن تسوية (jitter buffers) لإعادة ترتيب الحزم وتنعيم عرضها.",
+    "definition_en": "The variation in the arrival time of successive packets across a network relative to an expected delay, formally defined in RFC 3393 as an IP Packet Delay Variation (IPDV) metric; it degrades real-time applications like VoIP and video calls, requiring jitter buffers to reorder packets and smooth playback when it's high.",
+    "related": [
+      "latency",
+      "bandwidth",
+      "qos",
+      "webrtc"
+    ],
+    "date_added": "2026-09-08"
+  },
+  {
+    "id": "plc",
+    "name": "Programmable Logic Controller",
+    "category": "iot",
+    "subcategory": "industrial",
+    "aliases": [
+      "PLC"
+    ],
+    "definition_ar": "حاسوب صناعي مُقسّى يراقب باستمرار حالة أجهزة الإدخال كالحساسات، ويتخذ قرارات وفق برنامج مخصص للتحكم بحالة أجهزة الإخراج كالمشغّلات، وهو مصمم لتحمّل بيئات قاسية من حرارة ورطوبة وتداخل كهربائي؛ يشكّل وحدة التحكم الأساسية في خطوط التصنيع والأتمتة الصناعية، وغالبًا ما يعمل تحت إشراف أنظمة SCADA.",
+    "definition_en": "A ruggedized industrial computer that continuously monitors input devices such as sensors and makes decisions under a custom program to control output devices such as actuators, built to withstand harsh conditions like extreme temperature, humidity, and electrical interference; PLCs are the core control unit on manufacturing lines and in industrial automation, often supervised by SCADA systems.",
+    "related": [
+      "scada",
+      "ot",
+      "sensor",
+      "actuator"
+    ],
+    "date_added": "2026-09-08"
+  },
+  {
+    "id": "pdu",
+    "name": "Power Distribution Unit",
+    "category": "hardware",
+    "subcategory": "rack-infrastructure",
+    "aliases": [
+      "PDU",
+      "Rack PDU"
+    ],
+    "definition_ar": "جهاز متعدد المخارج يستقبل الطاقة الكهربائية من مصدر تيار متردد أو مستمر ويوزّعها على خوادم وأجهزة الشبكة والتخزين المُركَّبة داخل خزانة الرف؛ تتوفر أنواع أساسية (dumb) تقتصر على التوزيع، وأخرى مراقَبة أو مُقاسة تعرض بيانات الاستهلاك، وغالبًا ما تحتوي على قواطع دارة تحمي المعدات من فرط التيار.",
+    "definition_en": "A multi-outlet device that receives AC or DC electrical power from a source and distributes it to servers, network gear, and storage equipment mounted in a rack cabinet; basic (\"dumb\") PDUs simply distribute power, while monitored or metered types report power usage, and most include circuit breakers that protect equipment from overcurrent.",
+    "related": [
+      "rack",
+      "patchpanel",
+      "psu",
+      "server"
+    ],
+    "date_added": "2026-09-08"
+  },
+  {
+    "id": "botnet",
+    "name": "Botnet",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "Bot Network",
+      "Zombie Network"
+    ],
+    "definition_ar": "شبكة من الأجهزة المخترَقة (تُسمّى bots أو zombies) يسيطر عليها مهاجم عن بُعد عبر برمجيات خبيثة عادة من نوع طروادة، وتُستخدم لتنفيذ أنشطة كهجمات حجب الخدمة الموزّعة وإرسال البريد المزعج وسرقة البيانات؛ وتتكوّن اليوم غالبًا من أجهزة توجيه منزلية وأجهزة إنترنت الأشياء المخترقة كالكاميرات وأجهزة NAS، وفق ما توثّقه CISA وNIST.",
+    "definition_en": "A network of compromised devices (\"bots\" or \"zombies\") remotely controlled by an attacker, typically via Trojan malware, and used to carry out activities such as distributed denial-of-service attacks, spam campaigns, and data theft; as documented by CISA and NIST, modern botnets are increasingly built from compromised SOHO routers and IoT devices like cameras and NAS boxes.",
+    "related": [
+      "malware",
+      "ddos",
+      "iot_security",
+      "zero_day"
+    ],
+    "date_added": "2026-09-08"
   }
 ]
