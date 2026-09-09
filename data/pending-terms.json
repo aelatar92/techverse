@@ -1236,5 +1236,112 @@
       "zero_day"
     ],
     "date_added": "2026-09-08"
+  },
+  {
+    "id": "mutual_tls",
+    "name": "Mutual TLS",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "mTLS",
+      "Mutual Transport Layer Security",
+      "Two-Way TLS"
+    ],
+    "definition_ar": "نسخة من مصافحة TLS يقدّم فيها كل من العميل والخادم شهادات X.509 للتحقق من هوية الطرف الآخر، بدلًا من اقتصار التحقق على هوية الخادم كما في TLS التقليدي (RFC 8446). تُستخدم على نطاق واسع للمصادقة بين الخدمات في بنى الثقة الصفرية وبوابات API.",
+    "definition_en": "A TLS handshake variant in which both the client and the server present X.509 certificates to authenticate each other, rather than only the server proving its identity as in standard TLS (RFC 8446). Widely used for service-to-service authentication in zero-trust architectures and API gateways.",
+    "related": [
+      "ssl_tls",
+      "certificate"
+    ],
+    "date_added": "2026-09-09"
+  },
+  {
+    "id": "hsts",
+    "name": "HSTS",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": [
+      "HTTP Strict Transport Security",
+      "Strict-Transport-Security header"
+    ],
+    "definition_ar": "ترويسة استجابة HTTP (معرّفة في RFC 6797) توجّه المتصفح للاتصال بموقع عبر HTTPS فقط لمدة زمنية محددة، مما يحمي من هجمات إزالة SSL وتخفيض البروتوكول التي تستغل طلب HTTP الأولي غير المشفر.",
+    "definition_en": "An HTTP response header (defined in RFC 6797) that instructs a browser to only ever connect to a site over HTTPS for a specified duration, protecting against SSL-stripping and protocol-downgrade attacks that exploit an initial plaintext HTTP request.",
+    "related": [
+      "https",
+      "ssl_tls",
+      "cors"
+    ],
+    "date_added": "2026-09-09"
+  },
+  {
+    "id": "cve",
+    "name": "CVE",
+    "category": "security",
+    "subcategory": "fundamentals",
+    "aliases": [
+      "Common Vulnerabilities and Exposures",
+      "CVE Identifier",
+      "CVE-ID"
+    ],
+    "definition_ar": "قاموس عام لمعرّفات موحّدة (مثل CVE-2024-12345) للثغرات البرمجية المعروفة، تديره شركة MITRE منذ عام 1999 لمنح البائعين والباحثين وأدوات الأمن مرجعًا مشتركًا عند الحديث عن الثغرة نفسها.",
+    "definition_en": "A publicly maintained dictionary of standardized identifiers (e.g., CVE-2024-12345) for known software vulnerabilities, managed by the MITRE Corporation since 1999 to give vendors, researchers, and security tools a common reference when discussing the same flaw.",
+    "related": [
+      "pentest",
+      "patch_management"
+    ],
+    "date_added": "2026-09-09"
+  },
+  {
+    "id": "diffusion_model",
+    "name": "Diffusion Model",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [
+      "Denoising Diffusion Probabilistic Model",
+      "DDPM"
+    ],
+    "definition_ar": "نموذج توليدي يتعلّم إنتاج البيانات — غالبًا الصور — عبر عكس عملية إضافة تشويش تدريجية: يُدرَّب على إزالة التشويش تدريجيًا من مدخل عشوائي حتى تظهر عينة متماسكة، وهو النهج المستخدم في أنظمة مثل Stable Diffusion وDALL-E.",
+    "definition_en": "A generative model that learns to produce data — most commonly images — by reversing a gradual noising process: it is trained to progressively remove noise from a random input until a coherent sample emerges, an approach used by systems such as Stable Diffusion and DALL-E.",
+    "related": [
+      "generative_ai",
+      "neural_network",
+      "transformer"
+    ],
+    "date_added": "2026-09-09"
+  },
+  {
+    "id": "connection_pooling",
+    "name": "Connection Pooling",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [
+      "Database Connection Pool",
+      "Connection Pool"
+    ],
+    "definition_ar": "تقنية يُحتفظ فيها بمجموعة من اتصالات قاعدة البيانات المفتوحة مسبقًا لإعادة استخدامها عبر الطلبات بدلًا من فتح وإغلاق اتصال جديد لكل استعلام، مما يقلل عبء إنشاء الاتصالات ويتيح لعدد كبير من عملاء التطبيق مشاركة عدد أصغر من الاتصالات الفعلية مع الخادم.",
+    "definition_en": "A technique in which a set of pre-opened database connections is maintained and reused across requests instead of opening and closing a new connection for every query, reducing connection overhead and allowing many application clients to share a smaller number of server-side connections.",
+    "related": [
+      "orm",
+      "database",
+      "sharding"
+    ],
+    "date_added": "2026-09-09"
+  },
+  {
+    "id": "okr",
+    "name": "OKR",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [
+      "Objectives and Key Results"
+    ],
+    "definition_ar": "إطار لتحديد الأهداف يقرن هدفًا نوعيًا (Objective) بثلاث إلى خمس نتائج رئيسية قابلة للقياس (Key Results) لتتبع التقدم نحوه؛ اشتهر في شركة Intel على يد Andy Grove في السبعينيات، وانتشر لاحقًا على نطاق واسع بعد أن قدّمه John Doerr في Google.",
+    "definition_en": "A goal-setting framework pairing a qualitative Objective with 3-5 measurable Key Results used to track progress toward it; popularized at Intel by Andy Grove in the 1970s and later adopted widely after John Doerr introduced it at Google.",
+    "related": [
+      "roadmap",
+      "stakeholder",
+      "velocity"
+    ],
+    "date_added": "2026-09-09"
   }
 ]
