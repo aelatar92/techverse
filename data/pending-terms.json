@@ -1343,5 +1343,112 @@
       "velocity"
     ],
     "date_added": "2026-09-09"
+  },
+  {
+    "id": "aes",
+    "name": "Advanced Encryption Standard",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "AES",
+      "Rijndael"
+    ],
+    "definition_ar": "خوارزمية تشفير متماثلة بالكتل اعتمدتها NIST معيارًا فيدراليًا (FIPS 197) عام 2001، مبنية على خوارزمية Rijndael، تُشفّر البيانات في كتل ثابتة الحجم 128 بت باستخدام مفاتيح بطول 128 أو 192 أو 256 بت (AES-128/192/256)، وهي المعيار المعتمد لحماية البيانات الحكومية الأمريكية الحساسة، وتقوم عليها بروتوكولات مثل TLS وIPsec وWPA2/WPA3.",
+    "definition_en": "A symmetric block cipher standardized by NIST as FIPS 197 in 2001, based on the Rijndael algorithm; it encrypts data in fixed 128-bit blocks using keys of 128, 192, or 256 bits (AES-128/192/256) and is the U.S. federal government's approved standard for protecting sensitive data, underpinning protocols like TLS, IPsec, and WPA2/WPA3.",
+    "related": [
+      "encryption",
+      "ssl_tls",
+      "hash"
+    ],
+    "date_added": "2026-09-10"
+  },
+  {
+    "id": "lora",
+    "name": "LoRA",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [
+      "Low-Rank Adaptation"
+    ],
+    "definition_ar": "تقنية لضبط النماذج المُدرَّبة مسبقًا بكفاءة معطيات عالية (بحث Hu وآخرين، 2021)، تُجمّد أوزان النموذج الأصلية وتُدرج مصفوفات صغيرة منخفضة الرتبة قابلة للتدريب داخل طبقاته لتقريب التحديثات اللازمة لمهمة جديدة؛ ما يقلّص عدد المعطيات القابلة للتدريب بمقدار مراتب عدة مقارنة بالضبط الكامل، دون أي تأخير إضافي عند الاستدلال لأن المصفوفات منخفضة الرتبة يمكن دمجها لاحقًا في الأوزان الأساسية.",
+    "definition_en": "A parameter-efficient fine-tuning technique (Hu et al., 2021) that freezes a pre-trained model's original weights and injects small trainable low-rank matrices into its layers to approximate the weight updates needed for a new task; this cuts the number of trainable parameters by orders of magnitude compared to full fine-tuning while adding no inference latency, since the low-rank matrices can be merged back into the base weights.",
+    "related": [
+      "large_language_model",
+      "transformer",
+      "training_data"
+    ],
+    "date_added": "2026-09-10"
+  },
+  {
+    "id": "base_consistency",
+    "name": "BASE",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": [
+      "Basically Available, Soft state, Eventually consistent"
+    ],
+    "definition_ar": "نموذج اتساق لقواعد البيانات الموزّعة وأنظمة NoSQL — يشير الاختصار إلى التوافر الأساسي والحالة المرنة والاتساق النهائي (Basically Available, Soft state, Eventually consistent) — يُضحّي بالاتساق الفوري الصارم لصالح توافر عالٍ وتحمّل لانقسام الشبكة، إذ يظل النظام مستجيبًا أثناء الأعطال الجزئية ويسمح بتباين مؤقت بين النسخ المتماثلة، ولا يضمن سوى تقارب جميع النسخ نحو القيمة نفسها بعد توقف التحديثات؛ ويُوصف غالبًا بأنه النظير في عالم NoSQL لنموذج ACID الأكثر صرامة المستخدم في قواعد البيانات العلائقية.",
+    "definition_en": "A consistency model for distributed and NoSQL databases — Basically Available, Soft state, Eventually consistent — that trades strict, immediate consistency for high availability and partition tolerance: the system keeps responding during partial failures, allows data to be temporarily out of sync across replicas, and guarantees only that all copies converge to the same value once updates stop arriving; commonly framed as the NoSQL counterpart to the stricter ACID model used by relational databases.",
+    "related": [
+      "acid",
+      "nosql",
+      "replication",
+      "sharding"
+    ],
+    "date_added": "2026-09-10"
+  },
+  {
+    "id": "hsrp",
+    "name": "HSRP",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Hot Standby Router Protocol"
+    ],
+    "definition_ar": "بروتوكول تكرار للقفزة الأولى نشأ في Cisco (RFC 2281)، تشارك فيه مجموعة من الموجّهات على الشبكة المحلية نفسها عنوان IP وMAC افتراضيًا واحدًا كبوابة افتراضية؛ يُنتخب موجّه واحد نشطًا (Active) لتمرير الحركة المرورية بينما يراقبه موجّه احتياطي (Standby) عبر رسائل تحية دورية ويتولى المهمة خلال ثوانٍ عند تعطّله، مما يزيل البوابة الافتراضية كنقطة فشل وحيدة — وهو مشابه في غرضه لبروتوكول VRRP المفتوح المعياري.",
+    "definition_en": "A Cisco-originated first-hop redundancy protocol (RFC 2281) in which a group of routers on the same LAN share a single virtual IP and MAC address as a default gateway; one router is elected Active to forward traffic while a Standby router monitors it via periodic hello messages and takes over within seconds if it fails, removing the default gateway as a single point of failure — similar in purpose to the open-standard VRRP.",
+    "related": [
+      "router",
+      "gateway",
+      "highavailability",
+      "ospf"
+    ],
+    "date_added": "2026-09-10"
+  },
+  {
+    "id": "same_origin_policy",
+    "name": "Same-Origin Policy",
+    "category": "web",
+    "subcategory": "browsing",
+    "aliases": [
+      "SOP"
+    ],
+    "definition_ar": "آلية أمن أساسية في متصفحات الويب، صيغت رسميًا حول مفهوم الأصل (Origin) في RFC 6454، تُقيّد قدرة سكربت محمَّل من أصل معيّن — يُعرَّف بمزيج مخطط URI واسم المضيف والمنفذ — على الوصول إلى موارد أصل مختلف أو التفاعل معها؛ فمن دونها يمكن لصفحة خبيثة قراءة ملفات تعريف الارتباط أو محتوى DOM أو استجابات واجهات برمجية تخص موقعًا آخر بحرية، لذا يأتي تخفيف مثل CORS كاستثناء صريح واختياري لهذا العزل الافتراضي.",
+    "definition_en": "A foundational browser security mechanism, formalized around the origin concept in RFC 6454, that restricts how a script loaded from one origin — the combination of URI scheme, hostname, and port — can access or interact with resources from a different origin; without it, a malicious page could freely read cookies, DOM content, or API responses belonging to another site, so relaxations like CORS exist as an explicit, opt-in exception to this default isolation.",
+    "related": [
+      "cors",
+      "cookie",
+      "session",
+      "dom"
+    ],
+    "date_added": "2026-09-10"
+  },
+  {
+    "id": "modbus",
+    "name": "Modbus",
+    "category": "iot",
+    "subcategory": "industrial",
+    "aliases": [
+      "Modbus RTU",
+      "Modbus TCP"
+    ],
+    "definition_ar": "بروتوكول طلب/استجابة مفتوح ومجاني نشرته شركة Modicon عام 1979 للاتصال بين وحدات التحكم المنطقي القابلة للبرمجة (PLC) والمستشعرات وأنظمة الإشراف في الأتمتة الصناعية؛ تعمل إصداراته التسلسلية (RTU وASCII) عبر RS-232/RS-485، بينما يُغلّف Modbus TCP الإطار نفسه فوق إيثرنت عبر المنفذ 502، معتمدًا نموذج رئيسي/تابع (عميل/خادم) بسيط لقراءة وكتابة الملفات والسجلات والمداخل الرقمية.",
+    "definition_en": "An open, royalty-free request/response protocol published by Modicon in 1979 for communication between PLCs, sensors, and supervisory systems in industrial automation; its serial variants (RTU, ASCII) run over RS-232/RS-485, while Modbus TCP encapsulates the same frame over Ethernet on port 502, using a simple master/slave (client/server) model to read and write coils, registers, and discrete inputs.",
+    "related": [
+      "scada",
+      "ot",
+      "iot"
+    ],
+    "date_added": "2026-09-10"
   }
 ]
