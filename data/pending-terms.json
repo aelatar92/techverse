@@ -1450,5 +1450,107 @@
       "iot"
     ],
     "date_added": "2026-09-10"
+  },
+  {
+    "id": "san",
+    "name": "Storage Area Network",
+    "category": "systems",
+    "subcategory": "storage",
+    "aliases": [
+      "SAN"
+    ],
+    "definition_ar": "شبكة مخصّصة عالية السرعة تمنح الخوادم وصولاً على مستوى الكتل (block-level) إلى أجهزة تخزين مشتركة كمصفوفات الأقراص ومكتبات الأشرطة، بحيث يبدو التخزين البعيد وكأنه قرص متصل محليًا، بخلاف التخزين المتصل بالشبكة (NAS) الذي يعمل على مستوى الملفات.",
+    "definition_en": "A dedicated, high-speed network that gives servers block-level access to shared storage devices — such as disk arrays and tape libraries — so remote storage appears as a locally attached disk, unlike file-level network-attached storage (NAS).",
+    "related": [
+      "raid",
+      "backup",
+      "vm"
+    ],
+    "date_added": "2026-09-11"
+  },
+  {
+    "id": "rbac",
+    "name": "Role-Based Access Control",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "RBAC"
+    ],
+    "definition_ar": "نموذج للتحكم بالوصول صاغه باحثو المعهد الوطني الأمريكي للمعايير والتقنية (NIST) ووُحِّد ضمن معيار ANSI/INCITS 359، يمنح الصلاحيات للمستخدمين بشكل غير مباشر عبر أدوار تعكس المهام الوظيفية بدلاً من إسنادها للأفراد مباشرة، مما يبسّط الإدارة ويطبّق مبدأ الحد الأدنى من الصلاحيات على نطاق واسع.",
+    "definition_en": "An access control model, formalized by NIST researchers and standardized as ANSI/INCITS 359, that grants permissions to users indirectly through roles reflecting job functions rather than assigning them to individuals directly — simplifying administration and enforcing least privilege at scale.",
+    "related": [
+      "least_privilege",
+      "activedirectory",
+      "mfa"
+    ],
+    "date_added": "2026-09-11"
+  },
+  {
+    "id": "robots_txt",
+    "name": "Robots Exclusion Protocol",
+    "category": "web",
+    "subcategory": "discovery",
+    "aliases": [
+      "robots.txt",
+      "Robots Exclusion Standard"
+    ],
+    "definition_ar": "معيار (RFC 9309) يستخدم فيه أصحاب المواقع ملف robots.txt في جذر الموقع لإبلاغ برامج الزحف الملتزمة بالمسارات المسموح أو الممنوع الوصول إليها عبر توجيهي Allow وDisallow؛ وهو اتفاق طوعي وليس آلية أمنية أو تحكمًا بالوصول، إذ تبقى المسارات المذكورة فيه قابلة للجلب علنًا.",
+    "definition_en": "A standard (RFC 9309) by which site owners place a robots.txt file at their domain's root to tell well-behaved web crawlers which URL paths they may or may not access, using Allow and Disallow directives — a voluntary convention, not a security or access-control mechanism, since listed paths remain publicly fetchable.",
+    "related": [
+      "seo",
+      "url",
+      "web_server"
+    ],
+    "date_added": "2026-09-11"
+  },
+  {
+    "id": "digital_signature",
+    "name": "Digital Signature",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [],
+    "definition_ar": "آلية تشفيرية موحّدة ضمن معيار NIST FIPS 186-5، يُستخدم فيها المفتاح الخاص للموقِّع لإنتاج قيمة مرتبطة برسالة معيّنة، بحيث يمكن لأي طرف يملك المفتاح العام المقابل التحقق من هوية الموقِّع والتأكد من عدم تعديل البيانات؛ توفر بذلك المصادقة وسلامة البيانات وعدم إمكانية الإنكار، بخلاف دالة التجزئة المجردة التي لا تضمن أيًا من ذلك بمفردها.",
+    "definition_en": "A cryptographic mechanism, standardized in NIST FIPS 186-5, in which a signer's private key produces a value over a message so that anyone holding the corresponding public key can verify the signer's identity and confirm the data was not altered — providing authentication, integrity, and non-repudiation, unlike a plain hash, which offers none of these guarantees alone.",
+    "related": [
+      "encryption",
+      "certificate",
+      "hash"
+    ],
+    "date_added": "2026-09-11"
+  },
+  {
+    "id": "single_page_application",
+    "name": "Single-Page Application",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": [
+      "SPA"
+    ],
+    "definition_ar": "معمارية تطبيقات ويب تُحمَّل فيها وثيقة HTML واحدة مرة واحدة فقط، ثم يُعاد كتابة محتوى الصفحة ديناميكيًا عبر JavaScript أثناء تنقّل المستخدم، بالاعتماد على التوجيه من جهة العميل بدلاً من إعادة تحميل الصفحة كاملة من الخادم؛ وهو ما يمنح تفاعلات أسرع أشبه بالتطبيقات بعد التحميل الأول، مقابل تعقيد إضافي في تحسين محركات البحث وخصائص التحميل الأولي.",
+    "definition_en": "A web application architecture that loads a single HTML document once and then dynamically rewrites the page's content via JavaScript as the user navigates, using client-side routing instead of full-page reloads from the server — trading simpler SEO and initial-load characteristics for faster, app-like interactions thereafter.",
+    "related": [
+      "javascript",
+      "dom",
+      "browser"
+    ],
+    "date_added": "2026-09-11"
+  },
+  {
+    "id": "fstab",
+    "name": "fstab",
+    "category": "linux",
+    "subcategory": "filesystem",
+    "aliases": [
+      "/etc/fstab",
+      "Filesystem Table"
+    ],
+    "definition_ar": "ملف إعداد (fstab(5)) يسرد أنظمة الملفات والأجهزة والمشاركات الشبكية التي ينبغي لنظام لينكس تركيبها (mount) عند الإقلاع، حيث يحدّد كل سطر فيه الجهاز ونقطة التركيب ونوع نظام الملفات وخيارات التركيب؛ تقرأه الأمران mount(8) وfsck(8) بحيث تبقى عمليات التركيب ثابتة عبر عمليات إعادة التشغيل دون تدخل يدوي.",
+    "definition_en": "A configuration file (fstab(5)) listing the filesystems, devices, and network shares a Linux system should mount at boot — each line specifying a device, mount point, filesystem type, and mount options — read by mount(8) and fsck(8) so mounts persist across reboots without manual intervention.",
+    "related": [
+      "mount",
+      "partition",
+      "filesystem"
+    ],
+    "date_added": "2026-09-11"
   }
 ]
