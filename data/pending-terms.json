@@ -1552,5 +1552,114 @@
       "filesystem"
     ],
     "date_added": "2026-09-11"
+  },
+  {
+    "id": "bfd",
+    "name": "BFD",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Bidirectional Forwarding Detection"
+    ],
+    "definition_ar": "بروتوكول تحية خفيف (RFC 5880) يعمل بين محركّي تحويل متجاورين، يتبادل حزم تحكم بفواصل زمنية أقل من الثانية لاكتشاف أعطال الوصلة أو مسار التحويل أسرع بكثير من مؤقتات \"hello\" في بروتوكولات التوجيه وحدها، ثم يُبلغ بروتوكولات التوجيه مثل OSPF وBGP بالعطل لتتقارب فورًا.",
+    "definition_en": "A lightweight hello protocol (RFC 5880) that runs between two adjacent forwarding engines, exchanging control packets at sub-second intervals to detect link or forwarding-path failures far faster than routing-protocol hello timers alone, then signals the failure to routing protocols such as OSPF and BGP so they can reconverge immediately.",
+    "related": [
+      "ospf",
+      "bgp",
+      "router",
+      "switch"
+    ],
+    "date_added": "2026-09-12"
+  },
+  {
+    "id": "post_quantum_cryptography",
+    "name": "Post-Quantum Cryptography",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "PQC",
+      "Quantum-Resistant Cryptography"
+    ],
+    "definition_ar": "خوارزميات تشفير مصمَّمة لتبقى آمنة أمام هجمات الحواسيب الكمّية الكبيرة، القادرة نظريًا على كسر أنظمة المفتاح العام الشائعة مثل RSA وECC عبر خوارزمية شور (Shor)؛ وفي أغسطس 2024 اعتمد المعهد الوطني الأمريكي للمعايير والتقنية (NIST) أول معايير رسمية لها: FIPS 203 (ML-KEM لتغليف المفاتيح القائم على الشبكات البلورية)، وFIPS 204 (ML-DSA للتوقيعات القائمة على الشبكات البلورية)، وFIPS 205 (SLH-DSA للتوقيعات القائمة على الدوال التجزئية)، لتبدأ المؤسسات الانتقال إليها.",
+    "definition_en": "Cryptographic algorithms designed to remain secure against attacks by large-scale quantum computers, which could break widely used public-key schemes like RSA and ECC via Shor's algorithm; in August 2024, NIST finalized the first standards for migration — FIPS 203 (ML-KEM, lattice-based key encapsulation), FIPS 204 (ML-DSA, lattice-based signatures), and FIPS 205 (SLH-DSA, hash-based signatures).",
+    "related": [
+      "encryption",
+      "ssl_tls",
+      "private_key",
+      "certificate"
+    ],
+    "date_added": "2026-09-12"
+  },
+  {
+    "id": "http3",
+    "name": "HTTP/3",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": [
+      "HTTP3"
+    ],
+    "definition_ar": "الإصدار الرئيسي الثالث من HTTP (RFC 9114)، يحافظ على نفس دلالات الطلب والاستجابة والأساليب ورموز الحالة الموجودة في HTTP/1.1 وHTTP/2، لكنه يعمل فوق بروتوكول QUIC بدلاً من TCP، مما يلغي مشكلة الحجب أول-بأول (Head-of-Line Blocking) على مستوى طبقة النقل ويتيح تأسيس اتصال أسرع وترحيلاً سلسًا لمسار الشبكة.",
+    "definition_en": "The third major version of HTTP (RFC 9114), which preserves the same request/response semantics, methods, and status codes as HTTP/1.1 and HTTP/2 but runs over QUIC instead of TCP, eliminating head-of-line blocking at the transport layer and enabling faster connection establishment and seamless migration across network paths.",
+    "related": [
+      "http",
+      "https",
+      "cdn",
+      "browser"
+    ],
+    "date_added": "2026-09-12"
+  },
+  {
+    "id": "oltp",
+    "name": "OLTP",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [
+      "Online Transaction Processing"
+    ],
+    "definition_ar": "فئة من أنظمة قواعد البيانات مُحسَّنة لتنفيذ عمليات معاملاتية قصيرة وعالية الحجم — كالإدراج والتحديث والاستعلام عن عدد قليل من الصفوف — يجب أن تكتمل بسرعة وتحافظ على ضمانات ACID، على عكس أنظمة OLAP التي تُشغّل استعلامات تحليلية معقدة على مجموعات بيانات تاريخية كبيرة.",
+    "definition_en": "A category of database systems optimized for high-volume, short-lived transactional operations — inserts, updates, and lookups touching a small number of rows — that must complete quickly and preserve ACID guarantees, contrasted with OLAP systems that run complex analytical queries over large historical datasets.",
+    "related": [
+      "database",
+      "sql",
+      "acid",
+      "transaction"
+    ],
+    "date_added": "2026-09-12"
+  },
+  {
+    "id": "chaos_engineering",
+    "name": "Chaos Engineering",
+    "category": "systems",
+    "subcategory": "reliability",
+    "aliases": [
+      "Chaos Testing"
+    ],
+    "definition_ar": "ممارسة ابتكرتها Netflix تقوم بحقن أعطال متحكَّم بها عمدًا — كإيقاف خوادم افتراضية، أو زيادة زمن استجابة الشبكة، أو استنزاف الموارد — في نظام موزَّع، عادة في بيئة الإنتاج، لبناء الثقة بقدرته على تحمّل ظروف اضطراب حقيقية؛ ويضع الممارسون فرضية حول سلوك الحالة المستقرة، ثم يُدخلون أحداثًا واقعية متنوعة، ويؤتمتون التجارب لتعمل باستمرار.",
+    "definition_en": "A discipline pioneered by Netflix that deliberately injects controlled failures — killed instances, added network latency, resource exhaustion — into a distributed system, typically in production, to build confidence that it can withstand real turbulent conditions; practitioners form a hypothesis about steady-state behavior, vary real-world events, and automate the experiments to run continuously.",
+    "related": [
+      "highavailability",
+      "sla",
+      "backup",
+      "microservices"
+    ],
+    "date_added": "2026-09-12"
+  },
+  {
+    "id": "tokenization",
+    "name": "Tokenization",
+    "category": "ai",
+    "subcategory": "fundamentals",
+    "aliases": [
+      "Tokens"
+    ],
+    "definition_ar": "عملية تقسيم النص الخام إلى وحدات أصغر تُسمى الرموز (tokens) — كلمات أو أجزاء كلمات أو أحرف — قبل أن يتمكن نموذج اللغة من معالجته، وتُستخدم لذلك عادة خوارزميات مثل ترميز الأزواج البايتية (BPE) أو WordPiece أو SentencePiece؛ ويُعيَّن لكل رمز معرّف رقمي ثم تمثيل متجهي، وتُقاس نافذة السياق للنموذج بعدد الرموز التي يمكنه معالجتها دفعة واحدة.",
+    "definition_en": "The process of splitting raw text into smaller units called tokens — words, subwords, or characters — before a language model can process it, typically using algorithms like Byte Pair Encoding (BPE), WordPiece, or SentencePiece; each token is mapped to a numeric ID and then to a vector representation, and a model's context window is measured in the number of tokens it can process at once.",
+    "related": [
+      "nlp",
+      "large_language_model",
+      "transformer",
+      "chatbot"
+    ],
+    "date_added": "2026-09-12"
   }
 ]
