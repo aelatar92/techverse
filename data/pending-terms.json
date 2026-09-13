@@ -1661,5 +1661,113 @@
       "chatbot"
     ],
     "date_added": "2026-09-12"
+  },
+  {
+    "id": "cidr",
+    "name": "CIDR",
+    "category": "networking",
+    "subcategory": "addressing",
+    "aliases": [
+      "Classless Inter-Domain Routing"
+    ],
+    "definition_ar": "مخطط عنونة IP (RFC 4632) حلّ محل نظام الفئات القديم، يمثّل الشبكة بعنوان متبوع بشرطة مائلة وطول بادئة (مثل 192.168.1.0/24) يحدّد عدد البتات المكوّنة لجزء الشبكة، مما يتيح تقسيمًا مرنًا للشبكات الفرعية وتجميع المسارات لتقليل نمو جداول التوجيه العالمية.",
+    "definition_en": "An IP addressing scheme (RFC 4632) that replaced the old class-based system, representing a network as an address followed by a slash and a prefix length (e.g., 192.168.1.0/24) denoting how many bits form the network portion — enabling flexible subnet sizing and route aggregation to slow the growth of global routing tables.",
+    "related": [
+      "ip",
+      "subnet",
+      "router",
+      "nat"
+    ],
+    "date_added": "2026-09-13"
+  },
+  {
+    "id": "buffer_overflow",
+    "name": "Buffer Overflow",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [],
+    "definition_ar": "ثغرة (CWE-120) تحدث عندما يكتب برنامج بيانات إلى منطقة ذاكرة ثابتة الحجم (buffer) أكثر مما تستطيع استيعابه، فتُكتب البيانات الزائدة فوق الذاكرة المجاورة؛ يمكن للمهاجمين استغلال ذلك لتعطيل البرنامج أو السيطرة على مسار تنفيذه، وهي من أكثر فئات الثغرات البرمجية شيوعًا واستمرارًا.",
+    "definition_en": "A vulnerability (CWE-120) that occurs when a program writes more data to a fixed-size memory buffer than it can hold, overwriting adjacent memory; attackers can exploit this to crash a program or hijack its execution flow, making it one of the most persistent classes of software weaknesses.",
+    "related": [
+      "malware",
+      "pentest",
+      "ids_ips",
+      "siem"
+    ],
+    "date_added": "2026-09-13"
+  },
+  {
+    "id": "backpropagation",
+    "name": "Backpropagation",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [
+      "Backward Propagation of Errors"
+    ],
+    "definition_ar": "خوارزمية تعلّم موجّه تُدرَّب بها الشبكات العصبية، تحسب مُيل دالة الخطأ بالنسبة لكل وزن باستخدام قاعدة السلسلة، وتنشر الخطأ إلى الخلف من طبقة المخرجات إلى طبقة المدخلات، بحيث يستطيع الانحدار التدريجي (gradient descent) تعديل الأوزان وتقليل خطأ التنبؤ.",
+    "definition_en": "A supervised learning algorithm that trains neural networks by computing the gradient of the loss function with respect to each weight via the chain rule, propagating the error backward from the output layer to the input layer so that gradient descent can adjust the weights and reduce prediction error.",
+    "related": [
+      "neural_network",
+      "machine_learning",
+      "deep_learning",
+      "training_data"
+    ],
+    "date_added": "2026-09-13"
+  },
+  {
+    "id": "pwa",
+    "name": "Progressive Web App",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": [
+      "PWA"
+    ],
+    "definition_ar": "موقع ويب مبني بتقنيات الويب القياسية يعمل كتطبيق أصلي عبر الجمع بين بيان تطبيق الويب (manifest) وعامل خدمة (service worker) — وهو سكربت يعمل في الخلفية يخزّن الموارد مؤقتًا ويتيح الوصول دون اتصال بالإنترنت ويمكنه إرسال إشعارات فورية — ويمكن تثبيته مباشرة من المتصفح دون الحاجة لمتجر تطبيقات.",
+    "definition_en": "A website built with standard web technologies that behaves like a native app by combining a web app manifest with a service worker — a background script that caches assets, enables offline access, and can deliver push notifications — all installable directly from the browser without an app store.",
+    "related": [
+      "html",
+      "css",
+      "javascript",
+      "browser",
+      "static_site"
+    ],
+    "date_added": "2026-09-13"
+  },
+  {
+    "id": "honeypot",
+    "name": "Honeypot",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": [
+      "Decoy System"
+    ],
+    "definition_ar": "نظام أو مورد خادع يُنشر عمدًا ليبدو أصلًا إنتاجيًا حقيقيًا، بهدف تحويل المهاجمين عن البنية التحتية الفعلية بحيث يستطيع المدافعون رصد أدواتهم وأساليبهم وجمع معلومات استخباراتية عن التهديدات؛ ولأن أي تفاعل معه يُعدّ بطبيعته مشبوهًا، فإنه يولّد نتائج إيجابية كاذبة أقل بكثير من أنظمة كشف التسلل التقليدية.",
+    "definition_en": "A deliberately deployed decoy system or resource, made to look like a legitimate production asset, that lures attackers away from real infrastructure so defenders can observe their tools and tactics and generate threat intelligence — since any interaction with it is inherently suspicious, it produces far fewer false positives than traditional intrusion detection.",
+    "related": [
+      "firewall",
+      "ids_ips",
+      "siem",
+      "malware",
+      "pentest"
+    ],
+    "date_added": "2026-09-13"
+  },
+  {
+    "id": "burndown_chart",
+    "name": "Burndown Chart",
+    "category": "projectmgmt",
+    "subcategory": "artifacts",
+    "aliases": [
+      "Sprint Burndown"
+    ],
+    "definition_ar": "أداة تتبّع بصرية شائعة في Scrum ترسم العمل المتبقي — غالبًا بنقاط القصة أو الساعات — مقابل الزمن خلال السبرنت أو الإصدار؛ ويتجه الخط نحو الصفر مع اكتمال العمل، مما يسهّل معرفة ما إذا كان الفريق يسير وفق الجدول المتوقع لإنهاء العمل.",
+    "definition_en": "A visual tracking tool, common in Scrum, that plots remaining work — usually in story points or hours — against time over a sprint or release; the line trends toward zero as work is completed, making it easy to see whether the team is on pace to finish.",
+    "related": [
+      "sprint",
+      "scrum",
+      "velocity",
+      "product_backlog"
+    ],
+    "date_added": "2026-09-13"
   }
 ]
