@@ -1769,5 +1769,111 @@
       "product_backlog"
     ],
     "date_added": "2026-09-13"
+  },
+  {
+    "id": "cvss",
+    "name": "CVSS",
+    "category": "security",
+    "subcategory": "fundamentals",
+    "aliases": [
+      "Common Vulnerability Scoring System"
+    ],
+    "definition_ar": "إطار عمل مفتوح تديره مجموعة CVSS-SIG التابعة لمنظمة FIRST (الإصدار الحالي 4.0 الصادر في نوفمبر 2023) يُقيّم خطورة ثغرة برمجية على مقياس من 0.0 إلى 10.0 بالاعتماد على مقاييس سهولة الاستغلال وأثره، مما يساعد المؤسسات على ترتيب أولويات المعالجة، ويُستخدم عادة مقترنًا بمعرّف CVE الخاص بالثغرة.",
+    "definition_en": "An open framework, maintained by FIRST.org's CVSS Special Interest Group (current version 4.0, released November 2023), that scores a software vulnerability's severity on a 0.0-10.0 scale based on metrics approximating its exploitability and impact, helping organizations prioritize remediation — commonly paired with the vulnerability's CVE identifier.",
+    "related": [
+      "cia_triad",
+      "ids_ips",
+      "malware"
+    ],
+    "date_added": "2026-09-14"
+  },
+  {
+    "id": "mixture_of_experts",
+    "name": "Mixture of Experts",
+    "category": "ai",
+    "subcategory": "genai",
+    "aliases": [
+      "MoE",
+      "Sparse Mixture of Experts"
+    ],
+    "definition_ar": "بنية شبكة عصبية تستبدل طبقة تغذية أمامية كثيفة واحدة بعدة شبكات فرعية متوازية تُسمّى \"خبراء\" مع شبكة بوابة (gating network) قابلة للتدريب توجّه كل مُدخل إلى مجموعة صغيرة فقط من الخبراء، مما يتيح توسيع عدد معاملات النموذج دون زيادة تناسبية في الحساب لكل رمز؛ تُستخدم في نماذج مثل Mixtral وSwitch Transformer.",
+    "definition_en": "A neural network architecture that replaces a single dense feed-forward layer with multiple parallel 'expert' sub-networks and a trainable gating network that routes each input to only a small subset of experts, letting models scale to far more parameters without a proportional rise in per-token computation — used in models such as Mixtral and Switch Transformer.",
+    "related": [
+      "transformer",
+      "large_language_model",
+      "neural_network"
+    ],
+    "date_added": "2026-09-14"
+  },
+  {
+    "id": "etl",
+    "name": "ETL",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [
+      "Extract, Transform, Load",
+      "ETL Pipeline"
+    ],
+    "definition_ar": "عملية دمج بيانات تستخرج البيانات من نظام مصدر واحد أو أكثر، ثم تُحوّلها — بتنظيفها والتحقق منها وإعادة تشكيلها لتناسب قواعد العمل والمخطط — قبل تحميلها في مستودع بيانات أو مخزن بيانات هدف للتحليل؛ ويقابلها نمط ELT الأحدث الذي يُحمّل البيانات الخام أولًا ثم يُحوّلها داخل النظام الهدف.",
+    "definition_en": "A data integration process that extracts data from one or more source systems, transforms it — cleansing, validating, and reshaping it to fit business and schema rules — and loads it into a target data warehouse or data store for analysis; contrasted with the newer ELT pattern, which loads raw data first and transforms it inside the destination system.",
+    "related": [
+      "database",
+      "sql",
+      "query"
+    ],
+    "date_added": "2026-09-14"
+  },
+  {
+    "id": "xml_sitemap",
+    "name": "XML Sitemap",
+    "category": "web",
+    "subcategory": "discovery",
+    "aliases": [
+      "Sitemap",
+      "sitemap.xml"
+    ],
+    "definition_ar": "ملف بصيغة XML يتّبع بروتوكول Sitemaps (الإصدار 0.9 من sitemaps.org) يسرد عناوين URL لموقع ويب مع بيانات وصفية اختيارية كتاريخ آخر تعديل وتكرار التغيير، مما يساعد محركات البحث على اكتشاف الصفحات وزحفها بكفاءة أكبر من الاعتماد على الروابط وحدها؛ ويُعلَن عن موقعه غالبًا داخل ملف robots.txt.",
+    "definition_en": "An XML file following the Sitemaps protocol (sitemaps.org, version 0.9) that lists a website's URLs along with optional metadata like last-modified date and change frequency, helping search engines discover and crawl pages more efficiently than by following links alone; its location is often declared inside robots.txt.",
+    "related": [
+      "seo",
+      "url",
+      "web_server"
+    ],
+    "date_added": "2026-09-14"
+  },
+  {
+    "id": "zwave",
+    "name": "Z-Wave",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [
+      "ITU-T G.9959"
+    ],
+    "definition_ar": "بروتوكول لاسلكي شبكي (mesh) منخفض الطاقة يعمل ضمن نطاق ترددي دون الجيجاهرتز، مُوحَّد ضمن توصية ITU-T G.9959، يستخدم تشفير AES-128 وتوجيهًا شبكيًا عبر عُقد متصلة بالكهرباء للوصول إلى مدى يتراوح بين 30 و100 متر تقريبًا؛ بديل لبروتوكولي Zigbee وThread، وتُشرف عليه Z-Wave Alliance بدلًا من معيار IEEE 802.15.4 الذي يقوم عليه هذان البروتوكولان.",
+    "definition_en": "A low-power, sub-GHz mesh wireless protocol for smart home devices, standardized as ITU-T G.9959, that uses AES-128 encryption and mesh routing among mains-powered nodes to reach ranges of roughly 30-100 meters — an alternative to Zigbee and Thread, governed by the Z-Wave Alliance rather than the IEEE 802.15.4 standard those two protocols build on.",
+    "related": [
+      "zigbee",
+      "ble",
+      "smart_home"
+    ],
+    "date_added": "2026-09-14"
+  },
+  {
+    "id": "vms_video_management_system",
+    "name": "Video Management System",
+    "category": "hardware",
+    "subcategory": "cctv",
+    "aliases": [
+      "VMS"
+    ],
+    "definition_ar": "برمجية (تُرفَق أحيانًا بعتاد مخصّص) تُركّز اتصال وتسجيل وتخزين وتشغيل مقاطع الفيديو من عدد كبير من كاميرات IP — غالبًا من عدة شركات مصنّعة عبر بروتوكولات مثل ONVIF وRTSP — مضيفةً ميزات كالمراقبة متعددة المواقع وصلاحيات المستخدمين وتحليلات الفيديو، تفوق ما يوفّره جهاز NVR قائم بذاته.",
+    "definition_en": "Software (sometimes paired with dedicated hardware) that centralizes the connection, recording, storage, and playback of video from many IP cameras — often from multiple vendors, over protocols like ONVIF and RTSP — adding features such as multi-site monitoring, user permissions, and video analytics beyond what a standalone NVR appliance provides.",
+    "related": [
+      "nvr",
+      "ipcamera",
+      "onvif",
+      "dvr"
+    ],
+    "date_added": "2026-09-14"
   }
 ]
