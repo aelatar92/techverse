@@ -1875,5 +1875,110 @@
       "dvr"
     ],
     "date_added": "2026-09-14"
+  },
+  {
+    "id": "hmac",
+    "name": "HMAC",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "Hash-based Message Authentication Code",
+      "Keyed-Hash Message Authentication Code"
+    ],
+    "definition_ar": "آلية معرّفة في RFC 2104 للتحقق من سلامة الرسالة وصحة مصدرها معًا، عبر دمج دالة تجزئة تشفيرية (مثل SHA-256) مع مفتاح سري، بحيث لا يستطيع إنتاج القيمة المطابقة أو التحقق منها إلا من يملك المفتاح.",
+    "definition_en": "A mechanism defined in RFC 2104 (and FIPS 198) for verifying both the integrity and authenticity of a message by combining a cryptographic hash function, such as SHA-256, with a secret key, so only parties holding the key can generate or validate a matching digest.",
+    "related": [
+      "hash",
+      "encryption",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-15"
+  },
+  {
+    "id": "pxe",
+    "name": "PXE",
+    "category": "systems",
+    "subcategory": "servers-services",
+    "aliases": [
+      "Preboot Execution Environment",
+      "Preboot eXecution Environment",
+      "PXE Boot"
+    ],
+    "definition_ar": "بيئة قياسية بنمط عميل-خادم، أصبحت جزءًا من مواصفة UEFI، تتيح لجهاز الحاسوب الإقلاع وتحميل نظام التشغيل عبر الشبكة بدلًا من التخزين المحلي، باستخدام DHCP للحصول على عنوان IP وموقع خادم الإقلاع وTFTP لتنزيل ملف الإقلاع.",
+    "definition_en": "A standardized client-server environment, now part of the UEFI specification, that lets a computer boot and load its operating system over the network instead of local storage, using DHCP to obtain an IP address and boot-server location and TFTP to download the boot image.",
+    "related": [
+      "dhcp",
+      "kernel",
+      "server"
+    ],
+    "date_added": "2026-09-15"
+  },
+  {
+    "id": "zombie_process",
+    "name": "Zombie Process",
+    "category": "linux",
+    "subcategory": "process-management",
+    "aliases": [
+      "Defunct Process",
+      "Z State Process"
+    ],
+    "definition_ar": "عملية انتهى تنفيذها وحرّرت مواردها، لكنها ما زالت تحتفظ بمدخل في جدول العمليات (بحالة Z) لأن العملية الأم لم تستدعِ بعد wait() لقراءة حالة خروجها؛ وتراكم عدد كبير من هذه العمليات لفترة طويلة يدل على عملية أم لا تُنظّف عملياتها الفرعية.",
+    "definition_en": "A process that has finished executing and released its resources but still holds an entry (shown with state Z) in the process table because its parent has not yet called wait() to read its exit status; large numbers of long-lived zombies signal a parent process that fails to reap its children.",
+    "related": [
+      "process",
+      "kernel"
+    ],
+    "date_added": "2026-09-15"
+  },
+  {
+    "id": "read_replica",
+    "name": "Read Replica",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [
+      "Read-Only Replica"
+    ],
+    "definition_ar": "نسخة للقراءة فقط من قاعدة بيانات رئيسية تُبقيها متزامنة عملية نسخ متماثل غير متزامنة (asynchronous replication)، وتُستخدم لتخفيف حِمل استعلامات القراءة عن القاعدة الرئيسية وتوسيع نطاق الأحمال كثيفة القراءة؛ ولأن النسخ غير متزامن فإن النسخة غالبًا ما تكون 'متسقة في النهاية' وليست محدّثة لحظيًا.",
+    "definition_en": "A read-only copy of a primary database kept in sync through asynchronous replication, used to offload read queries from the primary and scale read-heavy workloads; because replication is asynchronous, replicas are typically eventually consistent rather than instantly up to date.",
+    "related": [
+      "replication",
+      "database",
+      "sql"
+    ],
+    "date_added": "2026-09-15"
+  },
+  {
+    "id": "rack_unit",
+    "name": "Rack Unit",
+    "category": "hardware",
+    "subcategory": "rack-infrastructure",
+    "aliases": [
+      "U",
+      "RU"
+    ],
+    "definition_ar": "وحدة قياس رأسي معيارية، يحدّدها معيار EIA-310 بمقدار 1.75 بوصة (44.45 ملم)، تُستخدم للتعبير عن ارتفاع خزائن الخوادم (الراك) والأجهزة المُركّبة فيها؛ فخادم بارتفاع '2U' مثلًا يشغل 3.5 بوصة من ارتفاع الراك.",
+    "definition_en": "A standardized unit of vertical measure, defined by EIA-310 as 1.75 inches (44.45 mm), used to express the height of server racks and the equipment mounted in them — for example, a '2U' server occupies 3.5 inches of rack height.",
+    "related": [
+      "rack"
+    ],
+    "date_added": "2026-09-15"
+  },
+  {
+    "id": "feature_flag",
+    "name": "Feature Flag",
+    "category": "softdev",
+    "subcategory": "practices",
+    "aliases": [
+      "Feature Toggle",
+      "Feature Switch"
+    ],
+    "definition_ar": "أسلوب يُغلّف جزءًا من الوظائف بشرط يُتحكم به وقت التشغيل، يتيح للفرق تفعيل الميزات أو إيقافها (لمستخدم معيّن أو بيئة معيّنة أو بنسبة تدريجية من المستخدمين) دون نشر كود جديد، ما يفصل بين نشر الكود وإطلاق الميزة فعليًا.",
+    "definition_en": "A technique that wraps a piece of functionality in a runtime-controlled conditional, letting teams turn features on or off — per user, environment, or percentage rollout — without deploying new code, decoupling code deployment from feature release.",
+    "related": [
+      "agile",
+      "devops",
+      "git"
+    ],
+    "date_added": "2026-09-15"
   }
 ]
