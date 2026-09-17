@@ -2075,5 +2075,118 @@
       "replication"
     ],
     "date_added": "2026-09-16"
+  },
+  {
+    "id": "imap",
+    "name": "IMAP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Internet Message Access Protocol",
+      "IMAP4rev2"
+    ],
+    "definition_ar": "بروتوكول قياسي على الإنترنت (RFC 9051، المعروف بـ IMAP4rev2) يتيح لعميل البريد الإلكتروني استرجاع الرسائل المخزّنة على خادم البريد وإدارتها، مع مزامنة الرسائل والمجلدات وحالة القراءة عبر عدة أجهزة، عادة عبر المنفذ 143 أو المنفذ 993 عند استخدام TLS الضمني؛ بخلاف POP3 الذي يُنزّل الرسائل ويحذفها من الخادم، يُبقي IMAP الرسائل على الخادم.",
+    "definition_en": "An Internet standard protocol (RFC 9051, IMAP4rev2) that lets an email client retrieve and manage messages stored on a mail server — keeping messages, folders, and read state synchronized across multiple devices — typically over TCP port 143 or, with implicit TLS, port 993; unlike POP3, IMAP leaves mail on the server rather than downloading and removing it.",
+    "related": [
+      "smtp",
+      "tcp",
+      "port",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-17"
+  },
+  {
+    "id": "pcie",
+    "name": "PCI Express",
+    "category": "systems",
+    "subcategory": "hardware",
+    "aliases": [
+      "PCIe",
+      "PCI-E"
+    ],
+    "definition_ar": "معيار ناقل توسعة تسلسلي عالي السرعة من نوع نقطة إلى نقطة، تُشرف عليه منظمة PCI-SIG، يربط مكوّنات مثل بطاقات الرسوميات وأقراص NVMe وبطاقات الشبكة باللوحة الأم عبر مسار أو أكثر من \"الحارات\" (من x1 حتى x16)، حيث يُضاعف كل جيل لاحق (من PCIe 3.0 حتى 6.0 وما بعده) تقريبًا عرض النطاق الترددي لكل حارة.",
+    "definition_en": "A high-speed, point-to-point serial expansion bus standard maintained by PCI-SIG that connects components such as GPUs, NVMe SSDs, and network adapters to a motherboard over one or more full-duplex lanes (x1 through x16), with each successive generation (PCIe 3.0 through 6.0 and beyond) roughly doubling per-lane bandwidth.",
+    "related": [
+      "gpu",
+      "nvme",
+      "motherboard",
+      "cpu"
+    ],
+    "date_added": "2026-09-17"
+  },
+  {
+    "id": "linux_acl",
+    "name": "Access Control List (Linux)",
+    "category": "linux",
+    "subcategory": "permissions",
+    "aliases": [
+      "ACL",
+      "POSIX ACL",
+      "setfacl"
+    ],
+    "definition_ar": "ميزة في نظام ملفات لينكس مبنية على مسودة POSIX.1e، تتيح للمسؤول منح أو منع صلاحيات القراءة والكتابة والتنفيذ لمستخدمين أو مجموعات إضافية محدّدة تتجاوز المالك والمجموعة و\"الآخرين\" التقليديين لملف واحد، وتُدار عبر أداتي setfacl وgetfacl، فتوسّع نموذج صلاحيات يونكس التقليدي دون استبداله.",
+    "definition_en": "A POSIX.1e-based Linux filesystem feature that lets administrators grant or deny read/write/execute permissions to specific additional users or groups beyond a file's single owner, group, and \"other\" — managed with the setfacl and getfacl utilities — extending the traditional Unix permission model without replacing it.",
+    "related": [
+      "chmod",
+      "chown",
+      "root",
+      "filesystem"
+    ],
+    "date_added": "2026-09-17"
+  },
+  {
+    "id": "rsa",
+    "name": "RSA",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "RSA Algorithm",
+      "Rivest-Shamir-Adleman"
+    ],
+    "definition_ar": "نظام تشفير بالمفتاح العام نشره عام 1977 كل من ريفست وشامير وأدلمان، ووُحِّد ضمن معيار PKCS #1 (RFC 8017)، ويعتمد أمانه على صعوبة تحليل حاصل ضرب عددين أوليين كبيرين إلى عواملهما؛ يُستخدم لتشفير البيانات بالمفتاح العام للمستلم ولإنشاء توقيعات رقمية يمكن التحقق منها بالمفتاح العام نفسه.",
+    "definition_en": "A public-key cryptosystem, published in 1977 by Rivest, Shamir, and Adleman and standardized as PKCS #1 (RFC 8017), whose security rests on the computational difficulty of factoring the product of two large prime numbers; it is used for both encrypting data with a recipient's public key and creating digital signatures verifiable with that same public key.",
+    "related": [
+      "encryption",
+      "digital_signature",
+      "pki",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-17"
+  },
+  {
+    "id": "sso",
+    "name": "Single Sign-On",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "SSO"
+    ],
+    "definition_ar": "مخطط مصادقة يتيح للمستخدم تسجيل الدخول مرة واحدة ببيانات اعتماد واحدة والوصول إلى عدة تطبيقات أو أنظمة مستقلة دون إعادة المصادقة لكل واحد منها على حدة، ويُنفَّذ عادة عبر بروتوكولات اتحاد الهوية مثل SAML أو OpenID Connect، أو أنظمة قائمة على التذاكر مثل Kerberos.",
+    "definition_en": "An authentication scheme that lets a user log in once with a single set of credentials and gain access to multiple independent applications or systems without re-authenticating to each one, typically implemented using federation protocols such as SAML or OpenID Connect, or ticket-based systems like Kerberos.",
+    "related": [
+      "saml",
+      "oidc",
+      "oauth2",
+      "kerberos"
+    ],
+    "date_added": "2026-09-17"
+  },
+  {
+    "id": "opc_ua",
+    "name": "OPC UA",
+    "category": "iot",
+    "subcategory": "industrial",
+    "aliases": [
+      "OPC Unified Architecture"
+    ],
+    "definition_ar": "معيار تشغيل بيني مستقل عن المنصة وقائم على الخدمات (IEC 62541) طوّرته مؤسسة OPC Foundation لتبادل البيانات بأمان وموثوقية بين الأجهزة والأنظمة الصناعية، ويحدّد طبقة اتصال (عميل/خادم ونشر/اشتراك) إضافة إلى نموذج معلومات موحّد يتيح لأي عميل متوافق تفسير متغيرات الآلة وتنبيهاتها ودوالها دون إعداد مخصّص.",
+    "definition_en": "A platform-independent, service-oriented interoperability standard (IEC 62541) developed by the OPC Foundation for secure, reliable data exchange between industrial devices and systems, defining both a communication layer (client/server and publish/subscribe) and a standardized information model so any compliant client can interpret a machine's variables, alarms, and methods without custom configuration.",
+    "related": [
+      "modbus",
+      "scada",
+      "plc",
+      "ot"
+    ],
+    "date_added": "2026-09-17"
   }
 ]
