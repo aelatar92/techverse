@@ -2188,5 +2188,117 @@
       "ot"
     ],
     "date_added": "2026-09-17"
+  },
+  {
+    "id": "sip",
+    "name": "SIP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Session Initiation Protocol"
+    ],
+    "definition_ar": "بروتوكول إشارة (signaling) من طبقة التطبيق (RFC 3261) يُستخدم لإنشاء جلسات اتصال متعددة الوسائط كالصوت والفيديو والمراسلة وتعديلها وإنهائها بين طرف أو أكثر، عبر رسائل نصية على غرار HTTP مثل INVITE وACK وBYE، بالاعتماد على خوادم وكيلة وتسجيل وإعادة توجيه؛ وهو الأساس الذي تقوم عليه معظم أنظمة VoIP والهاتف الحديثة.",
+    "definition_en": "An application-layer signaling protocol (RFC 3261) used to create, modify, and terminate multimedia sessions — voice, video, and messaging — between one or more participants, using HTTP-like text request/response methods such as INVITE, ACK, and BYE along with proxy, registrar, and redirect servers; it underlies most modern VoIP and telephony systems.",
+    "related": [
+      "udp",
+      "tcp",
+      "webrtc",
+      "http"
+    ],
+    "date_added": "2026-09-18"
+  },
+  {
+    "id": "diffie_hellman",
+    "name": "Diffie-Hellman Key Exchange",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "DH",
+      "DHKE",
+      "Diffie-Hellman"
+    ],
+    "definition_ar": "طريقة تبادل مفاتيح تشفير نشرها ويتفيلد ديفي ومارتن هيلمان عام 1976، تتيح لطرفين لا يملكان سرًا مشتركًا مسبقًا الاتفاق على مفتاح سري مشترك عبر قناة غير آمنة، بالاعتماد على صعوبة مسألة اللوغاريتم المتقطع؛ وله صيغة معيارية في RFC 2631، ويشكّل ركيزة أساسية في مصافحة TLS وبروتوكولات VPN، لكنه عرضة لهجوم الوسيط ما لم يُقترن بمصادقة كتوقيع رقمي أو شهادة.",
+    "definition_en": "A key-agreement method published by Whitfield Diffie and Martin Hellman in 1976 that lets two parties with no prior shared secret establish a common secret key over an insecure channel, relying on the hardness of the discrete logarithm problem; standardized as RFC 2631, it underpins the TLS handshake and many VPN protocols, though it is vulnerable to man-in-the-middle attacks unless combined with authentication such as digital signatures or certificates.",
+    "related": [
+      "rsa",
+      "encryption",
+      "ssl_tls",
+      "pki",
+      "mitm_attack"
+    ],
+    "date_added": "2026-09-18"
+  },
+  {
+    "id": "rsync",
+    "name": "rsync",
+    "category": "linux",
+    "subcategory": "shell",
+    "aliases": [],
+    "definition_ar": "أداة لنسخ الملفات ومزامنتها (rsync(1)) طوّرها أندرو تريدجل وبول ماكيراس، تعتمد خوارزمية نقل الفروقات (delta-transfer) التي ترسل فقط الاختلافات بين ملفات المصدر والوجهة بدل الملف كاملاً، مما يقلّل استهلاك الشبكة؛ تدعم النسخ عبر SSH مع الحفاظ على الصلاحيات والطوابع الزمنية، وتُستخدم غالبًا لمزامنة الأدلة والنسخ الاحتياطي.",
+    "definition_en": "A file-copying and synchronization utility (rsync(1)) written by Andrew Tridgell and Paul Mackerras that uses a delta-transfer algorithm to send only the differences between source and destination files rather than the whole file, minimizing network usage; it supports copying over SSH while preserving permissions and timestamps, and is widely used for mirroring directories and backups.",
+    "related": [
+      "ssh",
+      "tar",
+      "backup",
+      "filesystem"
+    ],
+    "date_added": "2026-09-18"
+  },
+  {
+    "id": "message_queue",
+    "name": "Message Queue",
+    "category": "systems",
+    "subcategory": "servers-services",
+    "aliases": [
+      "MQ"
+    ],
+    "definition_ar": "نمط معماري تُنشر فيه التطبيقات (المنتِجة) رسائل إلى طابور تديره وسيط رسائل (broker)، فيفصل بذلك المنتِج عن المستهلك الذي يقرأ الرسائل بشكل غير متزامن وبمعدله الخاص؛ يُستخدم لامتصاص ذروات الحمل وضمان التسليم وتمكين الاتصال غير المتزامن بين الخدمات المصغّرة، وتُطبِّقه معايير مثل AMQP وأدوات مثل RabbitMQ وApache Kafka.",
+    "definition_en": "An architectural pattern in which producer applications publish messages to a queue managed by a broker, decoupling them from consumers that read messages asynchronously at their own pace; used to absorb load spikes, guarantee delivery, and enable asynchronous communication between microservices, implemented via standards like AMQP and software such as RabbitMQ and Apache Kafka.",
+    "related": [
+      "microservices",
+      "api_gateway",
+      "webhook",
+      "service_mesh"
+    ],
+    "date_added": "2026-09-18"
+  },
+  {
+    "id": "graph_database",
+    "name": "Graph Database",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": [
+      "Graph DB"
+    ],
+    "definition_ar": "نموذج قاعدة بيانات NoSQL يخزّن البيانات كعقد (nodes) وحواف (edges) وخصائص (properties) تمثّل الكيانات وعلاقاتها مباشرة بدل الاعتماد على عمليات الربط (joins) بين الجداول، مما يتيح اجتياز البيانات شديدة الترابط بكفاءة عالية كما في الشبكات الاجتماعية وكشف الاحتيال ومحركات التوصية؛ ومن أبرز تطبيقاتها Neo4j.",
+    "definition_en": "A NoSQL database model that stores data as nodes, edges, and properties (the property graph model) representing entities and their relationships directly, rather than relying on table joins, enabling efficient traversal of highly connected data such as social networks, fraud detection, and recommendation engines; Neo4j is a leading implementation.",
+    "related": [
+      "nosql",
+      "database",
+      "mongodb",
+      "cap_theorem"
+    ],
+    "date_added": "2026-09-18"
+  },
+  {
+    "id": "openapi",
+    "name": "OpenAPI Specification",
+    "category": "softdev",
+    "subcategory": "apis",
+    "aliases": [
+      "OpenAPI",
+      "Swagger",
+      "Swagger Specification"
+    ],
+    "definition_ar": "مواصفة محايدة تجاه المزوّد ولغة البرمجة (تُشرف عليها OpenAPI Initiative التابعة لمؤسسة Linux Foundation) لوصف واجهات REST API ضمن مستند مقروء آليًا بصيغة YAML أو JSON، يغطي نقاط النهاية والعمليات والمعطيات ومخططات الطلب والاستجابة والمصادقة، مما يتيح توليد التوثيق وحزم SDK للعميل ونماذج الخادم تلقائيًا؛ وكانت تُعرف سابقًا بمواصفة Swagger قبل أن تُمنح لمبادرة OpenAPI عام 2015.",
+    "definition_en": "A vendor-neutral, language-agnostic specification, maintained by the OpenAPI Initiative under the Linux Foundation, for describing RESTful APIs in a machine-readable YAML or JSON document — covering endpoints, operations, parameters, request/response schemas, and authentication — enabling automatic generation of documentation, client SDKs, and server stubs; it was originally known as the Swagger Specification before being donated to the OpenAPI Initiative in 2015.",
+    "related": [
+      "rest_api",
+      "api",
+      "json",
+      "grpc",
+      "sdk"
+    ],
+    "date_added": "2026-09-18"
   }
 ]
