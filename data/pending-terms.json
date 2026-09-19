@@ -2300,5 +2300,114 @@
       "sdk"
     ],
     "date_added": "2026-09-18"
+  },
+  {
+    "id": "ssrf",
+    "name": "Server-Side Request Forgery",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [
+      "SSRF"
+    ],
+    "definition_ar": "ثغرة في تطبيقات الويب (ضمن OWASP Top 10 2021 كالبند A10) يخدع فيها المهاجم الخادم لإرسال طلبات مصمَّمة إلى وجهات غير مقصودة — كخدمات داخلية أو نقاط بيانات وصفية سحابية أو أنظمة محمية بجدار ناري — عبر التلاعب بعنوان URL يجلبه الخادم نيابةً عن المستخدم.",
+    "definition_en": "A web application vulnerability (OWASP Top 10 2021, A10) in which an attacker tricks a server into sending crafted requests to unintended destinations — including internal services, cloud metadata endpoints, or systems behind a firewall — by supplying or manipulating a URL that the server fetches on the user's behalf.",
+    "related": [
+      "firewall",
+      "proxy",
+      "url"
+    ],
+    "date_added": "2026-09-19"
+  },
+  {
+    "id": "service_worker",
+    "name": "Service Worker",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": [
+      "Service Workers API"
+    ],
+    "definition_ar": "عامل جافاسكربت قائم على الأحداث ومحدَّد بمواصفة W3C، يُسجَّل مقابل نطاق معيّن ويعمل كوكيل (proxy) قابل للبرمجة بين تطبيق الويب والمتصفح والشبكة، مما يتيح التخزين المؤقت دون اتصال والمزامنة في الخلفية وإشعارات Push حتى عند إغلاق الصفحة.",
+    "definition_en": "A W3C-specified, event-driven JavaScript worker registered against an origin that acts as a programmable proxy between a web app, the browser, and the network, enabling offline caching, background sync, and push notifications even when the page isn't open.",
+    "related": [
+      "browser",
+      "http",
+      "https",
+      "static_site"
+    ],
+    "date_added": "2026-09-19"
+  },
+  {
+    "id": "time_series_database",
+    "name": "Time-Series Database",
+    "category": "databases",
+    "subcategory": "nosql",
+    "aliases": [
+      "TSDB",
+      "Time Series DB"
+    ],
+    "definition_ar": "قاعدة بيانات مُحسَّنة لتخزين واستعلام نقاط بيانات مفهرسة بالزمن — كقراءات الحساسات أو مقاييس الأنظمة — وتوفر كتابة وضغطًا وتجميعًا فعّالًا ضمن نوافذ زمنية، وهي مهام تتعثر فيها قواعد البيانات العامة عند اتساع النطاق.",
+    "definition_en": "A database optimized to store and query data points indexed by time — such as sensor readings or system metrics — offering efficient time-windowed writes, compression, and aggregation that general-purpose databases handle poorly at scale.",
+    "related": [
+      "database",
+      "nosql",
+      "mongodb",
+      "sensor"
+    ],
+    "date_added": "2026-09-19"
+  },
+  {
+    "id": "dao",
+    "name": "Decentralized Autonomous Organization",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": [
+      "DAO"
+    ],
+    "definition_ar": "منظمة مملوكة لأعضائها تُدار بقواعد مبرمجة ضمن عقد ذكي على البلوك تشين بدل سلطة مركزية، إذ تُحسم المقترحات وإنفاق الخزينة عبر تصويت موزون بالرموز الرقمية (tokens) ويُنفَّذ تلقائيًا فور اجتياز التصويت.",
+    "definition_en": "A member-owned organization governed by rules encoded in a blockchain smart contract rather than a central authority, where proposals and treasury spending are decided by token-weighted voting and automatically executed once a vote passes.",
+    "related": [
+      "smart_contract",
+      "ethereum",
+      "blockchain",
+      "wallet"
+    ],
+    "date_added": "2026-09-19"
+  },
+  {
+    "id": "auto_scaling",
+    "name": "Auto Scaling",
+    "category": "systems",
+    "subcategory": "cloud",
+    "aliases": [
+      "Autoscaling",
+      "Elastic Scaling"
+    ],
+    "definition_ar": "قدرة في الحوسبة السحابية تضيف أو تزيل موارد حوسبة تلقائيًا — كنُسخ الأجهزة الافتراضية أو الحاويات — استجابةً للطلب الفعلي أو مقاييس محدَّدة مسبقًا، بما يحافظ على الأداء ويقلّل التكلفة مقارنةً بالتزويد الثابت للموارد.",
+    "definition_en": "A cloud computing capability that automatically adds or removes compute capacity — such as VM instances or containers — in response to real-time demand or defined metrics, maintaining performance while minimizing cost compared to statically provisioned capacity.",
+    "related": [
+      "cloud",
+      "loadbalancer",
+      "kubernetes",
+      "highavailability"
+    ],
+    "date_added": "2026-09-19"
+  },
+  {
+    "id": "story_points",
+    "name": "Story Points",
+    "category": "projectmgmt",
+    "subcategory": "roles-metrics",
+    "aliases": [
+      "Story Point Estimation"
+    ],
+    "definition_ar": "مقياس نسبي بلا وحدة قياس يستخدمه فرق أجايل لتقدير الجهد والتعقيد وعدم اليقين الإجمالي لقصة مستخدم أو عنصر في قائمة المهام، ويُحدَّد عادةً عبر تقنيات توافق جماعي مثل Planning Poker بدلًا من التقدير الزمني المباشر.",
+    "definition_en": "A relative, unitless measure used by Agile teams to estimate the overall effort, complexity, and uncertainty of a user story or backlog item, typically assigned through group-consensus techniques like Planning Poker rather than direct time estimates.",
+    "related": [
+      "agile",
+      "sprint",
+      "user_story",
+      "velocity"
+    ],
+    "date_added": "2026-09-19"
   }
 ]
