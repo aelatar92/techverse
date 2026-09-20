@@ -2409,5 +2409,93 @@
       "velocity"
     ],
     "date_added": "2026-09-19"
+  },
+  {
+    "id": "sdwan",
+    "name": "SD-WAN",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Software-Defined WAN",
+      "Software-Defined Wide Area Network"
+    ],
+    "definition_ar": "بنية شبكية تعتمد تحكمًا مركزيًا قائمًا على البرمجيات لإدارة اتصال الشبكة الواسعة عبر أنواع نقل متعددة (MPLS، الإنترنت العريض النطاق، LTE)، وتوجّه حركة البيانات ديناميكيًا عبر أفضل مسار متاح بناءً على حالة الشبكة الآنية كزمن الاستجابة وفقدان الحزم، مع فصل التحكم بالشبكة عن العتاد الأساسي.",
+    "definition_en": "A networking architecture that uses centralized, software-based control to manage WAN connectivity across multiple transport types (MPLS, broadband internet, LTE), dynamically routing traffic across the best-performing path based on real-time conditions like latency and packet loss, while decoupling network control from the underlying hardware.",
+    "related": [
+      "vpn",
+      "router",
+      "mpls",
+      "cloud"
+    ],
+    "date_added": "2026-09-20"
+  },
+  {
+    "id": "content_security_policy",
+    "name": "Content Security Policy",
+    "category": "web",
+    "subcategory": "frontend",
+    "aliases": [
+      "CSP"
+    ],
+    "definition_ar": "معيار أمني للمتصفح صادر عن W3C يتيح لخادم الويب الإعلان، عبر ترويسة استجابة HTTP أو وسم meta، عن المصادر الموثوقة التي يمكن للصفحة تحميل السكربتات والأنماط والموارد الأخرى منها، مما يخفف من هجمات حقن السكربتات عبر المواقع وغيرها من هجمات حقن المحتوى بمنع تنفيذ أي شيء خارج القائمة المسموح بها.",
+    "definition_en": "A W3C browser security standard that lets a web server declare, via an HTTP response header or meta tag, the trusted sources from which a page may load scripts, styles, and other resources — mitigating cross-site scripting and other content-injection attacks by blocking execution of anything outside the declared allowlist.",
+    "related": [
+      "html",
+      "javascript",
+      "browser",
+      "cors"
+    ],
+    "date_added": "2026-09-20"
+  },
+  {
+    "id": "materialized_view",
+    "name": "Materialized View",
+    "category": "databases",
+    "subcategory": "relational",
+    "aliases": [],
+    "definition_ar": "كائن في قاعدة البيانات يخزّن نتيجة استعلام محسوبة مسبقًا كجدول فعلي بدل إعادة حسابها في كل مرة كما في العرض العادي، مضحيًا بمساحة تخزين إضافية واحتمال تقادم البيانات مقابل أداء قراءة أسرع بكثير للاستعلامات المعقدة أو المتكررة؛ ويمكن تحديثه يدويًا أو وفق جدول زمني لمزامنته مع الجداول الأساسية.",
+    "definition_en": "A database object that stores the precomputed result set of a query as a physical table, rather than recomputing it on every access like a standard view — trading extra storage and potential staleness for much faster read performance on complex or frequently run queries; it can be refreshed manually or on a schedule to sync with the underlying base tables.",
+    "related": [
+      "sql",
+      "table",
+      "query",
+      "normalization"
+    ],
+    "date_added": "2026-09-20"
+  },
+  {
+    "id": "homomorphic_encryption",
+    "name": "Homomorphic Encryption",
+    "category": "security",
+    "subcategory": "cryptography",
+    "aliases": [
+      "FHE",
+      "Fully Homomorphic Encryption"
+    ],
+    "definition_ar": "مخطط تشفير يتيح إجراء العمليات الحسابية مباشرة على النص المشفّر، لينتج نصًا مشفّرًا يطابق عند فك تشفيره نتيجة إجراء العمليات نفسها على النص الأصلي، مما يسمح لطرف ثالث كمزوّد سحابي بمعالجة بيانات حساسة دون رؤيتها مطلقًا بشكلها غير المشفّر؛ ويدعم التشفير المتماثل الكامل (FHE) أي دالة قابلة للحساب.",
+    "definition_en": "An encryption scheme that allows computations to be performed directly on ciphertext, producing an encrypted result that, when decrypted, matches the result of the same operations performed on the plaintext — letting a third party such as a cloud provider process sensitive data without ever seeing it unencrypted; a fully homomorphic scheme (FHE) supports arbitrary computable functions.",
+    "related": [
+      "encryption",
+      "cloud",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-20"
+  },
+  {
+    "id": "nbiot",
+    "name": "NB-IoT",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [
+      "Narrowband IoT"
+    ],
+    "definition_ar": "تقنية راديو من فئة الشبكات واسعة النطاق منخفضة الطاقة (LPWAN) وضعها معيار 3GPP (وجُمّدت مواصفتها في الإصدار 13 عام 2016)، تعمل ضمن نطاق تردد ضيق مقداره 180 كيلوهرتز — إما داخل نطاق طيف الجوال المرخّص أو ضمن النطاق الحاجز لشبكة LTE أو بشكل مستقل — لتوفير تغطية داخلية عميقة وعمر بطارية يمتد لسنوات لأجهزة إنترنت الأشياء منخفضة نقل البيانات كعدادات الطاقة الذكية وأجهزة الاستشعار.",
+    "definition_en": "A Low-Power Wide-Area Network (LPWAN) radio technology standardized by 3GPP (frozen in Release 13, 2016) that operates within a narrow 180 kHz band — reusing licensed cellular spectrum in-band, in an LTE guard band, or standalone — to deliver deep indoor coverage and multi-year battery life for low-throughput IoT devices such as smart meters and sensors.",
+    "related": [
+      "lorawan",
+      "iot",
+      "sensor"
+    ],
+    "date_added": "2026-09-20"
   }
 ]
