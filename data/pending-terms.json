@@ -2497,5 +2497,111 @@
       "sensor"
     ],
     "date_added": "2026-09-20"
+  },
+  {
+    "id": "is_is",
+    "name": "IS-IS",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Intermediate System to Intermediate System",
+      "ISO 10589"
+    ],
+    "definition_ar": "بروتوكول توجيه داخلي من نوع حالة الرابط (ISO/IEC 10589، ووُسِّع لدعم IP عبر RFC 1195) يعمل مباشرة فوق طبقة ربط البيانات وينظّم نطاق التوجيه في هرمية من مستويين: تعرف موجّهات المستوى الأول طوبولوجيا منطقتها فقط بينما تربط موجّهات المستوى الثاني المناطق ببعضها، ويُستخدم على نطاق واسع في شبكات العمود الفقري لمزوّدي الخدمة إلى جانب أو بدلًا من OSPF.",
+    "definition_en": "A link-state interior gateway protocol (ISO/IEC 10589, extended for IP by RFC 1195) that runs directly over the data-link layer and organizes a routing domain into a two-level hierarchy — Level 1 routers know only their own area's topology while Level 2 routers interconnect areas — widely deployed in large service-provider backbones alongside or instead of OSPF.",
+    "related": [
+      "ospf",
+      "bgp",
+      "router"
+    ],
+    "date_added": "2026-09-21"
+  },
+  {
+    "id": "syslog",
+    "name": "Syslog",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "System Logging Protocol"
+    ],
+    "definition_ar": "معيار لإرسال رسائل السجلّ من الأجهزة والتطبيقات إلى مُجمِّع مركزي، حدّدته RFC 5424 (التي حلّت محل صيغة BSD القديمة في RFC 3164)؛ تحمل كل رسالة فئة (facility) ومستوى خطورة (severity) يُدمَجان في قيمة أولوية واحدة، وتُرسَل عادة عبر منفذ UDP رقم 514، أو عبر TCP/TLS لضمان الموثوقية والتشفير وفق RFC 5425.",
+    "definition_en": "A standard for forwarding log messages from devices and applications to a centralized collector, defined by RFC 5424 (obsoleting the legacy BSD format in RFC 3164); each message carries a facility and severity level combined into a single priority value, and is typically sent over UDP port 514 or, for reliable and encrypted delivery, over TCP/TLS per RFC 5425.",
+    "related": [
+      "siem",
+      "logfile",
+      "udp"
+    ],
+    "date_added": "2026-09-21"
+  },
+  {
+    "id": "pam",
+    "name": "Pluggable Authentication Modules",
+    "category": "linux",
+    "subcategory": "permissions",
+    "aliases": [
+      "PAM",
+      "Linux-PAM"
+    ],
+    "definition_ar": "إطار عمل اقترحته Sun Microsystems أول مرة عام 1995 ونُفِّذ في لينكس باسم Linux-PAM، يتيح لمسؤولي الأنظمة تهيئة كيفية مصادقة التطبيقات للمستخدمين عبر وحدات قابلة للتكديس والاستبدال تغطي المصادقة والحساب وكلمة المرور وإدارة الجلسة، دون الحاجة لتعديل التطبيقات نفسها؛ وتُعدّ لكل خدمة على حدة ضمن الدليل /etc/pam.d/.",
+    "definition_en": "A framework, originally proposed by Sun Microsystems in 1995 and implemented on Linux as Linux-PAM, that lets system administrators configure how applications authenticate users through stackable, swappable modules — covering authentication, account, password, and session management — without modifying the applications themselves; configured per-service under /etc/pam.d/.",
+    "related": [
+      "sudo",
+      "ssh",
+      "root"
+    ],
+    "date_added": "2026-09-21"
+  },
+  {
+    "id": "zfs",
+    "name": "ZFS",
+    "category": "systems",
+    "subcategory": "storage",
+    "aliases": [
+      "Zettabyte File System",
+      "OpenZFS"
+    ],
+    "definition_ar": "نظام ملفات مدمج مع مدير أحجام منطقي طوّرته أصلًا Sun Microsystems في منتصف العقد الأول من الألفية ويستمر تطويره اليوم كمشروع مفتوح المصدر باسم OpenZFS، يعتمد معاملات النسخ عند الكتابة (copy-on-write) بحيث تُنشئ كل عملية كتابة كتلة جديدة بدل الكتابة فوق البيانات الحالية، مما يتيح لقطات شبه فورية ومجاميع تحقق (checksums) شاملة تكتشف الأعطال الصامتة في البيانات وتُصلحها ذاتيًا، إضافة إلى نظام RAID-Z الخاص به الذي يتفادى ثغرة \"فجوة الكتابة\" في RAID-5.",
+    "definition_en": "A combined file system and logical volume manager, originally developed by Sun Microsystems in the mid-2000s and continued today as the open-source OpenZFS, that uses copy-on-write transactions so every write creates a new block rather than overwriting existing data — enabling near-instant snapshots, end-to-end checksums that detect and self-heal silent data corruption, and its own software-RAID scheme, RAID-Z, which avoids the RAID-5 write hole.",
+    "related": [
+      "raid",
+      "filesystem",
+      "backup"
+    ],
+    "date_added": "2026-09-21"
+  },
+  {
+    "id": "advanced_persistent_threat",
+    "name": "Advanced Persistent Threat",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [],
+    "definition_ar": "جهة تهديد متطورة وذات موارد كبيرة، غالبًا دولة أو جهة مدعومة من دولة، تحصل على وصول غير مصرّح به وخفي إلى شبكة الهدف وتحافظ عليه لفترة طويلة لاستخراج البيانات باستمرار أو تقويض العمليات، مع تكييف أساليبها استجابة لجهود المدافعين (وفق تعريف NIST في SP 800-39/800-137)؛ وتختلف عن الهجمات الانتهازية بإصرارها وأهدافها طويلة المدى بدلاً من اقتحام واحد.",
+    "definition_en": "A sophisticated, well-resourced threat actor — typically a nation-state or state-sponsored group — that gains and maintains unauthorized, stealthy access to a target's network over an extended period to continually exfiltrate data or undermine operations, adapting its techniques as defenders respond (NIST SP 800-39/800-137); distinguished from opportunistic attacks by its persistence and long-term objectives rather than a single intrusion.",
+    "related": [
+      "malware",
+      "phishing",
+      "social_engineering",
+      "siem"
+    ],
+    "date_added": "2026-09-21"
+  },
+  {
+    "id": "zero_knowledge_proof",
+    "name": "Zero-Knowledge Proof",
+    "category": "blockchain",
+    "subcategory": "web3",
+    "aliases": [
+      "ZKP",
+      "zk-SNARK"
+    ],
+    "definition_ar": "أسلوب تشفيري صاغه رسميًا Goldwasser وMicali وRackoff عام 1985، يتيح لطرف (المُثبِت) إقناع طرف آخر (المُتحقِّق) بصحة تصريح ما دون كشف أي معلومة تتجاوز صحته؛ وتقوم على صيغ غير تفاعلية ومختصرة منه تُعرف بـ zk-SNARKs عملات رقمية حافظة للخصوصية كـ Zcash، وكذلك تجميعات zk-rollup التي تُجمِّع المعاملات وتُثبتها خارج السلسلة الرئيسية لتوسيع نطاق شبكات مثل Ethereum.",
+    "definition_en": "A cryptographic method, formalized by Goldwasser, Micali, and Rackoff in 1985, that lets one party (the prover) convince another (the verifier) that a statement is true without revealing any information beyond its validity; non-interactive succinct variants known as zk-SNARKs underlie privacy-preserving cryptocurrencies like Zcash and zk-rollups, which batch and prove transactions off-chain to scale networks such as Ethereum.",
+    "related": [
+      "encryption",
+      "hash",
+      "smart_contract",
+      "ethereum"
+    ],
+    "date_added": "2026-09-21"
   }
 ]
