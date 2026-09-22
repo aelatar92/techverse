@@ -2603,5 +2603,95 @@
       "ethereum"
     ],
     "date_added": "2026-09-21"
+  },
+  {
+    "id": "coap",
+    "name": "CoAP",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [
+      "Constrained Application Protocol"
+    ],
+    "definition_ar": "بروتوكول نقل ويب خفيف يعمل فوق UDP (RFC 7252) صُمم للعقد المحدودة الموارد والشبكات منخفضة الطاقة وعالية فقد الحزم، يوفر نموذج طلب/استجابة شبيهًا بـ REST مع معرّفات URI واكتشاف موارد مدمج، ويُستخدم غالبًا في تطبيقات إنترنت الأشياء بين الآلات كأتمتة المباني والطاقة الذكية.",
+    "definition_en": "A specialized, lightweight web transfer protocol (RFC 7252) built on UDP for constrained nodes and lossy, low-power networks, offering a REST-like request/response model with URIs and built-in resource discovery — commonly used for machine-to-machine IoT applications like smart energy and building automation.",
+    "related": [
+      "mqtt",
+      "udp",
+      "iot",
+      "rest_api"
+    ],
+    "date_added": "2026-09-22"
+  },
+  {
+    "id": "dtls",
+    "name": "DTLS",
+    "category": "networking",
+    "subcategory": "security",
+    "aliases": [
+      "Datagram Transport Layer Security"
+    ],
+    "definition_ar": "بروتوكول تشفير (RFC 6347، وحُدِّث للإصدار 1.3 في RFC 9147) يكيّف بروتوكول TLS ليعمل فوق وسائط نقل غير موثوقة كـ UDP، فيوفر ضمانات سرية وسلامة بيانات مكافئة لـ TLS دون فرض تسليم موثوق أو مرتّب، ما يجعله مناسبًا لحركة بيانات حساسة للتأخير كمكالمات VoIP والفيديو ورسائل IoT.",
+    "definition_en": "A cryptographic protocol (RFC 6347, with version 1.3 defined in RFC 9147) that adapts TLS to run over unreliable transports such as UDP, providing equivalent confidentiality and integrity guarantees without requiring reliable or in-order delivery — well suited to delay-sensitive traffic like VoIP, video, and IoT messaging.",
+    "related": [
+      "ssl_tls",
+      "udp",
+      "encryption"
+    ],
+    "date_added": "2026-09-22"
+  },
+  {
+    "id": "byzantine_fault_tolerance",
+    "name": "Byzantine Fault Tolerance",
+    "category": "blockchain",
+    "subcategory": "consensus",
+    "aliases": [
+      "BFT",
+      "pBFT",
+      "Practical Byzantine Fault Tolerance"
+    ],
+    "definition_ar": "قدرة نظام موزَّع على الوصول إلى توافق صحيح حتى لو تعطّلت بعض عقده بشكل عشوائي أو تصرّفت بخبث، وتُنسب التسمية إلى مسألة جنرالات بيزنطة؛ يحقق نموذج BFT العملي (كاسترو وليسكوف، 1999) ذلك عبر ثلاث مراحل لتبادل الرسائل — ما قبل التحضير والتحضير والالتزام — متحمّلًا عطل حتى ثلث العقد، ويقوم عليه توافق سلاسل الكتل المصرَّح بها كـ Hyperledger Fabric.",
+    "definition_en": "The ability of a distributed system to reach correct consensus even when some nodes fail arbitrarily or act maliciously, named after the Byzantine Generals Problem; Practical BFT (Castro and Liskov, 1999) achieves this through three message-exchange phases — pre-prepare, prepare, and commit — tolerating up to one-third faulty nodes, and underlies consensus in permissioned blockchains such as Hyperledger Fabric.",
+    "related": [
+      "proof_of_stake",
+      "proof_of_work",
+      "blockchain",
+      "distributed_ledger"
+    ],
+    "date_added": "2026-09-22"
+  },
+  {
+    "id": "systemd_timer",
+    "name": "systemd Timer",
+    "category": "linux",
+    "subcategory": "scheduling",
+    "aliases": [
+      "systemd.timer",
+      "Timer Unit"
+    ],
+    "definition_ar": "نوع من وحدات systemd (systemd.timer(5)) يُشغّل وحدة .service مرتبطة به وفق فترات تقويمية أو زمنية نسبية، ويوفر تعويضًا مدمجًا للمهام الفائتة أثناء إيقاف تشغيل النظام، وتسجيلًا مركزيًا عبر journald، وتنفيذًا واعيًا بالاعتماديات — بديل حديث لـ cron للجدولة في توزيعات لينكس المعتمدة على systemd.",
+    "definition_en": "A systemd unit type (systemd.timer(5)) that triggers an associated .service unit at calendar-based or monotonic intervals, offering built-in catch-up for runs missed while the system was off, centralized logging via journald, and dependency-aware execution — a modern alternative to cron on systemd-based Linux distributions.",
+    "related": [
+      "cron",
+      "crontab",
+      "systemd"
+    ],
+    "date_added": "2026-09-22"
+  },
+  {
+    "id": "ccie",
+    "name": "CCIE",
+    "category": "networking",
+    "subcategory": "certifications",
+    "aliases": [
+      "Cisco Certified Internetwork Expert"
+    ],
+    "definition_ar": "أعلى مستويات شهادات Cisco التخصصية، صدرت لأول مرة عام 1993، وتتطلب اجتياز امتحان نظري أساسي مشترك مع شهادة CCNP، إضافة إلى امتحان عملي مخبري مدته ثماني ساعات ضمن مسار مختار كالبنية التحتية للمؤسسات أو الأمن أو مراكز البيانات، وتظل صالحة لثلاث سنوات قبل التجديد.",
+    "definition_en": "Cisco's expert-level certification track, first issued in 1993, requiring candidates to pass a core written exam shared with CCNP plus an eight-hour, hands-on lab exam in a chosen track — such as Enterprise Infrastructure, Security, or Data Center — and valid for three years before recertification.",
+    "related": [
+      "ccnp",
+      "ccna",
+      "router"
+    ],
+    "date_added": "2026-09-22"
   }
 ]
