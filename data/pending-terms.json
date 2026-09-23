@@ -2693,5 +2693,94 @@
       "router"
     ],
     "date_added": "2026-09-22"
+  },
+  {
+    "id": "eigrp",
+    "name": "EIGRP",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Enhanced Interior Gateway Routing Protocol"
+    ],
+    "definition_ar": "بروتوكول توجيه داخلي نشأ في Cisco ووُثّق لدى IETF في RFC 7868، يستخدم خوارزمية التحديث الانتشاري (DUAL) لحساب مسارات خالية من الحلقات وأقل تكلفة، وإعادة حسابها بسرعة بعد أي تغيّر في الطوبولوجيا دون بث الجدول الكامل دوريًا، فيجمع بين بساطة بروتوكولات متجه المسافة وسرعة تقارب تشبه بروتوكولات حالة الوصلة.",
+    "definition_en": "A Cisco-originated interior gateway routing protocol, documented for the IETF as RFC 7868, that uses the Diffusing Update Algorithm (DUAL) to compute loop-free, least-cost paths and rapidly recompute routes after a topology change without periodic full-table broadcasts — combining distance-vector simplicity with link-state-like fast convergence.",
+    "related": [
+      "bgp",
+      "ospf",
+      "router",
+      "stp"
+    ],
+    "date_added": "2026-09-23"
+  },
+  {
+    "id": "doh",
+    "name": "DNS over HTTPS",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "DoH"
+    ],
+    "definition_ar": "بروتوكول (RFC 8484) يُضمّن استعلامات واستجابات DNS داخل طلبات HTTPS، فيشفّر حركة بيانات DNS لمنع التنصت والتلاعب أثناء النقل؛ وبخلاف DNS عبر TLS (DoT) الذي يستخدم منفذًا مخصصًا هو 853، يتشارك DoH المنفذ القياسي لـ HTTPS رقم 443، مما يصعّب حجبه انتقائيًا من قبل الشبكات.",
+    "definition_en": "A protocol (RFC 8484) that encapsulates DNS queries and responses inside HTTPS exchanges, encrypting DNS traffic to prevent eavesdropping and on-path tampering; unlike DNS over TLS (DoT), which uses a dedicated port 853, DoH shares HTTPS's standard port 443, making it harder for networks to selectively block.",
+    "related": [
+      "dns",
+      "https",
+      "tcp"
+    ],
+    "date_added": "2026-09-23"
+  },
+  {
+    "id": "dlp",
+    "name": "Data Loss Prevention",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": [
+      "DLP",
+      "Data Leak Prevention"
+    ],
+    "definition_ar": "مجموعة من الأدوات والسياسات الأمنية تُحدّد وتراقب وتمنع النقل غير المصرّح به للبيانات الحساسة، كالمعلومات الشخصية أو الملكية الفكرية، عبر نقاط النهاية والشبكات والخدمات السحابية، وذلك عادةً من خلال فحص المحتوى وتحليل سياقي لمن ينقل أي بيانات وإلى أين وكيف.",
+    "definition_en": "A set of security tools and policies that identify, monitor, and block the unauthorized transmission of sensitive data — such as PII or intellectual property — across endpoints, networks, and cloud services, typically through content inspection and contextual analysis of who is moving what data, to where, and how.",
+    "related": [
+      "cia_triad",
+      "encryption",
+      "siem",
+      "malware"
+    ],
+    "date_added": "2026-09-23"
+  },
+  {
+    "id": "quantization",
+    "name": "Model Quantization",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [
+      "Quantization",
+      "Weight Quantization"
+    ],
+    "definition_ar": "تقنية ضغط للنماذج تُقلّل الدقة العددية لأوزان الشبكة العصبية وتنشيطاتها — مثلًا من فاصلة عائمة بـ32 أو 16 بت إلى أعداد صحيحة بـ8 أو 4 بت — مما يقلّص البصمة التخزينية ويسرّع الاستدلال، مقابل بعض فقدان الدقة الذي تحاول أساليب التكميم الواعية بالتدريب (quantization-aware) تقليله.",
+    "definition_en": "A model compression technique that reduces the numerical precision of a neural network's weights and activations — for example from 32-bit or 16-bit floating point down to 8-bit or 4-bit integers — shrinking memory footprint and speeding up inference, at the cost of some accuracy that quantization-aware methods try to minimize.",
+    "related": [
+      "large_language_model",
+      "training_data",
+      "transformer"
+    ],
+    "date_added": "2026-09-23"
+  },
+  {
+    "id": "change_data_capture",
+    "name": "Change Data Capture",
+    "category": "databases",
+    "subcategory": "operations",
+    "aliases": [
+      "CDC"
+    ],
+    "definition_ar": "نمط تصميم يرصد التغييرات على مستوى الصفوف من إدراج وتحديث وحذف في قاعدة بيانات — عادةً بقراءة سجل المعاملات (transaction log) بدل استقصاء الجداول بشكل متكرر — ويبثّها كأحداث إلى أنظمة لاحقة في الزمن شبه الفعلي، ويُستخدم غالبًا لمزامنة ذواكر التخزين المؤقت أو فهارس البحث أو مستودعات البيانات مع أثر ضئيل على قاعدة البيانات المصدر.",
+    "definition_en": "A design pattern that detects row-level inserts, updates, and deletes in a database — typically by reading its transaction log rather than repeatedly polling tables — and streams them as events to downstream systems in near real time, commonly used to keep caches, search indexes, or data warehouses synchronized with minimal load on the source database.",
+    "related": [
+      "database",
+      "replication",
+      "sql"
+    ],
+    "date_added": "2026-09-23"
   }
 ]
