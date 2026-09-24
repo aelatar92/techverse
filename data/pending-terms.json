@@ -2782,5 +2782,105 @@
       "sql"
     ],
     "date_added": "2026-09-23"
+  },
+  {
+    "id": "syscall",
+    "name": "System Call",
+    "category": "linux",
+    "subcategory": "core",
+    "aliases": [
+      "Syscall"
+    ],
+    "definition_ar": "الواجهة البرمجية — الموحَّدة لأنظمة POSIX ضمن معيار IEEE Std 1003.1 — التي يطلب من خلالها برنامج في مساحة المستخدم خدمة من نواة نظام التشغيل، كفتح ملف أو تخصيص ذاكرة أو تفريع عملية، محدثةً انتقالًا مضبوطًا من وضع المستخدم غير المُميَّز إلى وضع النواة المُميَّز للوصول الآمن إلى العتاد وموارد النظام.",
+    "definition_en": "The programmatic interface — standardized for POSIX-compliant systems as IEEE Std 1003.1 — through which a user-space program requests a service from the operating system kernel, such as opening a file, allocating memory, or forking a process, triggering a controlled switch from unprivileged user mode into privileged kernel mode to safely access hardware and system resources.",
+    "related": [
+      "kernel",
+      "process",
+      "bash"
+    ],
+    "date_added": "2026-09-24"
+  },
+  {
+    "id": "tftp",
+    "name": "TFTP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Trivial File Transfer Protocol"
+    ],
+    "definition_ar": "بروتوكول بسيط لنقل الملفات (RFC 1350) يعمل فوق UDP عبر المنفذ 69 ويدعم طلبَي القراءة والكتابة الأساسيَّين فقط دون مصادقة أو تشفير مدمجَين، ويُستخدم غالبًا لتسليم صور الإقلاع والبرامج الثابتة وملفات الإعداد إلى الأجهزة عديمة القرص أثناء الإقلاع عبر الشبكة.",
+    "definition_en": "A minimal file transfer protocol (RFC 1350) built on UDP port 69 that supports only basic read and write requests with no built-in authentication or encryption, commonly used to deliver boot images, firmware, and configuration files to diskless devices during network booting.",
+    "related": [
+      "udp",
+      "ftp",
+      "port"
+    ],
+    "date_added": "2026-09-24"
+  },
+  {
+    "id": "pop3",
+    "name": "POP3",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Post Office Protocol",
+      "Post Office Protocol version 3"
+    ],
+    "definition_ar": "بروتوكول قياسي على الإنترنت لاسترجاع البريد (RFC 1939) يتيح للعميل تنزيل الرسائل من صندوق بريد على خادم عبر منفذ TCP رقم 110 — وحذفها عادة من الخادم بعد التنزيل — على عكس IMAP الذي يبقي البريد متزامنًا عبر عدة عملاء؛ وتُغلِّفه عمليات النشر الحديثة بـ TLS باسم POP3S عبر المنفذ 995.",
+    "definition_en": "An Internet standard mail-retrieval protocol (RFC 1939) that lets a client download messages from a server mailbox over TCP port 110 — typically deleting them from the server after download — in contrast to IMAP, which keeps mail synchronized across multiple clients; modern deployments wrap it in TLS as POP3S on port 995.",
+    "related": [
+      "tcp",
+      "port",
+      "ssl_tls"
+    ],
+    "date_added": "2026-09-24"
+  },
+  {
+    "id": "credential_stuffing",
+    "name": "Credential Stuffing",
+    "category": "security",
+    "subcategory": "threats",
+    "aliases": [],
+    "definition_ar": "هجوم آلي، تصنّفه OWASP ضمن التهديدات الآلية باسم OAT-008، تُجرَّب فيه كميات كبيرة من أزواج اسم المستخدم وكلمة المرور المسروقة من اختراقات بيانات سابقة على نموذج تسجيل الدخول، مستغلاً إعادة استخدام كلمات المرور للاستيلاء على حسابات في خدمات غير مرتبطة دون أي تخمين أو هجوم قوة غاشمة على كلمة المرور.",
+    "definition_en": "An automated attack, classified by OWASP as Automated Threat OAT-008, in which large volumes of username-password pairs stolen in prior data breaches are tried against a login form, exploiting password reuse to hijack accounts on unrelated services without any password guessing or brute-forcing.",
+    "related": [
+      "phishing",
+      "mfa",
+      "pentest"
+    ],
+    "date_added": "2026-09-24"
+  },
+  {
+    "id": "recovery_time_objective",
+    "name": "Recovery Time Objective",
+    "category": "systems",
+    "subcategory": "reliability",
+    "aliases": [
+      "RTO"
+    ],
+    "definition_ar": "مقياس لاستمرارية الأعمال (يحدّده معيارا ISO 22301/22300) يُعبِّر عن أقصى مدة مقبولة لاستعادة نظام أو خدمة بعد انقطاع قبل أن يصبح الأثر غير مقبول للمؤسسة؛ ويُخطَّط له إلى جانب هدف نقطة الاستعادة (RPO) الذي يحدّد مقدار فقدان البيانات المسموح به مقاسًا بالزمن.",
+    "definition_en": "A business continuity metric (defined in ISO 22301/22300) specifying the maximum acceptable duration for restoring a system or service after a disruption before the impact becomes unacceptable to the organization; it is planned alongside the Recovery Point Objective (RPO), which bounds how much data loss, measured in time, is tolerable.",
+    "related": [
+      "backup",
+      "highavailability",
+      "sla"
+    ],
+    "date_added": "2026-09-24"
+  },
+  {
+    "id": "abac",
+    "name": "Attribute-Based Access Control",
+    "category": "security",
+    "subcategory": "identity",
+    "aliases": [
+      "ABAC"
+    ],
+    "definition_ar": "نموذج للتحكم في الوصول (صاغته NIST رسميًا في SP 800-162) يمنح العمليات أو يرفضها بتقييم سياسات مقابل خصائص الفاعل والمورد والإجراء والبيئة — كالقسم أو تصنيف البيانات أو وقت اليوم — بدلًا من أدوار ثابتة، مما يتيح تفويضًا أدق وأكثر مراعاة للسياق مقارنة بالتحكم في الوصول المستند إلى الأدوار (RBAC).",
+    "definition_en": "An access control model (formalized in NIST SP 800-162) that grants or denies operations by evaluating policies against attributes of the subject, resource, action, and environment — such as department, data classification, or time of day — rather than fixed roles, enabling more granular and context-aware authorization than Role-Based Access Control.",
+    "related": [
+      "least_privilege",
+      "zerotrust"
+    ],
+    "date_added": "2026-09-24"
   }
 ]
