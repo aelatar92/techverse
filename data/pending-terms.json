@@ -2882,5 +2882,99 @@
       "zerotrust"
     ],
     "date_added": "2026-09-24"
+  },
+  {
+    "id": "lldp",
+    "name": "LLDP",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "Link Layer Discovery Protocol",
+      "802.1AB"
+    ],
+    "definition_ar": "بروتوكول مستقل عن الشركة المصنّعة يعمل في الطبقة الثانية (معيار IEEE 802.1AB)، تُعلن بموجبه أجهزة الشبكة كالمحوّلات والموجّهات دوريًا عن هويتها وقدراتها ومعلومات منافذها للأجهزة المجاورة المتصلة مباشرة، مما يملأ قاعدة معلومات إدارة (MIB) قياسية تستخدمها أدوات إدارة الشبكة لبناء خرائط طوبولوجيا فعلية دقيقة.",
+    "definition_en": "A vendor-neutral Layer 2 protocol (IEEE 802.1AB) that lets network devices such as switches and routers periodically advertise their identity, capabilities, and port information to directly connected neighbors, populating a standard MIB that network management tools use to build accurate physical topology maps.",
+    "related": [
+      "switch",
+      "router",
+      "snmp",
+      "vlan"
+    ],
+    "date_added": "2026-09-25"
+  },
+  {
+    "id": "ptp",
+    "name": "Precision Time Protocol",
+    "category": "networking",
+    "subcategory": "protocols",
+    "aliases": [
+      "PTP",
+      "IEEE 1588"
+    ],
+    "definition_ar": "بروتوكول شبكي (معيار IEEE 1588) يُزامن الساعات عبر شبكة حزم البيانات بدقة تصل إلى ما دون الميكروثانية، معتمدًا على مخطط هرمي رئيسي-تابع وطوابع زمنية على مستوى العتاد، وهو أدق بكثير من NTP، ويُستخدم على نطاق واسع في الاتصالات والتداول المالي وأنظمة الأتمتة الصناعية التي تتطلب توقيتًا متزامنًا بدقة عالية.",
+    "definition_en": "A network protocol (IEEE 1588) that synchronizes clocks across a packet network to sub-microsecond accuracy using a hierarchical master-slave scheme and hardware timestamping — far more precise than NTP — and widely deployed in telecom, financial trading, and industrial automation systems that need tightly aligned time.",
+    "related": [
+      "ntp",
+      "latency",
+      "scada",
+      "ot"
+    ],
+    "date_added": "2026-09-25"
+  },
+  {
+    "id": "http2",
+    "name": "HTTP/2",
+    "category": "web",
+    "subcategory": "infrastructure",
+    "aliases": [
+      "HTTP2",
+      "h2"
+    ],
+    "definition_ar": "الإصدار الرئيسي الثاني من HTTP (RFC 9113، وأصله RFC 7540)، يحافظ على نفس دلالات الطلب والاستجابة الموجودة في HTTP/1.1 لكنه يضيف طبقة تأطير ثنائية تُعدِّد (multiplex) طلبات واستجابات كثيرة عبر اتصال TCP واحد، إلى جانب ضغط الترويسات (HPACK)، مما يلغي مشكلة الحجب أول-بأول على مستوى طبقة التطبيق الموجودة في HTTP/1.1.",
+    "definition_en": "The second major version of HTTP (RFC 9113, originally RFC 7540), which keeps the same request/response semantics as HTTP/1.1 but introduces a binary framing layer that multiplexes many requests and responses over a single TCP connection, along with header compression (HPACK), eliminating the application-layer head-of-line blocking present in HTTP/1.1.",
+    "related": [
+      "http",
+      "https",
+      "cdn",
+      "browser"
+    ],
+    "date_added": "2026-09-25"
+  },
+  {
+    "id": "vrf",
+    "name": "VRF",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Virtual Routing and Forwarding"
+    ],
+    "definition_ar": "تقنية تتيح لموجّه أو محوّل واحد الاحتفاظ بعدّة جداول توجيه مستقلة تمامًا وفي آنٍ واحد، لكل منها واجهاتها وقراراتها الخاصة في التمرير، بحيث يمكن لمساحات عناوين IP متداخلة أو متكررة تابعة لعملاء أو أقسام مختلفين أن تتعايش على بنية تحتية مشتركة دون تسرّب حركة البيانات بينها؛ وهي الأساس الذي تقوم عليه شبكات VPN من نوع BGP/MPLS IP كما يحدّدها RFC 4364.",
+    "definition_en": "A technology that lets a single router or switch maintain multiple, simultaneous, and completely independent routing tables — each with its own interfaces and forwarding decisions — so overlapping or duplicate IP address spaces from different customers or departments can coexist on shared infrastructure without leaking traffic between them; it underpins BGP/MPLS IP VPNs as defined in RFC 4364.",
+    "related": [
+      "mpls",
+      "bgp",
+      "vpn",
+      "router"
+    ],
+    "date_added": "2026-09-25"
+  },
+  {
+    "id": "mitre_attack",
+    "name": "MITRE ATT&CK",
+    "category": "security",
+    "subcategory": "defense",
+    "aliases": [
+      "ATT&CK",
+      "Adversarial Tactics, Techniques, and Common Knowledge"
+    ],
+    "definition_ar": "قاعدة معرفة متاحة عالميًا ومجانية تُديرها مؤسسة MITRE، تُصنِّف أساليب الخصوم الحقيقية (التكتيكات: لماذا) وتقنياتهم (كيف) المرصودة عبر بيئات المؤسسات والأجهزة المحمولة وأنظمة التحكم الصناعي، ضمن مصفوفة يستخدمها فرق الأمن لربط أدوات الكشف وتخطيط الدفاعات والتواصل بشأن سلوك التهديدات بمفردات مشتركة.",
+    "definition_en": "A globally accessible, freely available knowledge base maintained by MITRE that catalogs real-world adversary tactics (the why) and techniques (the how) observed across enterprise, mobile, and industrial-control environments, organized as a matrix that security teams use to map detections, plan defenses, and communicate threat behavior in a common vocabulary.",
+    "related": [
+      "pentest",
+      "siem",
+      "ids_ips",
+      "malware"
+    ],
+    "date_added": "2026-09-25"
   }
 ]
