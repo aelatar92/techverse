@@ -2976,5 +2976,101 @@
       "malware"
     ],
     "date_added": "2026-09-25"
+  },
+  {
+    "id": "rip",
+    "name": "RIP",
+    "category": "networking",
+    "subcategory": "routing-switching",
+    "aliases": [
+      "Routing Information Protocol",
+      "RIPv2"
+    ],
+    "definition_ar": "أحد أقدم بروتوكولات التوجيه الداخلية (RFC 2453 للإصدار الثاني RIPv2، وأصله RFC 1058)، يعتمد على عدد القفزات (hop count) كمقياس وحيد للتوجيه، ويرسل جدول التوجيه كاملًا كل 30 ثانية عبر البث، ويحدّ من قابلية الوصول للمسار عند 15 قفزة (بينما تعني 16 أن الوجهة غير قابلة للوصول) — بساطة سهّلت نشره لكنها جعلته أقل ملاءمة للشبكات الكبيرة أو سريعة التقارب مقارنة بـ OSPF أو EIGRP.",
+    "definition_en": "One of the oldest interior gateway routing protocols (RFC 2453 for RIPv2, originally RFC 1058), which uses hop count as its sole routing metric, broadcasts the full routing table every 30 seconds, and caps a route's reachability at 15 hops (16 meaning unreachable) — a simplicity that made it easy to deploy but poorly suited to large or fast-converging networks compared to OSPF or EIGRP.",
+    "related": [
+      "ospf",
+      "eigrp",
+      "bgp",
+      "is_is",
+      "router"
+    ],
+    "date_added": "2026-09-26"
+  },
+  {
+    "id": "circuit_breaker",
+    "name": "Circuit Breaker",
+    "category": "systems",
+    "subcategory": "reliability",
+    "aliases": [
+      "Circuit Breaker Pattern"
+    ],
+    "definition_ar": "نمط لتعزيز مرونة البرمجيات يُغلّف نداءات خدمة أو مورد بعيد، وبعد وصول عدد الإخفاقات المتتالية إلى حد معيّن 'يفصل الدارة' فيفشل بسرعة ويوقف إرسال الطلبات لفترة تهدئة بدلًا من تركها تتراكم وتنتهي مهلتها، ثم يسمح دوريًا بنداء تجريبي لاختبار تعافي الاعتماديّة قبل استئناف الحركة الطبيعية، مما يمنع تفشي الأعطال عبر الأنظمة الموزعة.",
+    "definition_en": "A software resiliency pattern that wraps calls to a remote service or resource and, after a threshold of consecutive failures, 'trips' to fail fast and stop sending requests for a cooldown period instead of letting them pile up and time out — then periodically allows a trial call to test whether the dependency has recovered before resuming normal traffic, preventing cascading failures across distributed systems.",
+    "related": [
+      "highavailability",
+      "microservices",
+      "service_mesh",
+      "chaos_engineering"
+    ],
+    "date_added": "2026-09-26"
+  },
+  {
+    "id": "five_g",
+    "name": "5G",
+    "category": "iot",
+    "subcategory": "connectivity",
+    "aliases": [
+      "5G NR",
+      "5G New Radio",
+      "Fifth-Generation Cellular Network"
+    ],
+    "definition_ar": "الجيل الخامس من تقنية الشبكات الخلوية، الذي وحّدت معاييره مجموعة 3GPP ابتداءً من الإصدار Release 15 (اكتمل تجميده وظيفيًا منتصف 2018)، ويقوم على واجهة الراديو الجديدة 5G NR؛ ويستهدف ثلاث فئات من الاستخدام — النطاق العريض المحمول المُحسَّن (eMBB) لزيادة سرعة النقل، والاتصال فائق الموثوقية ومنخفض الكمون (URLLC)، والاتصال الآلي الضخم (mMTC) — ما يجعله طبقة اتصال أساسية لنشر إنترنت الأشياء على نطاق واسع إلى جانب NB-IoT.",
+    "definition_en": "The fifth generation of cellular network technology, standardized by 3GPP starting with Release 15 (functionally frozen mid-2018) and built around the 5G NR (New Radio) air interface; it targets three use-case families — enhanced mobile broadband (eMBB) for higher throughput, ultra-reliable low-latency communication (URLLC), and massive machine-type communication (mMTC) — making it a key connectivity layer for large-scale IoT deployments alongside NB-IoT.",
+    "related": [
+      "nbiot",
+      "wifi",
+      "iot",
+      "edge_computing"
+    ],
+    "date_added": "2026-09-26"
+  },
+  {
+    "id": "daily_standup",
+    "name": "Daily Standup",
+    "category": "projectmgmt",
+    "subcategory": "ceremonies",
+    "aliases": [
+      "Daily Scrum",
+      "Stand-up Meeting"
+    ],
+    "definition_ar": "فعالية يومية قصيرة ومحدّدة زمنيًا (عادة 15 دقيقة) يحدّدها دليل Scrum، يزامن خلالها فريق التطوير تقدّمه نحو هدف السبرنت، ويكيّف قائمة مهام السبرنت عند الحاجة، ويكشف عن أي عوائق تعترض العمل — وتُعقد في الوقت والمكان نفسيهما يوميًا لتقليل الجهد الإضافي.",
+    "definition_en": "A short, time-boxed (typically 15-minute) daily event defined by the Scrum Guide in which the development team synchronizes on progress toward the sprint goal, adapts the sprint backlog if needed, and surfaces blockers — held at the same time and place each day to minimize overhead.",
+    "related": [
+      "scrum",
+      "sprint",
+      "agile",
+      "retrospective"
+    ],
+    "date_added": "2026-09-26"
+  },
+  {
+    "id": "gradient_descent",
+    "name": "Gradient Descent",
+    "category": "ai",
+    "subcategory": "training",
+    "aliases": [
+      "Stochastic Gradient Descent",
+      "SGD"
+    ],
+    "definition_ar": "خوارزمية تحسين تكرارية تُقلّل دالة الخسارة لنموذج ما عبر حساب التدرّج (المشتقات الجزئية) لتلك الدالة بالنسبة لمعاملاته، ثم تحديثها بخطوة صغيرة — يحدّد حجمها معدل التعلّم — في الاتجاه المعاكس للتدرّج؛ وهي الآلية الأساسية وراء تدريب الشبكات العصبية عبر خوارزمية الانتشار الخلفي.",
+    "definition_en": "An iterative optimization algorithm that minimizes a model's loss function by repeatedly computing the gradient (partial derivatives) of that function with respect to its parameters and updating them a small step — scaled by the learning rate — in the opposite direction of the gradient; it is the core mechanism behind training neural networks via backpropagation.",
+    "related": [
+      "backpropagation",
+      "neural_network",
+      "machine_learning",
+      "deep_learning"
+    ],
+    "date_added": "2026-09-26"
   }
 ]
